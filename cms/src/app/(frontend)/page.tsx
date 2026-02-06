@@ -4,18 +4,24 @@ import configPromise from '@payload-config'
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const payload = await getPayload({ config: configPromise })
+  let homePageData = null
 
-  const page = await payload.find({
-    collection: 'pages',
-    where: {
-      slug: { equals: 'home' },
-      status: { equals: 'published' },
-    },
-    limit: 1,
-  })
+  try {
+    const payload = await getPayload({ config: configPromise })
 
-  const homePageData = page.docs[0]
+    const page = await payload.find({
+      collection: 'pages',
+      where: {
+        slug: { equals: 'home' },
+        _status: { equals: 'published' },
+      },
+      limit: 1,
+    })
+
+    homePageData = page.docs[0]
+  } catch {
+    // Database tables may not exist yet on first deploy
+  }
 
   if (!homePageData) {
     return (

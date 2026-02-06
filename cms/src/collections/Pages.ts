@@ -11,7 +11,7 @@ export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
+    defaultColumns: ['title', 'slug', '_status', 'updatedAt'],
     group: 'Content',
   },
   access: {
@@ -39,18 +39,6 @@ export const Pages: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description: 'URL path for this page (e.g. "about" becomes /about).',
-      },
-    },
-    {
-      name: 'status',
-      type: 'select',
-      defaultValue: 'draft',
-      options: [
-        { label: 'Draft', value: 'draft' },
-        { label: 'Published', value: 'published' },
-      ],
-      admin: {
-        position: 'sidebar',
       },
     },
     {
