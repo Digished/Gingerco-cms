@@ -6,7 +6,7 @@ Vienna-based Afrobeats fitness company transitioning from static website to a mo
 
 **Phase**: Planning & Architecture (Complete) ✓
 **Current Tech**: Static HTML site on GitHub Pages
-**Target Tech**: Supabase (PostgreSQL) + Next.js + Netlify
+**Target Tech**: Supabase (PostgreSQL) + Next.js + Vercel
 **Timeline**: 4 weeks to MVP
 **Cost**: €20-50/month
 
@@ -111,7 +111,7 @@ GROUP BY session_id;  -- Single query!
 - Webhooks for automation
 
 ### Hosting
-- **Netlify** - Next.js frontend (€0-19/month)
+- **Vercel** - Next.js frontend (free Hobby plan)
 - **Supabase** - PostgreSQL backend (€0-30/month)
 - **Cloudinary** - Media CDN (unchanged)
 - **Resend** - Email service (€0-20/month)
@@ -197,7 +197,7 @@ See **`DOCS/CMS_IMPLEMENTATION_PLAN.md`** for detailed week-by-week guide
 ### Monthly Recurring
 | Service | Cost | Notes |
 |---------|------|-------|
-| Netlify | €0-19 | Pro tier if needed |
+| Vercel | €0-20 | Pro tier if needed |
 | Supabase | €0-30 | Scales with usage |
 | Resend | €0-20 | Free: 3,000 emails/month |
 | Cloudinary | Current | No change |
@@ -268,7 +268,7 @@ See `DOCS/CMS_IMPLEMENTATION_PLAN.md` for detailed step-by-step guide
 - **Supabase**: https://supabase.com/docs
 - **Next.js**: https://nextjs.org/docs
 - **PostgreSQL**: https://www.postgresql.org/docs/
-- **Netlify**: https://docs.netlify.com
+- **Vercel**: https://vercel.com/docs
 
 ---
 

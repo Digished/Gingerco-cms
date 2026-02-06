@@ -12,7 +12,7 @@ A complete headless CMS built with Next.js 14, Supabase, and Tailwind CSS.
 - **Styling**: Tailwind CSS
 - **Forms**: React Hook Form + Zod
 - **Charts**: Recharts (for analytics)
-- **Hosting**: Netlify (frontend) + Supabase (backend)
+- **Hosting**: Vercel (frontend) + Supabase (backend)
 
 **Cost**: €20-50/month (free tier covers needs)
 
@@ -213,7 +213,7 @@ See `migrations/` for complete schema and `DOCS/CMS_DATABASE_SCHEMA.md` for deta
 - [ ] Payment integration (Stripe)
 
 ### ⏳ Phase 4 - Production Launch
-- [ ] Deploy to Netlify
+- [ ] Deploy to Vercel
 - [ ] DNS configuration
 - [ ] Monitoring and logging
 - [ ] Performance optimization
@@ -257,25 +257,28 @@ npm run test:coverage
 
 ## 🚢 Deployment
 
-### Netlify Deployment
+### Vercel Deployment
 
 1. **Connect Repository**
    - Push to GitHub/GitLab
-   - Connect in Netlify dashboard
+   - Import project at vercel.com/new
 
 2. **Build Configuration**
-   - Build command: `npm run build`
-   - Publish directory: `.next`
+   - Framework: Next.js (auto-detected)
+   - Root Directory: `cms`
+   - Build command: `npm run build` (auto-detected)
 
 3. **Environment Variables**
-   - Site Settings > Build & Deploy > Environment
+   - Add during import or in Settings > Environment Variables
    - Add all variables from `.env.example`
 
 4. **Deploy**
    ```bash
-   # Manual deployment from main branch
+   # Pushes trigger automatic deployments
    git push origin main
    ```
+
+See `VERCEL_DEPLOYMENT.md` for the full step-by-step guide.
 
 ---
 

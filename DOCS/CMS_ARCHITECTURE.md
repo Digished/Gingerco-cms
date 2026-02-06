@@ -4,7 +4,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│              Netlify (Frontend CDN)                          │
+│              Vercel (Frontend CDN)                            │
 │           Next.js Application (React)                       │
 │  - Admin Dashboard                                          │
 │  - Public Pages                                             │
@@ -180,10 +180,10 @@ INSERT INTO registrations
      ▼
 PostgreSQL Webhook triggers
      │
-     ├─ HTTP POST to Netlify webhook endpoint
+     ├─ HTTP POST to Vercel webhook endpoint
      │
      ▼
-Netlify API Route: /api/webhooks/submissions
+Vercel API Route: /api/webhooks/submissions
      │
      ├─ Decrypt email
      ├─ Format confirmation email
@@ -654,9 +654,9 @@ const { data } = await supabase
 │ - Static assets: 1 year TTL                         │
 │ - Immutable: true for versioned files               │
 │                                                      │
-│ Netlify Edge Cache                                   │
+│ Vercel Edge Network                                  │
 │ - CDN caching for public pages                       │
-│ - Surrogate-Key for selective purging               │
+│ - ISR for selective revalidation                    │
 │                                                      │
 │ PostgreSQL Connection Pool                           │
 │ - Supabase handles pooling                          │

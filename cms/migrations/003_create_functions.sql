@@ -461,6 +461,6 @@ $$ LANGUAGE plpgsql STABLE;
 -- Next steps:
 -- 1. Test all functions via Supabase SQL Editor
 -- 2. Create first admin user
--- 3. Configure Netlify environment variables
+-- 3. Configure Vercel environment variables
 -- 4. Connect Next.js application
 -- ============================================================================

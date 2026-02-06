@@ -222,7 +222,7 @@ cms/
 ✅ **Data Protection**:
 - Service role key: Server-side only
 - Anon key: Safe in browser
-- Environment variables: Encrypted at Netlify
+- Environment variables: Encrypted at Vercel
 - Sensitive data: Ready for encryption
 
 ---
@@ -245,42 +245,42 @@ cms/
 
 ---
 
-## 🚀 How to Deploy on Netlify
+## 🚀 How to Deploy on Vercel
 
 ### Quick Summary
 
 1. **Connect Repository**
-   - Go to netlify.com
-   - Click "Add new site"
+   - Go to vercel.com/new
    - Select your Git provider
    - Choose Gingerco repository
+   - Click Import
 
 2. **Configure Build Settings**
-   - Base directory: `cms`
-   - Build command: `npm run build`
-   - Publish directory: `.next`
-   - Node version: 18 or 20
+   - Root directory: `cms`
+   - Framework: Next.js (auto-detected)
+   - Build command: `npm run build` (auto-detected)
 
 3. **Set Environment Variables**
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-key
    SUPABASE_SERVICE_ROLE_KEY=your-key
-   NEXT_PUBLIC_SITE_URL=https://your-domain.netlify.app
+   NEXT_PUBLIC_SITE_URL=https://your-project.vercel.app
+   NODE_ENV=production
    ```
 
 4. **Deploy**
-   - Click "Deploy site"
-   - Wait 3-5 minutes for build
-   - Test at `https://xyz123.netlify.app`
+   - Click "Deploy"
+   - Wait 1-3 minutes for build
+   - Test at `https://your-project.vercel.app`
 
 5. **Optional: Add Custom Domain**
-   - Go to Domain management
+   - Go to Settings > Domains
    - Add custom domain
-   - Update DNS (Netlify nameservers or CNAME)
-   - Get free SSL certificate
+   - Update DNS (CNAME or A record per Vercel instructions)
+   - SSL certificate provisioned automatically
 
-**For detailed instructions**: See `NETLIFY_DEPLOYMENT.md`
+**For detailed instructions**: See `VERCEL_DEPLOYMENT.md`
 
 ---
 
@@ -307,7 +307,7 @@ cms/
 
 ## 🧪 Testing Checklist
 
-After deploying to Netlify:
+After deploying to Vercel:
 
 - [ ] Home page loads
 - [ ] Login page accessible
@@ -356,7 +356,7 @@ After deploying to Netlify:
 ## 🔄 Next Steps After Deployment
 
 ### Immediately
-1. Follow `NETLIFY_DEPLOYMENT.md` to deploy
+1. Follow `VERCEL_DEPLOYMENT.md` to deploy
 2. Test all features on production
 3. Monitor build logs and errors
 4. Verify Supabase connection works
@@ -386,11 +386,11 @@ After deploying to Netlify:
   - Static generation (SSG)
   - Server-side rendering (SSR)
 
-- **Netlify Optimizations**:
-  - CDN caching
-  - Edge functions (optional)
-  - Minification and compression
-  - Brotli compression
+- **Vercel Optimizations**:
+  - Global edge network / CDN caching
+  - Edge Middleware for auth (near-zero cold start)
+  - Serverless Functions for API routes
+  - Automatic compression
 
 - **Supabase Optimizations**:
   - PostgreSQL indexes
@@ -429,7 +429,7 @@ You now have a **production-ready headless CMS** with:
 - Tailwind CSS styling
 - TypeScript type safety
 - Comprehensive documentation
-- Netlify deployment guide
+- Vercel deployment guide
 
 ✅ **Security**
 - HTTPS/SSL encryption
@@ -441,17 +441,17 @@ You now have a **production-ready headless CMS** with:
 
 ## 🚀 Get Started
 
-1. **Deploy to Netlify**: Follow `NETLIFY_DEPLOYMENT.md`
+1. **Deploy to Vercel**: Follow `VERCEL_DEPLOYMENT.md`
 2. **Test Features**: Use the testing checklist above
 3. **Continue Development**: Start Phase 3 with public interface
-4. **Monitor**: Use Netlify analytics and logs
+4. **Monitor**: Use Vercel analytics and logs
 
 ---
 
 ## 📚 Documentation Links
 
 - **Setup**: `PHASE_2_SETUP_GUIDE.md`
-- **Deployment**: `NETLIFY_DEPLOYMENT.md`
+- **Deployment**: `VERCEL_DEPLOYMENT.md`
 - **Architecture**: `DOCS/CMS_ARCHITECTURE.md`
 - **Database**: `DOCS/CMS_DATABASE_SCHEMA.md`
 - **Implementation Plan**: `DOCS/CMS_IMPLEMENTATION_PLAN.md`
@@ -462,4 +462,4 @@ You now have a **production-ready headless CMS** with:
 
 All code is committed to Git and pushed to the `claude/plan-headless-cms-OhICB` branch.
 
-Follow the Netlify deployment guide to go live in 15-20 minutes!
+Follow the Vercel deployment guide to go live!

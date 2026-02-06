@@ -234,7 +234,7 @@ cms/src/
 - Loading states
 - Form validation
 - Mobile responsiveness
-- Deploy to Netlify
+- Deploy to Vercel
 
 ---
 
@@ -382,7 +382,7 @@ const { data: stats } = await supabase
 ## Deployment Checklist
 
 - [ ] All routes protected
-- [ ] Environment variables set in Netlify
+- [ ] Environment variables set in Vercel
 - [ ] Database RLS policies active
 - [ ] Real-time subscriptions working
 - [ ] Forms validated on client & server
@@ -441,7 +441,7 @@ By end of Phase 2, you should have:
 ✅ Form builder interface
 ✅ Analytics visualization
 ✅ Settings management
-✅ Deployed to Netlify
+✅ Deployed to Vercel
 ✅ Mobile responsive
 ✅ All tests passing
 
