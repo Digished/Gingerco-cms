@@ -1,286 +1,151 @@
-# Ginger & Co. - Headless CMS Project
+# Ginger & Co. - Headless CMS
 
-Vienna-based Afrobeats fitness company transitioning from static website to a modern headless CMS powered by Supabase + Next.js.
+Vienna-based Afrobeats fitness company. This repository contains the CMS that manages the [gingerandco.at](https://gingerandco.at) website.
 
-## Project Status
+## Tech Stack
 
-**Phase**: Planning & Architecture (Complete) ✓
-**Current Tech**: Static HTML site on GitHub Pages
-**Target Tech**: Supabase (PostgreSQL) + Next.js + Vercel
-**Timeline**: 4 weeks to MVP
-**Cost**: €20-50/month
+- **CMS**: [Payload CMS 3](https://payloadcms.com) (open-source, built on Next.js)
+- **Framework**: Next.js 15 + React 19 + TypeScript
+- **Database**: PostgreSQL (via Supabase or Vercel Postgres)
+- **Media**: Vercel Blob Storage (or local filesystem in dev)
+- **Hosting**: Vercel
+- **Cost**: Free tier covers all current needs
 
 ---
 
 ## Repository Structure
 
 ```
-├── DOCS/                              # CMS Implementation Documentation ⭐
-│   ├── CMS_IMPLEMENTATION_PLAN.md     # 4-week roadmap with code examples
-│   ├── CMS_ARCHITECTURE.md            # System design & data flows
-│   └── CMS_DATABASE_SCHEMA.md         # PostgreSQL schema & RLS policies
+Gingerco-cms/
+├── cms/                           # Payload CMS application
+│   ├── payload.config.ts          # Central CMS configuration
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── (payload)/         # Admin panel + REST API (auto-generated)
+│   │   │   └── (frontend)/        # Public website pages
+│   │   ├── collections/           # Data models (Pages, Events, Media, Users)
+│   │   ├── blocks/                # Page builder blocks (Hero, Content, Gallery, etc.)
+│   │   └── globals/               # Site-wide settings (Header, Footer, SiteSettings)
+│   ├── VERCEL_DEPLOYMENT.md       # Deployment guide
+│   └── .env.example               # Environment variable template
 │
-├── public/                             # Current Static Website (GitHub Pages)
+├── DOCS/                          # Architecture documentation (reference)
+│   ├── CMS_IMPLEMENTATION_PLAN.md
+│   ├── CMS_ARCHITECTURE.md
+│   └── CMS_DATABASE_SCHEMA.md
+│
+├── public/                        # Current static website (GitHub Pages)
 │   ├── index.html, events.html
-│   ├── home/, events/, event/          # Directory structure
-│   └── 404.html, 410.html
+│   └── home/, events/, event/
 │
-├── cms/                                # Next.js CMS App (Phase 1)
-│   ├── src/, public/, package.json
-│   └── (Created during implementation)
-│
-├── .gitignore, README.md
-├── CNAME, robots.txt, sitemap.xml
-└── (Cleaned up: removed duplicate Firebase docs, test files, old guides)
+└── _reference/                    # Archived SQL migrations from earlier phases
 ```
 
 ---
 
-## 📚 Documentation (Start Here!)
+## What the CMS Does
 
-### 1. **`DOCS/CMS_IMPLEMENTATION_PLAN.md`** - START HERE
-Complete 4-week phased roadmap with code examples:
-- Week 1: Foundation (Supabase setup, schema, auth)
-- Week 2: Admin interface (dashboard, event manager, forms)
-- Week 3: Data migration (HTML → Firestore, Google Sheets → registrations)
-- Week 4: Launch (deploy, DNS, monitoring)
+The admin panel at `/admin` lets you:
 
-### 2. **`DOCS/CMS_ARCHITECTURE.md`**
-System design deep-dive:
-- Architecture diagrams
-- Data flow (registration, analytics, admin actions)
-- Component structure
-- API endpoints
-- Real-time subscriptions
-- Error handling & monitoring
+- **Manage pages** -- create, edit, and publish pages using a block-based editor (Hero, Content, Gallery, Events List, CTA, FAQ, Forms)
+- **Manage events** -- create events with sessions, pricing, capacity, registration forms, and recurring schedules
+- **Build forms** -- drag-and-drop form builder for registration and contact forms
+- **Upload media** -- image library with automatic resizing
+- **Configure navigation** -- header nav, footer links, social links
+- **Control site settings** -- site name, contact info, SEO defaults
 
-### 3. **`DOCS/CMS_DATABASE_SCHEMA.md`**
-PostgreSQL reference manual:
-- 13 table definitions with all fields & constraints
-- Row-Level Security (RLS) policies
-- Indexes for performance
-- PostgreSQL functions for analytics
-- Common query examples
-- Encryption strategy for sensitive data
+The public website reads content from the CMS and renders it at `gingerandco.at`.
 
 ---
 
-## Why Supabase + PostgreSQL?
+## Quick Start
 
-### Comparison
+### Prerequisites
 
-| Feature | Firebase | Supabase | Winner |
-|---------|----------|----------|--------|
-| **Real-time** | ✓ | ✓ | Tie |
-| **Analytics** | Code aggregation | ✓ SQL queries | **Supabase** |
-| **Reports** | 3-4 queries + code | 1 SQL query | **Supabase** |
-| **Event Automation** | Cloud Functions | Webhooks + pg_cron | **Supabase** |
-| **Cost** | €20-50/mo | €20-50/mo | Tie |
+- Node.js 20.9+
+- PostgreSQL database (Supabase project or local)
 
-### Example: Get Event Revenue by Session
+### Setup
 
-**Firebase** ❌
-```typescript
-// 1. Fetch all registrations
-// 2. Filter by event
-// 3. Aggregate in JavaScript
-// 4. Manual calculation
-```
-
-**Supabase** ✅
-```sql
-SELECT session_id, SUM(payment_amount) as revenue
-FROM registrations WHERE event_id = $1
-GROUP BY session_id;  -- Single query!
-```
-
----
-
-## Tech Stack
-
-### Frontend
-- Next.js 14+ (React + TypeScript)
-- Tailwind CSS, React Hook Form, Recharts
-
-### Backend
-- **Supabase** (Managed PostgreSQL)
-- PostgreSQL 15+ with native extensions
-- Row-Level Security (RLS) for authorization
-- PostgreSQL Functions for complex logic
-- pg_cron for scheduled jobs
-- Webhooks for automation
-
-### Hosting
-- **Vercel** - Next.js frontend (free Hobby plan)
-- **Supabase** - PostgreSQL backend (€0-30/month)
-- **Cloudinary** - Media CDN (unchanged)
-- **Resend** - Email service (€0-20/month)
-
----
-
-## Database Schema (13 Tables)
-
-1. **pages** - CMS pages (home, about, contact, etc.)
-2. **events** - Event details & configuration
-3. **sessions** - Sessions with pricing & capacity
-4. **registrations** - Registrations (encrypted PII + analytics)
-5. **submissions** - Form submissions
-6. **forms** - Form templates
-7. **analytics_events** - User interaction tracking
-8. **users** - Admin user management
-9. **audit_logs** - Admin action history
-10. **email_logs** - Email delivery tracking
-11. **media** - Media library metadata
-12. **settings** - Global configuration
-13. **session_registration_counts** - Real-time counters
-
-**Key Features**:
-- ✓ Encrypted PII (full_name, email, phone)
-- ✓ Real-time capacity tracking
-- ✓ SQL functions for analytics
-- ✓ Row-Level Security for access control
-- ✓ Audit trail for compliance
-
----
-
-## Quick Implementation Guide
-
-### Phase 1: Foundation (Week 1)
 ```bash
-# 1. Create Supabase project
-# Visit https://supabase.com → New Project → Europe region
-
-# 2. Initialize Next.js app
-npx create-next-app@latest cms --typescript --tailwind --app
 cd cms
+cp .env.example .env
 
-# 3. Install Supabase client
-npm install @supabase/supabase-js @supabase/auth-helpers-nextjs
+# Fill in DATABASE_URL and PAYLOAD_SECRET in .env
 
-# 4. Configure environment
-cp .env.example .env.local
-# Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-# 5. Create PostgreSQL schema
-# Copy SQL from DOCS/CMS_DATABASE_SCHEMA.md
-# Run in Supabase SQL Editor
+npm install
+npm run dev
 ```
 
-### Phase 2-4: Follow Documentation
-See **`DOCS/CMS_IMPLEMENTATION_PLAN.md`** for detailed week-by-week guide
+Open [http://localhost:3000/admin](http://localhost:3000/admin) to access the admin panel. You'll be prompted to create your first admin user.
 
 ---
 
-## Current Site → CMS Features
+## Deployment
 
-### Current (Static Site)
-- ✓ Event information pages
-- ✓ Registration forms (Google Apps Script)
-- ✓ Event tracking (Google Sheets)
-- ✓ Responsive design
-- ✓ SEO optimized
+See **[cms/VERCEL_DEPLOYMENT.md](./cms/VERCEL_DEPLOYMENT.md)** for the full deployment guide.
 
-### New CMS Adds
-- ✓ Admin dashboard for content management
-- ✓ Create/edit pages without coding
-- ✓ Real-time capacity tracking
-- ✓ Analytics dashboard (funnel, revenue, fill rate)
-- ✓ No-code form builder
-- ✓ User role management
-- ✓ Audit logging
-- ✓ Data encryption for privacy
+Quick version:
+1. Import the repo at [vercel.com/new](https://vercel.com/new)
+2. Set root directory to `cms`
+3. Add environment variables (`DATABASE_URL`, `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL`)
+4. Deploy
 
 ---
 
-## Cost Analysis
+## Collections
 
-### Monthly Recurring
+| Collection | Purpose |
+|-----------|---------|
+| **Pages** | Site pages built with content blocks |
+| **Events** | Fitness classes, workshops, performances |
+| **Media** | Images with auto-generated sizes |
+| **Users** | Admin users with role-based access |
+| **Forms** | Dynamic forms (via plugin) |
+| **Form Submissions** | Submitted form data (via plugin) |
+
+## Page Blocks
+
+| Block | Purpose |
+|-------|---------|
+| Hero | Full-width hero section with image, heading, CTA buttons |
+| Content | Rich text with layout options (full, two-column, text+image) |
+| Events List | Displays upcoming events (filterable by type) |
+| Gallery | Image gallery with configurable columns |
+| Call to Action | CTA section with buttons and optional background |
+| FAQ | Accordion-style questions and answers |
+| Form | Embeds a form from the form builder |
+
+## Globals
+
+| Global | Purpose |
+|--------|---------|
+| Header | Logo and navigation links |
+| Footer | Footer columns, copyright, social links |
+| Site Settings | Site name, contact info, SEO defaults, analytics ID |
+
+---
+
+## Cost
+
 | Service | Cost | Notes |
 |---------|------|-------|
-| Vercel | €0-20 | Pro tier if needed |
-| Supabase | €0-30 | Scales with usage |
-| Resend | €0-20 | Free: 3,000 emails/month |
-| Cloudinary | Current | No change |
-| **TOTAL** | **€20-50** | |
-
-### Comparison
-- **Contentful/Sanity**: €99-300+/month ❌
-- **Self-hosted Strapi**: €30-50/month + DevOps overhead ⚠️
-- **Supabase + Next.js**: €20-50/month ✅ **BEST CHOICE**
+| Vercel | Free | Hobby plan |
+| PostgreSQL (Supabase) | Free-€25/mo | Free tier: 500MB |
+| Vercel Blob | Free-€5/mo | Free tier: 250MB |
+| **Total** | **€0-30/mo** | |
 
 ---
 
-## File Changes in This Cleanup
+## Links
 
-### ✅ Kept
-- `public/` - Current static site (all HTML pages)
-- `DOCS/CMS_*` - Supabase implementation docs
-- `README.md`, `.gitignore`, `CNAME`
-
-### ❌ Removed
-- Firebase docs (Firebase version - replaced by Supabase)
-- Old setup guides (RESEND_*.md, SESSION3_*.md)
-- Test files (download-*.html, test-form.html)
-- Empty directories (home/, events/, event/)
-
-### 📁 Reorganized
-- Moved `index.html` → `public/index.html`
-- Moved subdirectories → `public/home/`, `public/events/`, etc.
-- Created `DOCS/` folder for all CMS documentation
-- Added `.gitignore` for cleaner version control
-
----
-
-## Getting Started
-
-### 1. Read Documentation
-```bash
-# Start with the implementation plan
-cat DOCS/CMS_IMPLEMENTATION_PLAN.md
-
-# Then architecture
-cat DOCS/CMS_ARCHITECTURE.md
-
-# Then database schema
-cat DOCS/CMS_DATABASE_SCHEMA.md
-```
-
-### 2. Set Up Supabase
-- Visit https://supabase.com
-- Create project "gingerco-cms"
-- Choose Europe region
-- Get API keys from Settings → API
-
-### 3. Initialize Next.js
-```bash
-mkdir cms
-npx create-next-app@latest cms --typescript --tailwind --app
-cd cms && npm install @supabase/supabase-js
-```
-
-### 4. Follow Phase 1
-See `DOCS/CMS_IMPLEMENTATION_PLAN.md` for detailed step-by-step guide
-
----
-
-## Important Links
-
-- **Supabase**: https://supabase.com/docs
+- **Payload CMS**: https://payloadcms.com/docs
 - **Next.js**: https://nextjs.org/docs
-- **PostgreSQL**: https://www.postgresql.org/docs/
 - **Vercel**: https://vercel.com/docs
+- **Supabase**: https://supabase.com/docs
 
 ---
-
-## Project Info
 
 **Project**: Ginger & Co. Headless CMS
 **Company**: Ginger & Co. (Vienna)
 **Website**: https://gingerandco.at
-**Created**: 2026-02-06
-**Status**: ✅ Planning Complete - Ready for Phase 1
-
----
-
-**Questions?** Refer to the comprehensive documentation in `DOCS/` folder.
-**Ready to build?** Start with Phase 1 in `DOCS/CMS_IMPLEMENTATION_PLAN.md`
