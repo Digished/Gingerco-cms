@@ -8,7 +8,103 @@ Complete PostgreSQL schema for Supabase with all tables, columns, indexes, funct
 
 ## Core Tables
 
-### 1. `events` Table
+### 1. `pages` Table
+
+**Purpose:** CMS pages (home, about, contact, etc.) - allows users to create custom pages
+
+```sql
+CREATE TABLE pages (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+
+  -- Basic info
+  title TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  description TEXT,
+  is_published BOOLEAN DEFAULT false,
+
+  -- Page content (stored as JSON sections)
+  -- Can contain hero, text blocks, galleries, CTAs, etc.
+  sections JSONB DEFAULT '[]'::jsonb,
+
+  -- Hero section (optional)
+  hero_title TEXT,
+  hero_subtitle TEXT,
+  hero_image_cloudinary_id TEXT,
+  hero_cta_text TEXT,
+  hero_cta_url TEXT,
+
+  -- Settings
+  is_home_page BOOLEAN DEFAULT false,
+  show_in_navigation BOOLEAN DEFAULT true,
+  navigation_order INTEGER,
+
+  -- SEO
+  seo_title TEXT,
+  seo_description TEXT,
+  seo_keywords TEXT,
+  seo_og_image TEXT,
+
+  -- Access control
+  visible_to_public BOOLEAN DEFAULT false, -- Can be private pages
+  requires_auth BOOLEAN DEFAULT false,
+
+  -- Audit fields
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  published_at TIMESTAMP,
+  published_by UUID REFERENCES users(id),
+  created_by UUID REFERENCES users(id),
+
+  CONSTRAINT valid_slug CHECK (slug ~ '^[a-z0-9-]+$')
+);
+
+CREATE INDEX idx_pages_slug ON pages(slug);
+CREATE INDEX idx_pages_published ON pages(is_published);
+CREATE INDEX idx_pages_home ON pages(is_home_page);
+CREATE INDEX idx_pages_navigation_order ON pages(navigation_order);
+```
+
+**Example `sections` JSON:**
+```json
+[
+  {
+    "type": "hero",
+    "title": "Welcome to Ginger & Co.",
+    "subtitle": "Afrobeats-powered fitness",
+    "image": "cloudinary-id-123",
+    "cta": {
+      "text": "Book Now",
+      "url": "/events"
+    }
+  },
+  {
+    "type": "text",
+    "title": "About Us",
+    "content": "<p>We are a boutique fitness company...</p>"
+  },
+  {
+    "type": "gallery",
+    "title": "Photo Gallery",
+    "images": [
+      {
+        "cloudinaryId": "img-1",
+        "alt": "Class photo",
+        "caption": "Our community in action"
+      }
+    ]
+  },
+  {
+    "type": "cta",
+    "title": "Ready to join?",
+    "buttonText": "Register Now",
+    "buttonUrl": "/registration"
+  }
+]
+```
+
+---
+
+### 2. `events` Table
 
 **Purpose:** Event details and configuration
 
@@ -89,7 +185,7 @@ CREATE INDEX idx_events_slug ON events(slug);
 
 ---
 
-### 2. `sessions` Table
+### 3. `sessions` Table
 
 **Purpose:** Event sessions with pricing and capacity
 
@@ -131,7 +227,7 @@ CREATE INDEX idx_sessions_event_id ON sessions(event_id);
 
 ---
 
-### 3. `registrations` Table
+### 4. `registrations` Table
 
 **Purpose:** Event registrations with encrypted PII
 
@@ -206,7 +302,7 @@ CREATE INDEX idx_registrations_payment_status ON registrations(payment_status);
 
 ---
 
-### 4. `sessions` Analytics View (Counter)
+### 5. `sessions_registration_counts` Analytics View
 
 **Purpose:** Real-time registration counts per session
 
@@ -288,7 +384,7 @@ EXECUTE FUNCTION update_session_counts();
 
 ---
 
-### 5. `forms` Table
+### 6. `forms` Table
 
 **Purpose:** Form template definitions
 
@@ -357,7 +453,7 @@ CREATE INDEX idx_forms_type ON forms(type);
 
 ---
 
-### 6. `submissions` Table
+### 7. `submissions` Table
 
 **Purpose:** Generic form submission storage
 
@@ -396,7 +492,7 @@ CREATE INDEX idx_submissions_created_at ON submissions(created_at DESC);
 
 ---
 
-### 7. `analytics_events` Table
+### 8. `analytics_events` Table
 
 **Purpose:** Track user interactions for analytics
 
@@ -432,7 +528,7 @@ CREATE INDEX idx_analytics_events_timestamp ON analytics_events(timestamp DESC);
 
 ---
 
-### 8. `users` Table
+### 9. `users` Table
 
 **Purpose:** Admin user management (extends Supabase auth)
 
@@ -461,7 +557,7 @@ CREATE TABLE users (
 
 ---
 
-### 9. `audit_logs` Table
+### 10. `audit_logs` Table
 
 **Purpose:** Track all admin actions
 
@@ -502,7 +598,7 @@ CREATE INDEX idx_audit_logs_resource ON audit_logs(resource_type, resource_id);
 
 ---
 
-### 10. `email_logs` Table
+### 11. `email_logs` Table
 
 **Purpose:** Track email sending
 
@@ -530,7 +626,7 @@ CREATE INDEX idx_email_logs_registration_id ON email_logs(registration_id);
 
 ---
 
-### 11. `settings` Table
+### 12. `settings` Table
 
 **Purpose:** Global application settings
 
@@ -581,7 +677,7 @@ CREATE TABLE settings (
 
 ---
 
-### 12. `media` Table
+### 13. `media` Table
 
 **Purpose:** Media library metadata
 
@@ -802,6 +898,59 @@ $$ LANGUAGE plpgsql STABLE;
 
 ## Row-Level Security (RLS) Policies
 
+### Pages Table Policies
+
+```sql
+ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
+
+-- Policy 1: Public can read published, public pages
+CREATE POLICY "public_read_published_pages"
+ON pages
+FOR SELECT
+USING (is_published = true AND visible_to_public = true AND requires_auth = false);
+
+-- Policy 2: Authenticated users can read published pages they have access to
+CREATE POLICY "authenticated_read_pages"
+ON pages
+FOR SELECT
+USING (
+  auth.uid() IS NOT NULL AND
+  (
+    is_published = true OR
+    EXISTS (SELECT 1 FROM users u WHERE u.id = auth.uid() AND u.role IN ('admin', 'editor'))
+  )
+);
+
+-- Policy 3: Only admins can create pages
+CREATE POLICY "admin_create_pages"
+ON pages
+FOR INSERT
+WITH CHECK (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM users u WHERE u.id = auth.uid() AND u.role = 'admin')
+);
+
+-- Policy 4: Only admins/editors can update pages
+CREATE POLICY "admin_update_pages"
+ON pages
+FOR UPDATE
+USING (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM users u WHERE u.id = auth.uid() AND u.role IN ('admin', 'editor'))
+);
+
+-- Policy 5: Only admins can delete pages
+CREATE POLICY "admin_delete_pages"
+ON pages
+FOR DELETE
+USING (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM users u WHERE u.id = auth.uid() AND u.role = 'admin')
+);
+```
+
+---
+
 ### Events Table Policies
 
 ```sql
@@ -912,6 +1061,71 @@ USING (
 ---
 
 ## Common Queries
+
+### Get Page by Slug
+
+```sql
+SELECT
+  id,
+  title,
+  slug,
+  description,
+  sections,
+  seo_title,
+  seo_description,
+  is_published,
+  published_at
+FROM pages
+WHERE slug = $1 AND is_published = true AND visible_to_public = true;
+```
+
+### Get All Published Pages (Navigation Menu)
+
+```sql
+SELECT
+  id,
+  title,
+  slug,
+  navigation_order
+FROM pages
+WHERE is_published = true
+  AND visible_to_public = true
+  AND show_in_navigation = true
+ORDER BY COALESCE(navigation_order, 999), title;
+```
+
+### Get Home Page
+
+```sql
+SELECT
+  id,
+  title,
+  slug,
+  hero_title,
+  hero_subtitle,
+  hero_image_cloudinary_id,
+  sections
+FROM pages
+WHERE is_home_page = true AND is_published = true;
+```
+
+### Get All Unpublished Pages (Admin View)
+
+```sql
+SELECT
+  id,
+  title,
+  slug,
+  is_published,
+  created_at,
+  updated_at,
+  created_by
+FROM pages
+WHERE is_published = false
+ORDER BY updated_at DESC;
+```
+
+---
 
 ### Get All Published Events with Session Count
 
