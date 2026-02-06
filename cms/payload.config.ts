@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { migrations } from './src/migrations'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 
@@ -22,7 +23,7 @@ export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || '',
 
   db: postgresAdapter({
-    push: true,
+    prodMigrations: migrations,
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
