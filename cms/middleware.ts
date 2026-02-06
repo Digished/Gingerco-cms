@@ -7,7 +7,7 @@
  * - Redirects unauthenticated users to /login
  */
 
-import { createServerClient, CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
