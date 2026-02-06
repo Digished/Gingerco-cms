@@ -1,7 +1,7 @@
 # Gingerco Headless CMS Implementation Plan - Supabase Edition
 
 **Status**: Planning Phase (Revised for Supabase)
-**Tech Stack**: Supabase (PostgreSQL Backend) + Next.js (Frontend) + Netlify (Hosting)
+**Tech Stack**: Supabase (PostgreSQL Backend) + Next.js (Frontend) + Vercel (Hosting)
 **Timeline**: 3-4 weeks
 **Cost**: €20-50/month
 **Database**: PostgreSQL with Real-time Subscriptions
@@ -35,7 +35,7 @@
     ▼                                             ▼
 ┌────────────────────────┐          ┌─────────────────────┐
 │  Next.js Frontend      │          │  Supabase Backend   │
-│  (Netlify Hosting)     │          │  - PostgreSQL DB    │
+│  (Vercel Hosting)      │          │  - PostgreSQL DB    │
 │  - Home page           │◄────────►│  - Realtime API     │
 │  - Events listing      │  REST    │  - Auth & RLS       │
 │  - Event details       │  API &   │  - Webhooks         │
@@ -1388,19 +1388,23 @@ migrateRegistrations().catch(console.error)
 
 ## Phase 4: Launch (Week 4)
 
-### 4.1 Deploy to Netlify
+### 4.1 Deploy to Vercel
 
 ```bash
 # Build and test locally
 npm run build
 
-# Deploy to Netlify
-netlify deploy --prod
+# Deploy via Vercel (connect Git repo at vercel.com/new)
+# Or use Vercel CLI:
+npx vercel --prod
 
-# Set environment variables in Netlify
+# Set environment variables in Vercel Dashboard
+# Settings > Environment Variables:
 # - NEXT_PUBLIC_SUPABASE_URL
 # - NEXT_PUBLIC_SUPABASE_ANON_KEY
 # - SUPABASE_SERVICE_ROLE_KEY (for server-side operations)
+# - NEXT_PUBLIC_SITE_URL
+# - NODE_ENV=production
 ```
 
 ### 4.2 Set Up Webhooks for Automation
@@ -1474,20 +1478,21 @@ export async function POST(request: NextRequest) {
 
 ```
 Current: gingerandco.at → GitHub Pages
-New: gingerco.at → Netlify (Next.js CMS)
+New: gingerco.at → Vercel (Next.js CMS)
 
 Steps:
-1. Point DNS to Netlify nameservers
-2. Set up SSL certificate (automatic)
-3. Redirect old GitHub Pages to new domain
-4. Monitor for 24 hours
+1. Add domain in Vercel Dashboard > Settings > Domains
+2. Update DNS records (CNAME or A record per Vercel instructions)
+3. SSL certificate provisioned automatically by Vercel
+4. Redirect old GitHub Pages to new domain
+5. Monitor for 24 hours
 ```
 
 ---
 
 ## Technology Stack Details
 
-### Frontend (Netlify)
+### Frontend (Vercel)
 - **Framework**: Next.js 14+ with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
@@ -1513,7 +1518,7 @@ Steps:
 - **CLI**: Supabase CLI for migrations
 - **Testing**: Jest + React Testing Library
 - **Linting**: ESLint + Prettier
-- **CI/CD**: GitHub Actions (optional) + Netlify auto-deploy
+- **CI/CD**: GitHub Actions (optional) + Vercel auto-deploy
 
 ---
 

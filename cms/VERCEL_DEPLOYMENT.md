@@ -1,343 +1,264 @@
 # Vercel Deployment Guide for Gingerco CMS
 
-**The Easy Way to Deploy Next.js** ✅
+Deploy the Gingerco CMS (Payload CMS 3 + Next.js 15) to Vercel.
 
-Vercel is created by the Next.js team and is optimized for Next.js applications. This guide will have your CMS live in **5 minutes**.
-
-**Cost**: Free tier covers everything you need
+**Cost**: Free tier (Hobby plan) covers everything needed.
 
 ---
 
-## STEP 1: Prepare Your Repository (Already Done!)
+## Prerequisites
 
-Your code is already pushed to:
-```
-Branch: claude/plan-headless-cms-OhICB
-Repository: Your Git repo (GitHub/GitLab/Bitbucket)
-```
-
-✅ All files committed and pushed to Git
+1. **Git repository** with code pushed (GitHub, GitLab, or Bitbucket)
+2. **Vercel account** (free) -- sign up at https://vercel.com
+3. **PostgreSQL database** -- either:
+   - Supabase project (free tier, get the connection string from Project Settings > Database)
+   - Vercel Postgres (Neon-based, add from Vercel's Storage tab)
+   - Any PostgreSQL provider
 
 ---
 
-## STEP 2: Create a Vercel Account
+## Step 1: Create a Vercel Account
 
 1. Go to **https://vercel.com**
-2. Click **"Sign Up"**
-3. Choose sign-up method:
-   - GitHub (recommended - auto-connects your repos)
-   - GitLab
-   - Bitbucket
-   - Email
-4. Complete sign-up
+2. Click **Sign Up**
+3. Choose your Git provider (GitHub recommended)
+4. Authorize Vercel to access your repositories
 
 ---
 
-## STEP 3: Connect Your Repository
+## Step 2: Import Your Project
 
-### Method A: Import Existing Project (Easiest)
-
-1. After signing up, you'll see **"Create a new project"** or click **"New Project"**
-2. Click **"Import Git Repository"**
-3. Paste your repository URL OR select from list if using GitHub
-4. Click **"Import"**
-
-### Method B: From Dashboard
-
-1. Click **"+ New Project"** button
-2. Select your Git provider (GitHub/GitLab/Bitbucket)
-3. Find and select **Gingerco** repository
-4. Click **"Import"**
+1. Click **Add New... > Project**
+2. Find and select the **Gingerco-cms** repository
+3. Click **Import**
 
 ---
 
-## STEP 4: Configure Build Settings
-
-Vercel should auto-detect Next.js. Verify these settings:
-
-### Framework Preset
-```
-✓ Framework: Next.js
-✓ Detected automatically
-```
-
-### Build Settings
-```
-Build Command: npm run build
-Output Directory: .next
-Install Command: npm install
-```
+## Step 3: Configure Build Settings
 
 ### Root Directory
+
 ```
-Root Directory: cms/
-(Select "cms" from the dropdown or type it)
+Root Directory: cms
 ```
 
-**Screenshot of what it should look like:**
+Click **Edit** next to Root Directory and type `cms`.
+
+### Build & Output Settings
+
+Vercel auto-detects Next.js. Defaults are correct:
+
 ```
-Framework: Next.js 14.2.35 ✓
-Root Directory: cms ✓
-Build Command: npm run build ✓
-Install Command: npm install ✓
-Output Directory: .next ✓
+Framework Preset:   Next.js
+Build Command:      next build
+Output Directory:   .next (auto-detected)
+Install Command:    npm install (auto-detected)
 ```
+
+### Node.js Version
+
+Set to **20.x** or higher (Payload CMS requires Node.js 20.9+).
 
 ---
 
-## STEP 5: Add Environment Variables
+## Step 4: Add Environment Variables
 
-This is critical! Add all your Supabase credentials:
+In the **Environment Variables** section, add:
 
-### In Vercel Dashboard:
+### Required Variables
 
-1. Scroll down to **"Environment Variables"** section
-2. Click **"Add Environment Variable"** for each:
+| Variable | Value | Where to Find |
+|----------|-------|---------------|
+| `DATABASE_URL` | `postgresql://user:pass@host:5432/db` | Supabase: Project Settings > Database > Connection string (URI). Use the "Transaction" pooler connection string for serverless. |
+| `PAYLOAD_SECRET` | Random 32+ character string | Generate with `openssl rand -hex 32` |
+| `NEXT_PUBLIC_SERVER_URL` | `https://your-project.vercel.app` | Your Vercel domain (update after first deploy) |
 
-**Add these 5 variables:**
+### Optional Variables
 
-```
-Name: NEXT_PUBLIC_SUPABASE_URL
-Value: https://your-project.supabase.co
-[Add]
+| Variable | Value | Purpose |
+|----------|-------|---------|
+| `BLOB_READ_WRITE_TOKEN` | Auto-set by Vercel Blob integration | Media uploads in production |
 
-Name: NEXT_PUBLIC_SUPABASE_ANON_KEY
-Value: your-actual-anon-key-here
-[Add]
+### Setting Up Media Storage (Vercel Blob)
 
-Name: SUPABASE_SERVICE_ROLE_KEY
-Value: your-actual-service-role-key-here
-[Add]
+In production on Vercel, local file storage does not persist. For media uploads:
 
-Name: NEXT_PUBLIC_SITE_URL
-Value: https://your-domain.vercel.app
-[Add]
+1. Go to your Vercel project **Storage** tab
+2. Click **Create** > **Blob**
+3. Follow the setup -- this automatically adds `BLOB_READ_WRITE_TOKEN` to your env vars
+4. Redeploy
 
-Name: NODE_ENV
-Value: production
-[Add]
-```
+Without this, media uploads will not persist between deployments.
 
-### How to Get Your Keys
+### Security Notes
 
-**NEXT_PUBLIC_SUPABASE_URL**:
-- Go to **Supabase Dashboard** → Your project → **Settings** → **API**
-- Copy "Project URL"
-
-**NEXT_PUBLIC_SUPABASE_ANON_KEY**:
-- Same location, copy "anon public key"
-
-**SUPABASE_SERVICE_ROLE_KEY**:
-- Settings → API, scroll down
-- Copy "service_role key"
-
-**NEXT_PUBLIC_SITE_URL**:
-- After first deployment, use your Vercel domain
-- Format: `https://your-project.vercel.app`
-- Or your custom domain once set up
+- `PAYLOAD_SECRET` is used to encrypt auth cookies and tokens -- keep it secret
+- `DATABASE_URL` contains database credentials -- never expose it
+- Vercel encrypts all environment variables at rest
 
 ---
 
-## STEP 6: Deploy!
+## Step 5: Deploy
 
-1. Scroll to bottom of settings page
-2. Click **"Deploy"** button
-3. Vercel will:
-   - Install dependencies (434 packages)
-   - Build Next.js app
-   - Deploy to CDN
-   - Show live URL
-
-**Build takes 2-3 minutes**
+1. Click **Deploy**
+2. Vercel will install dependencies, build, and deploy
+3. First build takes 2-4 minutes
 
 ---
 
-## STEP 7: Get Your Live URL
+## Step 6: Create Your First Admin User
 
-After deployment completes:
-
-```
-✓ Deployment successful
-Your site is live at: https://xxx.vercel.app
-```
-
-### Test Your CMS
-
-Visit:
-```
-https://xxx.vercel.app/login
-```
-
-Login with:
-- Email: your admin email
-- Password: your admin password
-
-Expected:
-- ✅ Login page loads
-- ✅ Login succeeds
-- ✅ Dashboard displays
-- ✅ Real-time data works
-- ✅ Sidebar navigation works
-- ✅ All features functional
+1. Visit `https://your-project.vercel.app/admin`
+2. Payload shows a registration form on first visit
+3. Create your admin account (email + password)
+4. You'll be logged into the admin panel
 
 ---
 
-## STEP 8: (Optional) Add Custom Domain
+## Step 7: Verify Your Deployment
 
-If you want `cms.gingerandco.at` instead of `xxx.vercel.app`:
+### Test Checklist
 
-1. Go to **Vercel Dashboard** → Your project
-2. Click **"Settings"** tab
-3. Click **"Domains"** in left sidebar
-4. Click **"Add"**
-5. Enter your domain: `cms.gingerandco.at`
-6. Follow DNS instructions:
-   - Add CNAME record to your domain registrar
-   - OR update nameservers to Vercel's
-7. DNS propagates in 5-30 minutes
+- [ ] `/admin` loads the Payload admin panel
+- [ ] Can create a new Page with blocks (Hero, Content, etc.)
+- [ ] Can create a new Event
+- [ ] Can upload media (images)
+- [ ] Can configure Header navigation
+- [ ] Can configure Footer
+- [ ] Can create a Form
+- [ ] Public pages render at `/` and `/your-slug`
+
+### Update NEXT_PUBLIC_SERVER_URL
+
+After the first deploy, update `NEXT_PUBLIC_SERVER_URL` in **Settings > Environment Variables** to match your actual domain, then redeploy.
 
 ---
 
-## STEP 9: Enable Auto-Deploys
+## Step 8: Custom Domain (Optional)
 
-Every time you push to Git, Vercel automatically rebuilds and deploys!
+1. Go to project **Settings > Domains**
+2. Enter your domain: `cms.gingerandco.at`
+3. Click **Add**
+4. Configure DNS at your registrar:
+
+**Subdomain** (e.g., `cms.gingerandco.at`):
+
+| Type | Name | Value |
+|------|------|-------|
+| CNAME | `cms` | `cname.vercel-dns.com` |
+
+**Apex domain** (e.g., `gingerandco.at`):
+
+| Type | Name | Value |
+|------|------|-------|
+| A | `@` | `76.76.21.21` |
+
+SSL certificates are provisioned automatically.
+
+---
+
+## Automatic Deployments
+
+Every push to Git triggers an automatic deployment. Every pull request gets a preview URL.
 
 ```bash
-git push origin claude/plan-headless-cms-OhICB
+git push origin main        # triggers production deployment
 ```
 
-**Within 30 seconds:**
-- Vercel detects the push
-- Starts building
-- Deploys automatically
-- Your changes are live
+---
+
+## Database Migrations
+
+Payload manages database schema through Drizzle migrations.
+
+### Development
+
+In dev mode (`npm run dev`), Payload auto-syncs your schema to the database. No migrations needed.
+
+### Production
+
+Before deploying schema changes:
+
+```bash
+# Generate a migration file from your current schema changes
+npx payload migrate:create
+
+# The migration file is created in src/migrations/
+# Commit it and push -- the build process runs migrations automatically
+```
+
+---
+
+## Rollbacks
+
+1. Go to **Deployments** tab
+2. Find the last working deployment
+3. Click the three dots menu > **Promote to Production**
+
+Rollback takes effect instantly.
 
 ---
 
 ## Troubleshooting
 
-### Build Fails with 500 Error
+### Build Fails: DATABASE_URL error
 
-**Cause**: Environment variables not set or incorrect
+**Cause**: `DATABASE_URL` not set or invalid.
 
-**Fix**:
-1. Go to **Settings** → **Environment Variables**
-2. Verify all 5 variables are present
-3. Check values match your Supabase project
-4. Click **"Redeploy"** button
+**Fix**: Go to Settings > Environment Variables, verify the connection string format: `postgresql://user:password@host:port/database`
 
-### Login Page Shows 404
+### Admin Panel Shows 500 Error
 
-**Cause**: Similar to Netlify issue
+**Cause**: Missing `PAYLOAD_SECRET` or database connection issue.
 
 **Fix**:
-- This shouldn't happen on Vercel with Next.js ✅
-- If it does, redeploy with updated environment variables
+1. Verify both `DATABASE_URL` and `PAYLOAD_SECRET` are set
+2. Check that the database is accessible from Vercel (not blocked by firewall)
+3. For Supabase: use the "Transaction" pooler connection string for serverless
 
-### Slow Build Time
+### Media Uploads Fail
 
-**Normal**: First build takes 2-3 minutes
+**Cause**: No persistent storage configured.
 
-**Subsequent builds**: ~30-60 seconds (Vercel caches dependencies)
+**Fix**: Set up Vercel Blob storage (see Step 4). Local filesystem storage does not persist on Vercel.
 
-### Database Connection Failed
+### Supabase Connection Refused
 
-**Cause**: Wrong Supabase URL or key
+**Cause**: Using the wrong connection string format.
 
-**Fix**:
-1. Verify Supabase project is running
-2. Check credentials in Vercel dashboard
-3. Ensure `.env.local` works locally first
-4. Redeploy
-
----
-
-## After Deployment
-
-### Monitor Your Site
-
-**Vercel Dashboard shows:**
-- ✅ Deployment history
-- ✅ Build logs
-- ✅ Performance metrics
-- ✅ Analytics (pageviews, etc.)
-
-### View Build Logs
-
-1. Click **"Deployments"** tab
-2. Click on a deployment
-3. Scroll to see build output
-
-### Rollback to Previous Version
-
-If something breaks:
-1. Click **"Deployments"** tab
-2. Find previous working deployment
-3. Click the three dots **⋮**
-4. Select **"Promote to Production"**
-
-Your site reverts instantly! ✅
+**Fix**: In Supabase, go to Project Settings > Database > Connection string. Use the **Transaction** pooler URI (port 6543), not the direct connection, for serverless environments.
 
 ---
 
 ## Quick Reference
 
-| Command | What It Does |
-|---------|-------------|
-| `git push` | Auto-deploys to Vercel |
-| Visit Vercel dashboard | View deployment status |
-| Settings → Environment | Update secrets/credentials |
-| Deployments tab | See build history |
-| Custom domain | Add your domain name |
+| Action | How |
+|--------|-----|
+| Deploy | Push to Git (automatic) |
+| Access admin | Visit `/admin` |
+| View logs | Vercel Dashboard > Logs |
+| Update env vars | Settings > Environment Variables > Redeploy |
+| Add domain | Settings > Domains > Add |
+| Rollback | Deployments > Previous > Promote to Production |
+| Run migrations | `npx payload migrate:create` then push |
 
 ---
 
-## Vercel vs Netlify for Next.js
+## Links
 
-| Feature | Vercel | Netlify |
-|---------|--------|---------|
-| **Next.js Support** | ⭐⭐⭐⭐⭐ | ⭐⭐ |
-| **API Routes** | ✅ Built-in | ⚠️ Requires Functions |
-| **Real-time** | ✅ Yes | ⚠️ Limited |
-| **SSR/Dynamic** | ✅ Yes | ❌ No |
-| **Ease of Deploy** | 2 minutes | 20+ minutes |
-| **Cost** | Free tier | Free tier |
-
----
-
-## Environment Variables Checklist
-
-Before clicking deploy, have these ready:
-
-- [ ] NEXT_PUBLIC_SUPABASE_URL (from Supabase Settings)
-- [ ] NEXT_PUBLIC_SUPABASE_ANON_KEY (from Supabase Settings)
-- [ ] SUPABASE_SERVICE_ROLE_KEY (from Supabase Settings)
-- [ ] NEXT_PUBLIC_SITE_URL (your Vercel domain)
-- [ ] NODE_ENV (set to "production")
-
----
-
-## Deploy Now! 🚀
-
-1. Go to **https://vercel.com**
-2. Click **"New Project"**
-3. Import your Gingerco repository
-4. Set Root Directory: **cms**
-5. Add Environment Variables (5 of them)
-6. Click **"Deploy"**
-
-**That's it!** Your CMS will be live in 3 minutes! 🎉
+- **Payload CMS Docs**: https://payloadcms.com/docs
+- **Payload Deployment Guide**: https://payloadcms.com/docs/production/deployment
+- **Vercel Docs**: https://vercel.com/docs
+- **Next.js on Vercel**: https://vercel.com/docs/frameworks/nextjs
+- **Supabase**: https://supabase.com/docs
 
 ---
 
 ## Support
 
 If deployment fails:
+
 1. Check **Deployments** tab for build logs
-2. Verify environment variables are correct
-3. Ensure Supabase project is active
-4. Redeploy with updated settings
-
-**Vercel support**: https://vercel.com/support
-
-Enjoy your live CMS! ✨
+2. Review the Troubleshooting section above
+3. Payload CMS docs: https://payloadcms.com/docs
+4. Vercel support: https://vercel.com/support

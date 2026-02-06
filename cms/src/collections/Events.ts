@@ -1,0 +1,246 @@
+import type { CollectionConfig } from 'payload'
+
+export const Events: CollectionConfig = {
+  slug: 'events',
+  admin: {
+    useAsTitle: 'title',
+    defaultColumns: ['title', 'status', 'date', 'location'],
+    group: 'Content',
+  },
+  access: {
+    read: () => true,
+    create: ({ req: { user } }) => Boolean(user),
+    update: ({ req: { user } }) => Boolean(user),
+    delete: ({ req: { user } }) => Boolean(user),
+  },
+  versions: {
+    drafts: {
+      autosave: true,
+    },
+  },
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'slug',
+      type: 'text',
+      required: true,
+      unique: true,
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'status',
+      type: 'select',
+      defaultValue: 'draft',
+      options: [
+        { label: 'Draft', value: 'draft' },
+        { label: 'Published', value: 'published' },
+        { label: 'Cancelled', value: 'cancelled' },
+        { label: 'Completed', value: 'completed' },
+      ],
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Details',
+          fields: [
+            {
+              name: 'description',
+              type: 'richText',
+            },
+            {
+              name: 'shortDescription',
+              type: 'textarea',
+              maxLength: 300,
+            },
+            {
+              name: 'featuredImage',
+              type: 'upload',
+              relationTo: 'media',
+            },
+            {
+              name: 'eventType',
+              type: 'select',
+              options: [
+                { label: 'Class', value: 'class' },
+                { label: 'Workshop', value: 'workshop' },
+                { label: 'Event', value: 'event' },
+                { label: 'Performance', value: 'performance' },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Schedule',
+          fields: [
+            {
+              name: 'date',
+              type: 'date',
+              required: true,
+              admin: {
+                date: {
+                  pickerAppearance: 'dayAndTime',
+                },
+              },
+            },
+            {
+              name: 'endDate',
+              type: 'date',
+              admin: {
+                date: {
+                  pickerAppearance: 'dayAndTime',
+                },
+              },
+            },
+            {
+              name: 'recurring',
+              type: 'checkbox',
+              defaultValue: false,
+            },
+            {
+              name: 'recurrencePattern',
+              type: 'select',
+              options: [
+                { label: 'Weekly', value: 'weekly' },
+                { label: 'Bi-weekly', value: 'biweekly' },
+                { label: 'Monthly', value: 'monthly' },
+              ],
+              admin: {
+                condition: (_, siblingData) => siblingData?.recurring,
+              },
+            },
+          ],
+        },
+        {
+          label: 'Location & Pricing',
+          fields: [
+            {
+              name: 'location',
+              type: 'text',
+            },
+            {
+              name: 'address',
+              type: 'textarea',
+            },
+            {
+              name: 'price',
+              type: 'number',
+              min: 0,
+            },
+            {
+              name: 'currency',
+              type: 'select',
+              defaultValue: 'EUR',
+              options: [
+                { label: 'EUR', value: 'EUR' },
+                { label: 'USD', value: 'USD' },
+              ],
+            },
+            {
+              name: 'capacity',
+              type: 'number',
+              min: 0,
+              admin: {
+                description: 'Maximum number of participants. Leave empty for unlimited.',
+              },
+            },
+          ],
+        },
+        {
+          label: 'Sessions',
+          fields: [
+            {
+              name: 'sessions',
+              type: 'array',
+              admin: {
+                description: 'Add individual time slots for this event.',
+              },
+              fields: [
+                {
+                  name: 'sessionTitle',
+                  type: 'text',
+                  required: true,
+                },
+                {
+                  name: 'startTime',
+                  type: 'date',
+                  required: true,
+                  admin: {
+                    date: {
+                      pickerAppearance: 'dayAndTime',
+                    },
+                  },
+                },
+                {
+                  name: 'endTime',
+                  type: 'date',
+                  admin: {
+                    date: {
+                      pickerAppearance: 'dayAndTime',
+                    },
+                  },
+                },
+                {
+                  name: 'sessionCapacity',
+                  type: 'number',
+                  min: 0,
+                },
+                {
+                  name: 'sessionPrice',
+                  type: 'number',
+                  min: 0,
+                },
+                {
+                  name: 'instructor',
+                  type: 'text',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Registration',
+          fields: [
+            {
+              name: 'registrationEnabled',
+              type: 'checkbox',
+              defaultValue: true,
+            },
+            {
+              name: 'registrationForm',
+              type: 'relationship',
+              relationTo: 'forms',
+              admin: {
+                description: 'Select which form to use for registration.',
+                condition: (_, siblingData) => siblingData?.registrationEnabled,
+              },
+            },
+            {
+              name: 'registrationDeadline',
+              type: 'date',
+              admin: {
+                condition: (_, siblingData) => siblingData?.registrationEnabled,
+              },
+            },
+            {
+              name: 'externalRegistrationUrl',
+              type: 'text',
+              admin: {
+                description: 'External registration link (overrides built-in form).',
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+}
