@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     template: '%s | Ginger & Co.',
   },
   description: 'Vienna-based Afrobeats fitness company.',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default function FrontendLayout({ children }: { children: React.ReactNode }) {
