@@ -13,7 +13,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/hooks/useAuth'
-import { requireAuth } from '@/lib/auth'
 
 export default function AdminLayout({
   children,
