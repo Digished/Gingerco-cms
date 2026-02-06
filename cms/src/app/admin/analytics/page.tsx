@@ -19,9 +19,6 @@ import {
   Line,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -132,8 +129,6 @@ export default function AnalyticsPage() {
       setLoading(false)
     }
   }
-
-  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
 
   return (
     <div className="space-y-6">
