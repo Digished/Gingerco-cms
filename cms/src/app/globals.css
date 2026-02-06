@@ -1,0 +1,42 @@
+/**
+ * Global Styles
+ *
+ * Tailwind CSS configuration and global styling
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+/* Animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Utility classes */
+.transition {
+  @apply transition-all duration-300;
+}
+
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Focus ring */
+.focus-ring {
+  @apply outline-none ring-2 ring-offset-2 ring-blue-500;
+}
