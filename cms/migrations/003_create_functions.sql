@@ -359,8 +359,6 @@ CREATE OR REPLACE FUNCTION create_audit_log(
   p_duration_ms INTEGER DEFAULT NULL
 )
 RETURNS UUID AS $$
-DECLARE
-  v_log_id BIGSERIAL;
 BEGIN
   INSERT INTO audit_logs (
     timestamp,
