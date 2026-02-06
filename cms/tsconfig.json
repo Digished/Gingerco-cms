@@ -21,7 +21,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["node", "jest", "@testing-library/jest-dom"],
+    "types": ["node"],
     "incremental": true,
     "isolatedModules": true,
     "allowJs": true,
