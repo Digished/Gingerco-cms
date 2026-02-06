@@ -4,11 +4,11 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# Environment variables
+# Environment variables (only ignore actual secrets, not examples)
 .env.local
 .env.*.local
 .env
-.env.example
+# .env.example should NOT be ignored - it's documentation/template
 
 # IDE
 .vscode/
