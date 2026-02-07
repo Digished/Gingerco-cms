@@ -19,9 +19,6 @@ import { SiteSettings } from './src/globals/SiteSettings'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const serverURL = process.env.NEXT_PUBLIC_SERVER_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '')
-
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || '',
 
@@ -82,9 +79,4 @@ export default buildConfig({
     },
   },
 
-  serverURL,
-
-  csrf: [
-    serverURL,
-  ].filter(Boolean),
 })
