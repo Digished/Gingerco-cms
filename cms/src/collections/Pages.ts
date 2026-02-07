@@ -6,6 +6,10 @@ import { Gallery } from '../blocks/Gallery'
 import { CallToAction } from '../blocks/CallToAction'
 import { FAQ } from '../blocks/FAQ'
 import { FormBlock } from '../blocks/FormBlock'
+import { CountdownTimer } from '../blocks/CountdownTimer'
+import { TeamBlock } from '../blocks/TeamBlock'
+import { Testimonials } from '../blocks/Testimonials'
+import { BlogList } from '../blocks/BlogList'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -45,7 +49,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       required: true,
-      blocks: [Hero, Content, EventsList, Gallery, CallToAction, FAQ, FormBlock],
+      blocks: [Hero, Content, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList],
     },
     {
       name: 'meta',

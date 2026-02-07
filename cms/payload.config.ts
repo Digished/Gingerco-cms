@@ -12,6 +12,8 @@ import { Users } from './src/collections/Users'
 import { Pages } from './src/collections/Pages'
 import { Events } from './src/collections/Events'
 import { Media } from './src/collections/Media'
+import { BlogPosts } from './src/collections/BlogPosts'
+import { TeamMembers } from './src/collections/TeamMembers'
 import { Header } from './src/globals/Header'
 import { Footer } from './src/globals/Footer'
 import { SiteSettings } from './src/globals/SiteSettings'
@@ -31,7 +33,7 @@ export default buildConfig({
 
   editor: lexicalEditor({}),
 
-  collections: [Users, Pages, Events, Media],
+  collections: [Users, Pages, Events, BlogPosts, TeamMembers, Media],
 
   globals: [Header, Footer, SiteSettings],
 
@@ -75,7 +77,8 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     meta: {
-      titleSuffix: ' - Ginger & Co.',
+      titleSuffix: ' - Ginger & Co. Admin',
+      title: 'Ginger & Co. Admin',
     },
   },
 
