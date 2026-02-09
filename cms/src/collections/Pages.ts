@@ -1,6 +1,8 @@
 import type { CollectionConfig } from 'payload'
 import { Hero } from '../blocks/Hero'
 import { Content } from '../blocks/Content'
+import { AboutSection } from '../blocks/AboutSection'
+import { ShowcaseSection } from '../blocks/ShowcaseSection'
 import { EventsList } from '../blocks/EventsList'
 import { Gallery } from '../blocks/Gallery'
 import { CallToAction } from '../blocks/CallToAction'
@@ -49,7 +51,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       required: true,
-      blocks: [Hero, Content, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList],
+      blocks: [Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList],
     },
     {
       name: 'meta',

@@ -1,6 +1,8 @@
 import React from 'react'
 import { HeroBlock } from './blocks/HeroBlock'
 import { ContentBlock } from './blocks/ContentBlock'
+import { AboutSectionBlock } from './blocks/AboutSectionBlock'
+import { ShowcaseSectionBlock } from './blocks/ShowcaseSectionBlock'
 import { EventsListBlock } from './blocks/EventsListBlock'
 import { GalleryBlock } from './blocks/GalleryBlock'
 import { CTABlock } from './blocks/CTABlock'
@@ -15,6 +17,8 @@ import { BlogListBlock } from './blocks/BlogListBlock'
 const blockComponents: Record<string, React.FC<{ block: any }>> = {
   hero: HeroBlock,
   content: ContentBlock,
+  'about-section': AboutSectionBlock,
+  'showcase-section': ShowcaseSectionBlock,
   eventsList: EventsListBlock as any,
   gallery: GalleryBlock,
   cta: CTABlock,

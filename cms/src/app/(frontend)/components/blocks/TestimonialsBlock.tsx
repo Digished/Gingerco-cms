@@ -1,43 +1,81 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react'
+'use client'
+import React, { useState, useRef } from 'react'
 
 function Stars({ count }: { count: number }) {
   return (
-    <div className="testimonial-stars">
-      {Array.from({ length: 5 }, (_, i) => (
-        <span key={i} className={i < count ? 'star filled' : 'star'}>&#9733;</span>
+    <div className="stars">
+      {Array.from({ length: count }, (_, i) => (
+        <span key={i}>&#9733;</span>
       ))}
     </div>
   )
 }
 
+function VideoTestimonial({ item }: { item: any }) {
+  const [playing, setPlaying] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  const handlePlay = () => {
+    if (videoRef.current) {
+      videoRef.current.play()
+      setPlaying(true)
+    }
+  }
+
+  const posterUrl = item.photo?.url || ''
+
+  return (
+    <div
+      className={`video-testimonial ${playing ? 'is-playing' : ''}`}
+      style={posterUrl && !playing ? { backgroundImage: `url(${posterUrl})` } : undefined}
+      onClick={!playing ? handlePlay : undefined}
+    >
+      <h4>{item.name}</h4>
+      <video
+        ref={videoRef}
+        controls={playing}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          borderRadius: '8px',
+          display: playing ? 'block' : 'none',
+        }}
+        preload="none"
+      >
+        {item.videoUrl && <source src={item.videoUrl} type="video/mp4" />}
+      </video>
+      {!playing && <div className="play-button-overlay">&#9654;</div>}
+    </div>
+  )
+}
+
 export function TestimonialsBlock({ block }: { block: any }) {
-  const { heading, items } = block
+  const { heading, intro, subLabel, items } = block
 
   if (!items || items.length === 0) return null
 
   return (
-    <section className="block-testimonials">
-      <div className="testimonials-inner">
+    <section className="block-community">
+      <div className="community-container">
         {heading && <h2>{heading}</h2>}
-        <div className="testimonials-grid">
-          {items.map((item: any, i: number) => (
-            <div key={item.id || i} className="testimonial-card">
-              {item.rating && <Stars count={item.rating} />}
-              <blockquote className="testimonial-quote">
-                &ldquo;{item.quote}&rdquo;
-              </blockquote>
-              <div className="testimonial-author">
-                {item.photo?.url && (
-                  <img src={item.photo.url} alt={item.photo.alt || item.name} className="testimonial-photo" />
-                )}
-                <div>
-                  <p className="testimonial-name">{item.name}</p>
-                  {item.role && <p className="testimonial-role">{item.role}</p>}
-                </div>
+        {intro && <p className="community-intro">{intro}</p>}
+        {subLabel && <div className="testimonials-header">{subLabel}</div>}
+        <div className="testimonials">
+          {items.map((item: any, i: number) => {
+            if (item.type === 'video') {
+              return <VideoTestimonial key={item.id || i} item={item} />
+            }
+
+            return (
+              <div key={item.id || i} className="testimonial">
+                <h4>{item.name}</h4>
+                {item.rating && <Stars count={item.rating} />}
+                {item.quote && <p>&ldquo;{item.quote}&rdquo;</p>}
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </section>
