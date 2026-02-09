@@ -2,7 +2,7 @@ import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, FixedToolbarFeature, TextStateFeature, defaultColors } from '@payloadcms/richtext-lexical'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { migrations } from './src/migrations'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
@@ -31,7 +31,39 @@ export default buildConfig({
     },
   }),
 
-  editor: lexicalEditor({}),
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      FixedToolbarFeature(),
+      TextStateFeature({
+        state: {
+          color: {
+            ...defaultColors.text,
+            'text-gold': { label: 'Gold', css: { color: '#D4AF37' } },
+            'text-white': { label: 'White', css: { color: '#FFFFFF' } },
+            'text-black': { label: 'Black', css: { color: '#1A1A1A' } },
+            'text-gray': { label: 'Gray', css: { color: '#666666' } },
+          },
+          backgroundColor: {
+            ...defaultColors.background,
+            'bg-gold': { label: 'Gold', css: { 'background-color': '#D4AF37' } },
+            'bg-black': { label: 'Black', css: { 'background-color': '#1A1A1A' } },
+            'bg-white': { label: 'White', css: { 'background-color': '#FFFFFF' } },
+          },
+          fontSize: {
+            'size-xs': { label: 'Extra Small', css: { 'font-size': '0.75rem' } },
+            'size-sm': { label: 'Small', css: { 'font-size': '0.875rem' } },
+            'size-base': { label: 'Normal', css: { 'font-size': '1rem' } },
+            'size-lg': { label: 'Large', css: { 'font-size': '1.25rem' } },
+            'size-xl': { label: 'Extra Large', css: { 'font-size': '1.5rem' } },
+            'size-2xl': { label: '2X Large', css: { 'font-size': '2rem' } },
+            'size-3xl': { label: '3X Large', css: { 'font-size': '2.5rem' } },
+            'size-4xl': { label: '4X Large', css: { 'font-size': '3rem' } },
+          },
+        },
+      }),
+    ],
+  }),
 
   collections: [Users, Pages, Events, BlogPosts, TeamMembers, Media],
 
