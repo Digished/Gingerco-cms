@@ -216,6 +216,39 @@ export default async function EventDetail({ params }: Args) {
           </section>
         )}
 
+        {/* Event Sponsors / Partners */}
+        {event.sponsors && event.sponsors.length > 0 && (
+          <section className="event-sponsors">
+            <div className="event-container">
+              <h2 className="event-section-title">Event Partners & Sponsors</h2>
+              <div className="sponsors-grid">
+                {event.sponsors.map((sponsor: any) => {
+                  const s = typeof sponsor === 'object' ? sponsor : null
+                  if (!s) return null
+                  const content = (
+                    <div key={s.id} className="sponsor-item">
+                      {s.logo?.url ? (
+                        <img src={s.logo.url} alt={s.name} loading="lazy" />
+                      ) : (
+                        <span className="sponsor-name">{s.name}</span>
+                      )}
+                      {s.type && <span className="sponsor-type">{s.type}</span>}
+                    </div>
+                  )
+                  if (s.url) {
+                    return (
+                      <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="sponsor-link">
+                        {content}
+                      </a>
+                    )
+                  }
+                  return content
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Registration CTA */}
         {event.externalRegistrationUrl && (
           <section className="event-cta">

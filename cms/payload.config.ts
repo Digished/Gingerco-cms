@@ -14,6 +14,7 @@ import { Events } from './src/collections/Events'
 import { Media } from './src/collections/Media'
 import { BlogPosts } from './src/collections/BlogPosts'
 import { TeamMembers } from './src/collections/TeamMembers'
+import { Partners } from './src/collections/Partners'
 import { Header } from './src/globals/Header'
 import { Footer } from './src/globals/Footer'
 import { SiteSettings } from './src/globals/SiteSettings'
@@ -65,7 +66,7 @@ export default buildConfig({
     ],
   }),
 
-  collections: [Users, Pages, Events, BlogPosts, TeamMembers, Media],
+  collections: [Users, Pages, Events, BlogPosts, TeamMembers, Partners, Media],
 
   globals: [Header, Footer, SiteSettings],
 
@@ -84,6 +85,68 @@ export default buildConfig({
         admin: {
           group: 'Forms',
         },
+        fields: ({ defaultFields }) => [
+          ...defaultFields,
+          {
+            name: 'arrivalNotice',
+            type: 'textarea',
+            label: 'Notice / Warning',
+            admin: {
+              description: 'Optional notice shown before consent sections (e.g. arrival time, important notes). Displayed with a warning style.',
+            },
+          },
+          {
+            name: 'consentSections',
+            type: 'array',
+            label: 'Consent & GDPR Sections',
+            admin: {
+              description: 'Add consent declarations, GDPR notices, and waivers to this form.',
+            },
+            fields: [
+              {
+                name: 'sectionTitle',
+                type: 'text',
+                required: true,
+                admin: { description: 'Section heading, e.g. "Participant Declarations & Waiver" or "GDPR & Media Consent".' },
+              },
+              {
+                name: 'declarations',
+                type: 'array',
+                label: 'Consent Declarations',
+                fields: [
+                  {
+                    name: 'title',
+                    type: 'text',
+                    required: true,
+                    admin: { description: 'e.g. "Age Confirmation", "Liability Waiver", "GDPR Consent".' },
+                  },
+                  {
+                    name: 'description',
+                    type: 'textarea',
+                    admin: { description: 'Full text of the declaration the user must agree to.' },
+                  },
+                  {
+                    name: 'required',
+                    type: 'checkbox',
+                    defaultValue: true,
+                    admin: { description: 'Must the user agree to this declaration?' },
+                  },
+                ],
+              },
+              {
+                name: 'collapsibleLabel',
+                type: 'text',
+                defaultValue: 'View Full Consent Details',
+                admin: { description: 'Label for the expandable details button.' },
+              },
+              {
+                name: 'collapsibleContent',
+                type: 'richText',
+                admin: { description: 'Full legal text shown when expanded (e.g. full GDPR policy, media consent text).' },
+              },
+            ],
+          },
+        ],
       },
       formSubmissionOverrides: {
         admin: {

@@ -1,15 +1,62 @@
 'use client'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
-export function InlineFormBlock({ formData }: { formData: any }) {
+export function PopupModalBlock({ block }: { block: any }) {
+  const { triggerLabel, triggerStyle, alignment, modalHeading, modalSubtitle, form } = block
+  const [open, setOpen] = useState(false)
+
+  const formData = typeof form === 'object' ? form : null
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [open])
+
+  // Close on Escape
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    if (open) window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
+
+  return (
+    <div className={`block-popup-trigger ${alignment === 'left' ? 'align-left' : 'align-center'}`}>
+      <button
+        className={`btn btn-${triggerStyle || 'primary'}`}
+        onClick={() => setOpen(true)}
+      >
+        {triggerLabel || 'Open'}
+      </button>
+
+      {open && (
+        <div className="popup-overlay" onClick={() => setOpen(false)}>
+          <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+            <button className="popup-close" onClick={() => setOpen(false)} aria-label="Close">&times;</button>
+            {modalHeading && <h2>{modalHeading}</h2>}
+            {modalSubtitle && <p className="popup-subtitle">{modalSubtitle}</p>}
+            {formData && (
+              <ModalForm formData={formData} onSuccess={() => {}} />
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => void }) {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState<Record<number, boolean>>({})
-
-  if (!formData) return null
 
   const fields = formData.fields || []
   const consentSections = formData.consentSections || []
@@ -31,6 +78,7 @@ export function InlineFormBlock({ formData }: { formData: any }) {
       }
     })
 
+    // Collect consent checkbox values
     consentSections.forEach((section: any) => {
       section.declarations?.forEach((decl: any) => {
         const name = `consent_${decl.id || decl.title}`
@@ -51,6 +99,7 @@ export function InlineFormBlock({ formData }: { formData: any }) {
 
       if (res.ok) {
         setSubmitted(true)
+        onSuccess()
       } else {
         setError('Something went wrong. Please try again.')
       }
@@ -63,14 +112,14 @@ export function InlineFormBlock({ formData }: { formData: any }) {
 
   if (submitted) {
     return (
-      <div className="inline-form-success">
+      <div className="form-message success">
         {formData.confirmationMessage || 'Thank you! Your submission has been received.'}
       </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="inline-form">
+    <form onSubmit={handleSubmit} className="modal-form">
       {fields.map((field: any, i: number) => {
         const name = field.name || field.label
         const blockType = field.blockType
@@ -78,8 +127,8 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         if (blockType === 'checkbox') {
           return (
             <div key={i} className="form-field form-checkbox">
-              <input type="checkbox" id={`inline-${name}`} name={name} required={field.required} />
-              <label htmlFor={`inline-${name}`}>{field.label}{field.required && ' *'}</label>
+              <input type="checkbox" id={`modal-${name}`} name={name} required={field.required} />
+              <label htmlFor={`modal-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
             </div>
           )
         }
@@ -87,8 +136,8 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         if (blockType === 'textarea') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`inline-${name}`}>{field.label}{field.required && ' *'}</label>
-              <textarea id={`inline-${name}`} name={name} required={field.required} />
+              <label htmlFor={`modal-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <textarea id={`modal-${name}`} name={name} required={field.required} rows={4} />
             </div>
           )
         }
@@ -96,8 +145,8 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         if (blockType === 'select') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`inline-${name}`}>{field.label}{field.required && ' *'}</label>
-              <select id={`inline-${name}`} name={name} required={field.required}>
+              <label htmlFor={`modal-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <select id={`modal-${name}`} name={name} required={field.required}>
                 <option value="">Select...</option>
                 {field.options?.map((opt: any, j: number) => (
                   <option key={j} value={opt.value}>{opt.label}</option>
@@ -110,8 +159,8 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         if (blockType === 'email') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`inline-${name}`}>{field.label}{field.required && ' *'}</label>
-              <input type="email" id={`inline-${name}`} name={name} required={field.required} />
+              <label htmlFor={`modal-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <input type="email" id={`modal-${name}`} name={name} required={field.required} />
             </div>
           )
         }
@@ -119,15 +168,15 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         if (blockType === 'number') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`inline-${name}`}>{field.label}{field.required && ' *'}</label>
-              <input type="number" id={`inline-${name}`} name={name} required={field.required} />
+              <label htmlFor={`modal-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <input type="number" id={`modal-${name}`} name={name} required={field.required} />
             </div>
           )
         }
 
         if (blockType === 'message') {
           return (
-            <div key={i} className="form-field">
+            <div key={i} className="form-field form-message-field">
               <p>{field.message}</p>
             </div>
           )
@@ -135,18 +184,20 @@ export function InlineFormBlock({ formData }: { formData: any }) {
 
         return (
           <div key={i} className="form-field">
-            <label htmlFor={`inline-${name}`}>{field.label}{field.required && ' *'}</label>
-            <input type="text" id={`inline-${name}`} name={name} required={field.required} />
+            <label htmlFor={`modal-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+            <input type="text" id={`modal-${name}`} name={name} required={field.required} />
           </div>
         )
       })}
 
+      {/* Arrival Notice */}
       {arrivalNotice && (
         <div className="arrival-notice">
           <strong>Important:</strong> {arrivalNotice}
         </div>
       )}
 
+      {/* Consent Sections */}
       {consentSections.map((section: any, si: number) => (
         <div key={si} className="consent-section">
           <div className="consent-section-title">{section.sectionTitle}</div>
@@ -154,11 +205,11 @@ export function InlineFormBlock({ formData }: { formData: any }) {
             <div key={di} className="declaration-item">
               <input
                 type="checkbox"
-                id={`inline-consent-${si}-${di}`}
+                id={`consent-modal-${si}-${di}`}
                 name={`consent_${decl.id || decl.title}`}
                 required={decl.required}
               />
-              <label htmlFor={`inline-consent-${si}-${di}`}>
+              <label htmlFor={`consent-modal-${si}-${di}`}>
                 {decl.title && <strong>{decl.title}</strong>}
                 {decl.description && <span>{decl.description}</span>}
                 {decl.required && <span className="required-mark"> *</span>}
@@ -185,9 +236,18 @@ export function InlineFormBlock({ formData }: { formData: any }) {
 
       {error && <div className="form-message error">{error}</div>}
 
-      <button type="submit" className="btn btn-primary" disabled={submitting}>
-        {submitting ? 'Sending...' : (formData.submitButtonLabel || 'Submit')}
-      </button>
+      <div className="form-submit">
+        <button type="submit" className="form-submit-btn" disabled={submitting}>
+          {submitting ? (
+            <span className="form-spinner-wrap">
+              <span className="form-spinner" />
+              Sending...
+            </span>
+          ) : (
+            formData.submitButtonLabel || 'Submit'
+          )}
+        </button>
+      </div>
     </form>
   )
 }

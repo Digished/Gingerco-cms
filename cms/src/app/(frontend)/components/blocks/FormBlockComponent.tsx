@@ -8,11 +8,14 @@ export function FormBlockComponent({ block }: { block: any }) {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [detailsOpen, setDetailsOpen] = useState<Record<number, boolean>>({})
 
   const formData = typeof form === 'object' ? form : null
   if (!formData) return null
 
   const fields = formData.fields || []
+  const consentSections = formData.consentSections || []
+  const arrivalNotice = formData.arrivalNotice
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -28,6 +31,15 @@ export function FormBlockComponent({ block }: { block: any }) {
       if (value !== null) {
         submissionData.push({ field: name, value: String(value) })
       }
+    })
+
+    // Collect consent checkbox values
+    consentSections.forEach((section: any) => {
+      section.declarations?.forEach((decl: any) => {
+        const name = `consent_${decl.id || decl.title}`
+        const value = data.get(name)
+        submissionData.push({ field: `[Consent] ${decl.title}`, value: value ? 'Agreed' : 'Not agreed' })
+      })
     })
 
     try {
@@ -140,6 +152,50 @@ export function FormBlockComponent({ block }: { block: any }) {
             )
           })}
 
+          {/* Arrival Notice */}
+          {arrivalNotice && (
+            <div className="arrival-notice">
+              <strong>Important:</strong> {arrivalNotice}
+            </div>
+          )}
+
+          {/* Consent / GDPR Sections */}
+          {consentSections.map((section: any, si: number) => (
+            <div key={si} className="consent-section">
+              <div className="consent-section-title">{section.sectionTitle}</div>
+              {section.declarations?.map((decl: any, di: number) => (
+                <div key={di} className="declaration-item">
+                  <input
+                    type="checkbox"
+                    id={`consent-${si}-${di}`}
+                    name={`consent_${decl.id || decl.title}`}
+                    required={decl.required}
+                  />
+                  <label htmlFor={`consent-${si}-${di}`}>
+                    {decl.title && <strong>{decl.title}</strong>}
+                    {decl.description && <span>{decl.description}</span>}
+                    {decl.required && <span className="required-mark"> *</span>}
+                  </label>
+                </div>
+              ))}
+
+              {section.collapsibleContent && (
+                <div className="collapsible-details">
+                  <button
+                    type="button"
+                    className={`details-toggle${detailsOpen[si] ? ' active' : ''}`}
+                    onClick={() => setDetailsOpen(prev => ({ ...prev, [si]: !prev[si] }))}
+                  >
+                    {section.collapsibleLabel || 'View Full Consent Details'}
+                  </button>
+                  <div className={`details-content${detailsOpen[si] ? ' active' : ''}`}>
+                    <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(section.collapsibleContent) }} />
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
           {error && <div className="form-message error">{error}</div>}
 
           <div className="form-submit">
@@ -158,4 +214,26 @@ export function FormBlockComponent({ block }: { block: any }) {
       </div>
     </section>
   )
+}
+
+function serializeRichText(content: any): string {
+  if (!content?.root?.children) return ''
+  return content.root.children.map((node: any) => serializeNode(node)).join('')
+}
+
+function serializeNode(node: any): string {
+  if (node.type === 'text') {
+    let text = node.text || ''
+    if (node.format & 1) text = `<strong>${text}</strong>`
+    if (node.format & 2) text = `<em>${text}</em>`
+    return text
+  }
+  const children = (node.children || []).map((c: any) => serializeNode(c)).join('')
+  switch (node.type) {
+    case 'paragraph': return `<p>${children}</p>`
+    case 'heading': return `<h${node.tag?.[1] || '4'}>${children}</h${node.tag?.[1] || '4'}>`
+    case 'list': return node.listType === 'number' ? `<ol>${children}</ol>` : `<ul>${children}</ul>`
+    case 'listitem': return `<li>${children}</li>`
+    default: return children
+  }
 }

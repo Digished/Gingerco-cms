@@ -58,6 +58,23 @@ export const Hero: Block = {
       },
     },
     {
+      name: 'subheadingSize',
+      type: 'select',
+      defaultValue: 'default',
+      admin: {
+        description: 'Font size of the subheading text.',
+      },
+      options: [
+        { label: 'Small (0.95rem)', value: 'small' },
+        { label: 'Default (1.1rem)', value: 'default' },
+        { label: 'Medium (1.4rem)', value: 'medium' },
+        { label: 'Large (1.8rem)', value: 'large' },
+        { label: 'XL (2.2rem)', value: 'xl' },
+        { label: '2XL - Statement (2.8rem)', value: '2xl' },
+        { label: '3XL - Hero (3.5rem)', value: '3xl' },
+      ],
+    },
+    {
       name: 'image',
       type: 'upload',
       relationTo: 'media',

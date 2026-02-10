@@ -3,7 +3,17 @@ import React from 'react'
 import { resolveLink } from '../resolveLink'
 
 export function HeroBlock({ block }: { block: any }) {
-  const { headingSegments, subheading, image, overlay, textAlign, minHeight, links } = block
+  const { headingSegments, subheading, subheadingSize, image, overlay, textAlign, minHeight, links } = block
+
+  const sizeMap: Record<string, string> = {
+    small: '0.95rem',
+    default: '1.1rem',
+    medium: '1.4rem',
+    large: '1.8rem',
+    xl: '2.2rem',
+    '2xl': '2.8rem',
+    '3xl': '3.5rem',
+  }
 
   // Support old 'heading' field for backward compatibility
   const hasSegments = headingSegments && headingSegments.length > 0
@@ -40,7 +50,14 @@ export function HeroBlock({ block }: { block: any }) {
             oldHeading || ''
           )}
         </h1>
-        {subheading && <p className="hero-subheading">{subheading}</p>}
+        {subheading && (
+          <p
+            className={`hero-subheading${subheadingSize && subheadingSize !== 'default' ? ' hero-subheading-lg' : ''}`}
+            style={subheadingSize && subheadingSize !== 'default' ? { fontSize: sizeMap[subheadingSize] || '1.1rem' } : undefined}
+          >
+            {subheading}
+          </p>
+        )}
         {links && links.length > 0 && (
           <div className="hero-links">
             {links.map((link: any, i: number) => {

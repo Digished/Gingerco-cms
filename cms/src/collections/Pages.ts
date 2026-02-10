@@ -14,6 +14,8 @@ import { Testimonials } from '../blocks/Testimonials'
 import { BlogList } from '../blocks/BlogList'
 import { BulletList } from '../blocks/BulletList'
 import { SplitContent } from '../blocks/SplitContent'
+import { PopupModal } from '../blocks/PopupModal'
+import { PartnerSection } from '../blocks/PartnerSection'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -53,7 +55,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       required: true,
-      blocks: [Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList, BulletList, SplitContent],
+      blocks: [Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList, BulletList, SplitContent, PopupModal, PartnerSection],
     },
     {
       name: 'meta',

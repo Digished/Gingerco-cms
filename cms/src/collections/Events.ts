@@ -230,6 +230,20 @@ export const Events: CollectionConfig = {
           ],
         },
         {
+          label: 'Partners & Sponsors',
+          fields: [
+            {
+              name: 'sponsors',
+              type: 'relationship',
+              relationTo: 'partners' as any,
+              hasMany: true,
+              admin: {
+                description: 'Select sponsors/partners for this event.',
+              },
+            },
+          ],
+        },
+        {
           label: 'Registration',
           fields: [
             {
