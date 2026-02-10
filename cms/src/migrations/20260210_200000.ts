@@ -24,6 +24,19 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     CREATE INDEX IF NOT EXISTS "partners_created_at_idx" ON "partners" USING btree ("created_at");
   `)
 
+  // ── 1b. Add partners_id to Payload internal rels tables ──
+  await db.execute(sql`
+    ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "partners_id" integer;
+
+    DO $$ BEGIN
+      ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_partners_id_partners_id_fk"
+        FOREIGN KEY ("partners_id") REFERENCES "partners"("id") ON DELETE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$;
+
+    CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_partners_idx" ON "payload_locked_documents_rels" USING btree ("partners_id");
+  `)
+
   // ── 2. Hero subheadingSize field ──
   await db.execute(sql`
     ALTER TABLE "pages_blocks_hero" ADD COLUMN IF NOT EXISTS "subheading_size" varchar DEFAULT 'default';
