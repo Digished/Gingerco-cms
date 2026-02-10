@@ -12,6 +12,8 @@ import { CountdownTimer } from '../blocks/CountdownTimer'
 import { TeamBlock } from '../blocks/TeamBlock'
 import { Testimonials } from '../blocks/Testimonials'
 import { BlogList } from '../blocks/BlogList'
+import { BulletList } from '../blocks/BulletList'
+import { SplitContent } from '../blocks/SplitContent'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -51,7 +53,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       required: true,
-      blocks: [Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList],
+      blocks: [Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList, BulletList, SplitContent],
     },
     {
       name: 'meta',

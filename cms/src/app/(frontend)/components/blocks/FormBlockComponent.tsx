@@ -69,7 +69,7 @@ export function FormBlockComponent({ block }: { block: any }) {
       <div className="form-inner">
         {heading && <h2>{heading}</h2>}
         {description && <p className="form-description">{description}</p>}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="cms-form">
           {fields.map((field: any, i: number) => {
             const name = field.name || field.label
             const blockType = field.blockType
@@ -78,7 +78,7 @@ export function FormBlockComponent({ block }: { block: any }) {
               return (
                 <div key={i} className="form-field form-checkbox">
                   <input type="checkbox" id={name} name={name} required={field.required} />
-                  <label htmlFor={name}>{field.label}{field.required && ' *'}</label>
+                  <label htmlFor={name}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
                 </div>
               )
             }
@@ -86,8 +86,8 @@ export function FormBlockComponent({ block }: { block: any }) {
             if (blockType === 'textarea') {
               return (
                 <div key={i} className="form-field">
-                  <label htmlFor={name}>{field.label}{field.required && ' *'}</label>
-                  <textarea id={name} name={name} required={field.required} />
+                  <label htmlFor={name}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+                  <textarea id={name} name={name} required={field.required} rows={4} />
                 </div>
               )
             }
@@ -95,7 +95,7 @@ export function FormBlockComponent({ block }: { block: any }) {
             if (blockType === 'select') {
               return (
                 <div key={i} className="form-field">
-                  <label htmlFor={name}>{field.label}{field.required && ' *'}</label>
+                  <label htmlFor={name}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
                   <select id={name} name={name} required={field.required}>
                     <option value="">Select...</option>
                     {field.options?.map((opt: any, j: number) => (
@@ -109,7 +109,7 @@ export function FormBlockComponent({ block }: { block: any }) {
             if (blockType === 'email') {
               return (
                 <div key={i} className="form-field">
-                  <label htmlFor={name}>{field.label}{field.required && ' *'}</label>
+                  <label htmlFor={name}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
                   <input type="email" id={name} name={name} required={field.required} />
                 </div>
               )
@@ -118,7 +118,7 @@ export function FormBlockComponent({ block }: { block: any }) {
             if (blockType === 'number') {
               return (
                 <div key={i} className="form-field">
-                  <label htmlFor={name}>{field.label}{field.required && ' *'}</label>
+                  <label htmlFor={name}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
                   <input type="number" id={name} name={name} required={field.required} />
                 </div>
               )
@@ -126,16 +126,15 @@ export function FormBlockComponent({ block }: { block: any }) {
 
             if (blockType === 'message') {
               return (
-                <div key={i} className="form-field">
+                <div key={i} className="form-field form-message-field">
                   <p>{field.message}</p>
                 </div>
               )
             }
 
-            // Default: text input
             return (
               <div key={i} className="form-field">
-                <label htmlFor={name}>{field.label}{field.required && ' *'}</label>
+                <label htmlFor={name}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
                 <input type="text" id={name} name={name} required={field.required} />
               </div>
             )
@@ -144,8 +143,15 @@ export function FormBlockComponent({ block }: { block: any }) {
           {error && <div className="form-message error">{error}</div>}
 
           <div className="form-submit">
-            <button type="submit" className="btn btn-primary" disabled={submitting}>
-              {submitting ? 'Sending...' : (formData.submitButtonLabel || 'Submit')}
+            <button type="submit" className="form-submit-btn" disabled={submitting}>
+              {submitting ? (
+                <span className="form-spinner-wrap">
+                  <span className="form-spinner" />
+                  Sending...
+                </span>
+              ) : (
+                formData.submitButtonLabel || 'Submit'
+              )}
             </button>
           </div>
         </form>

@@ -41,6 +41,25 @@ export const TeamMembers: CollectionConfig = {
       name: 'photo',
       type: 'upload',
       relationTo: 'media',
+      admin: {
+        description: 'Main profile photo (displayed on team grid and profile page hero).',
+      },
+    },
+    {
+      name: 'photo2',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Optional second photo (shown on profile page).',
+      },
+    },
+    {
+      name: 'photo3',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Optional third photo (shown on profile page).',
+      },
     },
     {
       name: 'bio',

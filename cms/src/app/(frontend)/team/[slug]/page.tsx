@@ -30,11 +30,13 @@ export default async function TeamMemberProfile({ params }: Args) {
       ? member.specialties.split(',').map((s: string) => s.trim()).filter(Boolean)
       : []
 
+    const extraPhotos = [member.photo2, member.photo3].filter((p: any) => p?.url)
+
     return (
       <main className="team-profile">
         <div className="team-profile-inner">
-          <div className="team-profile-grid">
-            {/* Photo */}
+          {/* Hero / Main Photo + Info */}
+          <div className="team-profile-hero">
             <div className="team-profile-photo-col">
               {member.photo?.url ? (
                 <img src={member.photo.url} alt={member.photo.alt || member.name} className="team-profile-photo" />
@@ -45,7 +47,6 @@ export default async function TeamMemberProfile({ params }: Args) {
               )}
             </div>
 
-            {/* Info */}
             <div className="team-profile-info">
               <h1>{member.name}</h1>
               <p className="team-profile-role">{member.role}</p>
@@ -105,6 +106,21 @@ export default async function TeamMemberProfile({ params }: Args) {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Extra Photos Gallery */}
+          {extraPhotos.length > 0 && (
+            <div className="team-profile-gallery">
+              {extraPhotos.map((photo: any, i: number) => (
+                <div key={i} className="team-profile-gallery-item">
+                  <img src={photo.url} alt={photo.alt || `${member.name} photo ${i + 2}`} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="team-profile-back">
+            <a href="/" className="btn btn-outline">&larr; Back</a>
           </div>
         </div>
       </main>
