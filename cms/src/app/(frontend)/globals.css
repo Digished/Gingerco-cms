@@ -2828,6 +2828,83 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-primary);
 }
 
+/* --- Coming Soon Block --- */
+.block-coming-soon {
+  padding: 5rem 5%;
+  text-align: center;
+  background: #f5f5f5;
+}
+
+.block-coming-soon.bg-dark {
+  background: var(--color-bg-dark);
+  color: var(--color-text-on-dark);
+}
+
+.block-coming-soon.bg-light-gray {
+  background: #f5f5f5;
+}
+
+.coming-soon-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.coming-soon-emoji {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.coming-soon-inner h2 {
+  font-size: 2rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-family: var(--font-heading);
+  margin-bottom: 1rem;
+}
+
+.coming-soon-inner p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-text-light);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.block-coming-soon.bg-dark .coming-soon-inner h2 {
+  color: var(--color-white);
+}
+
+.block-coming-soon.bg-dark .coming-soon-inner p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* --- Event Hero Actions --- */
+.event-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.event-hero-price {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--btn-radius);
+  backdrop-filter: blur(4px);
+}
+
+/* --- Event CTA Price --- */
+.event-cta-price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+}
+
 /* --- Mobile Menu Hamburger Animation --- */
 .mobile-menu-btn.active span:nth-child(1) {
   transform: rotate(45deg) translate(5px, 5px);

@@ -16,6 +16,7 @@ import { BulletList } from '../blocks/BulletList'
 import { SplitContent } from '../blocks/SplitContent'
 import { PopupModal } from '../blocks/PopupModal'
 import { PartnerSection } from '../blocks/PartnerSection'
+import { ComingSoon } from '../blocks/ComingSoon'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -55,7 +56,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       required: true,
-      blocks: [Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList, BulletList, SplitContent, PopupModal, PartnerSection],
+      blocks: [Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList, BulletList, SplitContent, PopupModal, PartnerSection, ComingSoon],
     },
     {
       name: 'meta',

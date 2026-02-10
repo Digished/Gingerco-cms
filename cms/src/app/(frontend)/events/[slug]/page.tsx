@@ -57,11 +57,18 @@ export default async function EventDetail({ params }: Args) {
           <div className="event-hero-content">
             <h1>{event.title}</h1>
             {event.shortDescription && <p>{event.shortDescription}</p>}
-            {event.externalRegistrationUrl && (
-              <a href={event.externalRegistrationUrl} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
-                Get Tickets
-              </a>
-            )}
+            <div className="event-hero-actions">
+              {event.externalRegistrationUrl && (
+                <a href={event.externalRegistrationUrl} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                  Get Tickets
+                </a>
+              )}
+              {event.price != null && (
+                <span className="event-hero-price">
+                  {event.price === 0 ? 'Free Event' : `From ${currency}${event.price}`}
+                </span>
+              )}
+            </div>
           </div>
         </section>
 
@@ -250,13 +257,24 @@ export default async function EventDetail({ params }: Args) {
         )}
 
         {/* Registration CTA */}
-        {event.externalRegistrationUrl && (
+        {(event.externalRegistrationUrl || event.registrationEnabled) && (
           <section className="event-cta">
             <div className="event-container" style={{ textAlign: 'center' }}>
               <h2>Ready to Join?</h2>
-              <a href={event.externalRegistrationUrl} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
-                Get Tickets
-              </a>
+              {event.price != null && (
+                <p className="event-cta-price">
+                  {event.price === 0 ? 'Free Event' : `From ${currency}${event.price}`}
+                </p>
+              )}
+              {event.externalRegistrationUrl ? (
+                <a href={event.externalRegistrationUrl} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                  Get Tickets
+                </a>
+              ) : (
+                <p style={{ color: 'var(--color-text-light)', marginTop: '0.5rem' }}>
+                  Registration details coming soon.
+                </p>
+              )}
             </div>
           </section>
         )}

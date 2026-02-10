@@ -16,6 +16,7 @@ import { BulletListBlock } from './blocks/BulletListBlock'
 import { SplitContentBlock } from './blocks/SplitContentBlock'
 import { PopupModalBlock } from './blocks/PopupModalBlock'
 import { PartnerSectionBlock } from './blocks/PartnerSectionBlock'
+import { ComingSoonBlock } from './blocks/ComingSoonBlock'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const blockComponents: Record<string, React.FC<{ block: any }>> = {
@@ -36,6 +37,7 @@ const blockComponents: Record<string, React.FC<{ block: any }>> = {
   splitContent: SplitContentBlock as any,
   popupModal: PopupModalBlock,
   partnerSection: PartnerSectionBlock as any,
+  comingSoon: ComingSoonBlock,
 }
 
 export function RenderBlocks({ blocks }: { blocks: any[] }) {
