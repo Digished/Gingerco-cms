@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const Hero: Block = {
   slug: 'hero',
@@ -101,16 +102,7 @@ export const Hero: Block = {
       type: 'array',
       maxRows: 3,
       fields: [
-        {
-          name: 'label',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'url',
-          type: 'text',
-          required: true,
-        },
+        ...linkFields,
         {
           name: 'style',
           type: 'select',

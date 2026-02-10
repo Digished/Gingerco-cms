@@ -14,6 +14,20 @@ function getTimeLeft(targetDate: string) {
   }
 }
 
+function resolveLinkClient(link: any): { href: string; target?: string; rel?: string } {
+  let href = '#'
+  if (link.linkType === 'page' && link.page) {
+    const slug = typeof link.page === 'object' ? link.page.slug : null
+    href = slug === 'home' ? '/' : `/${slug}`
+  } else if (link.url) {
+    href = link.url
+  }
+  return {
+    href,
+    ...(link.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}),
+  }
+}
+
 export function CountdownTimerBlock({ block }: { block: any }) {
   const { heading, targetDate, description, link, expiredMessage } = block
   const [timeLeft, setTimeLeft] = useState(getTimeLeft(targetDate))
@@ -26,6 +40,8 @@ export function CountdownTimerBlock({ block }: { block: any }) {
     }, 1000)
     return () => clearInterval(timer)
   }, [targetDate])
+
+  const resolved = link?.label ? resolveLinkClient(link) : null
 
   return (
     <section className="block-countdown">
@@ -54,8 +70,13 @@ export function CountdownTimerBlock({ block }: { block: any }) {
           <p className="countdown-expired">{expiredMessage || 'This event has started!'}</p>
         )}
         {description && <p className="countdown-description">{description}</p>}
-        {link?.label && link?.url && (
-          <a href={link.url} className="btn btn-primary" style={{ marginTop: '1.5rem' }}>
+        {resolved && (
+          <a
+            href={resolved.href}
+            className="btn btn-primary"
+            style={{ marginTop: '1.5rem' }}
+            {...(resolved.target ? { target: resolved.target, rel: resolved.rel } : {})}
+          >
             {link.label}
           </a>
         )}

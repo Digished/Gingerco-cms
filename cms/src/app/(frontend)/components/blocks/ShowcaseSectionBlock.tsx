@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
+import { resolveLink } from '../resolveLink'
 
 export function ShowcaseSectionBlock({ block }: { block: any }) {
   const {
@@ -49,15 +50,19 @@ export function ShowcaseSectionBlock({ block }: { block: any }) {
 
           {links && links.length > 0 && (
             <div className="showcase-actions">
-              {links.map((link: any, i: number) => (
-                <a
-                  key={i}
-                  href={link.url}
-                  className={`btn-showcase btn-showcase-${link.style || 'outline'}`}
-                >
-                  {link.label}
-                </a>
-              ))}
+              {links.map((link: any, i: number) => {
+                const resolved = resolveLink(link)
+                return (
+                  <a
+                    key={link.id || i}
+                    href={resolved.href}
+                    className={`btn-showcase btn-showcase-${link.style || 'outline'}`}
+                    {...(resolved.target ? { target: resolved.target, rel: resolved.rel } : {})}
+                  >
+                    {link.label}
+                  </a>
+                )
+              })}
             </div>
           )}
         </div>

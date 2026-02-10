@@ -20,6 +20,16 @@ export const TeamMembers: CollectionConfig = {
       required: true,
     },
     {
+      name: 'slug',
+      type: 'text',
+      required: true,
+      unique: true,
+      admin: {
+        description: 'URL-friendly identifier (e.g. "jane-doe"). Used for the team member profile page.',
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'role',
       type: 'text',
       required: true,

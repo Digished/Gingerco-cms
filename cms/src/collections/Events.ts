@@ -68,6 +68,28 @@ export const Events: CollectionConfig = {
               relationTo: 'media',
             },
             {
+              name: 'gallery',
+              type: 'array',
+              admin: {
+                description: 'Optional gallery images for the event detail page.',
+              },
+              fields: [
+                {
+                  name: 'image',
+                  type: 'upload',
+                  relationTo: 'media',
+                  required: true,
+                },
+              ],
+            },
+            {
+              name: 'videoUrl',
+              type: 'text',
+              admin: {
+                description: 'Optional video URL (MP4) for the event detail page.',
+              },
+            },
+            {
               name: 'eventType',
               type: 'select',
               options: [

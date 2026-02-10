@@ -40,40 +40,42 @@ export async function EventsListBlock({ block }: { block: any }) {
         ) : (
           <div className={layout === 'grid' ? 'events-grid' : 'events-list-layout'}>
             {events.map((event: any) => (
-              <article key={event.id} className="event-card">
-                {event.featuredImage?.url && (
-                  <div className="event-card-image">
-                    <img src={event.featuredImage.url} alt={event.featuredImage.alt || event.title} />
-                  </div>
-                )}
-                <div className="event-card-body">
-                  {event.eventType && (
-                    <span className="event-card-type">{event.eventType}</span>
+              <a key={event.id} href={`/events/${event.slug}`} className="event-card-link">
+                <article className="event-card">
+                  {event.featuredImage?.url && (
+                    <div className="event-card-image">
+                      <img src={event.featuredImage.url} alt={event.featuredImage.alt || event.title} />
+                    </div>
                   )}
-                  <h3>{event.title}</h3>
-                  <div className="event-card-meta">
-                    {event.date && (
-                      <span>{new Date(event.date).toLocaleDateString('en-AT', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}</span>
+                  <div className="event-card-body">
+                    {event.eventType && (
+                      <span className="event-card-type">{event.eventType}</span>
                     )}
-                    {event.location && <span>{event.location}</span>}
+                    <h3>{event.title}</h3>
+                    <div className="event-card-meta">
+                      {event.date && (
+                        <span>{new Date(event.date).toLocaleDateString('en-AT', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}</span>
+                      )}
+                      {event.location && <span>{event.location}</span>}
+                    </div>
+                    {event.shortDescription && (
+                      <p className="event-card-description">{event.shortDescription}</p>
+                    )}
+                    {event.price != null && event.price > 0 && (
+                      <p className="event-card-price">
+                        {event.currency === 'USD' ? '$' : '\u20AC'}{event.price}
+                      </p>
+                    )}
                   </div>
-                  {event.shortDescription && (
-                    <p className="event-card-description">{event.shortDescription}</p>
-                  )}
-                  {event.price != null && event.price > 0 && (
-                    <p className="event-card-price">
-                      {event.currency === 'USD' ? '$' : '\u20AC'}{event.price}
-                    </p>
-                  )}
-                </div>
-              </article>
+                </article>
+              </a>
             ))}
           </div>
         )}

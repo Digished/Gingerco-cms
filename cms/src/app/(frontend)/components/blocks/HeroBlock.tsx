@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
+import { resolveLink } from '../resolveLink'
 
 export function HeroBlock({ block }: { block: any }) {
   const { headingSegments, subheading, image, overlay, textAlign, minHeight, links } = block
@@ -42,15 +43,19 @@ export function HeroBlock({ block }: { block: any }) {
         {subheading && <p className="hero-subheading">{subheading}</p>}
         {links && links.length > 0 && (
           <div className="hero-links">
-            {links.map((link: any, i: number) => (
-              <a
-                key={i}
-                href={link.url}
-                className={`btn btn-${link.style || 'primary'}`}
-              >
-                {link.label}
-              </a>
-            ))}
+            {links.map((link: any, i: number) => {
+              const resolved = resolveLink(link)
+              return (
+                <a
+                  key={link.id || i}
+                  href={resolved.href}
+                  className={`btn btn-${link.style || 'primary'}`}
+                  {...(resolved.target ? { target: resolved.target, rel: resolved.rel } : {})}
+                >
+                  {link.label}
+                </a>
+              )
+            })}
           </div>
         )}
       </div>

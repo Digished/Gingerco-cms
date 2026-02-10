@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const CallToAction: Block = {
   slug: 'cta',
@@ -22,16 +23,7 @@ export const CallToAction: Block = {
       minRows: 1,
       maxRows: 3,
       fields: [
-        {
-          name: 'label',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'url',
-          type: 'text',
-          required: true,
-        },
+        ...linkFields,
         {
           name: 'style',
           type: 'select',
