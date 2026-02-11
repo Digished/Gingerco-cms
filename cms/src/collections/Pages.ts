@@ -18,9 +18,9 @@ import { PopupModal } from '../blocks/PopupModal'
 import { PartnerSection } from '../blocks/PartnerSection'
 import { ComingSoon } from '../blocks/ComingSoon'
 
-const validateUniqueSlug: TextFieldSingleValidation = async (value, { payload, id }) => {
-  if (!value || !payload) return true
-  const existing = await payload.find({
+const validateUniqueSlug: TextFieldSingleValidation = async (value, { req, id }) => {
+  if (!value || !req?.payload) return true
+  const existing = await req.payload.find({
     collection: 'pages',
     where: {
       slug: { equals: value },

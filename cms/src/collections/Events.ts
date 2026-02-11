@@ -1,8 +1,8 @@
 import type { CollectionConfig, TextFieldSingleValidation } from 'payload'
 
-const validateUniqueSlug: TextFieldSingleValidation = async (value, { payload, id }) => {
-  if (!value || !payload) return true
-  const existing = await payload.find({
+const validateUniqueSlug: TextFieldSingleValidation = async (value, { req, id }) => {
+  if (!value || !req?.payload) return true
+  const existing = await req.payload.find({
     collection: 'events',
     where: {
       slug: { equals: value },
