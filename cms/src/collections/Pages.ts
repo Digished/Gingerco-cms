@@ -32,6 +32,7 @@ export const Pages: CollectionConfig = {
     delete: ({ req: { user } }) => Boolean(user),
   },
   versions: {
+    maxPerDoc: 25,
     drafts: {
       autosave: true,
     },
