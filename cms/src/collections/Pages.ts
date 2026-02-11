@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, TextFieldSingleValidation } from 'payload'
 import { Hero } from '../blocks/Hero'
 import { Content } from '../blocks/Content'
 import { AboutSection } from '../blocks/AboutSection'
@@ -17,6 +17,23 @@ import { SplitContent } from '../blocks/SplitContent'
 import { PopupModal } from '../blocks/PopupModal'
 import { PartnerSection } from '../blocks/PartnerSection'
 import { ComingSoon } from '../blocks/ComingSoon'
+
+const validateUniqueSlug: TextFieldSingleValidation = async (value, { payload, id }) => {
+  if (!value || !payload) return true
+  const existing = await payload.find({
+    collection: 'pages',
+    where: {
+      slug: { equals: value },
+      ...(id ? { id: { not_equals: id } } : {}),
+    },
+    limit: 1,
+    depth: 0,
+  })
+  if (existing.docs.length > 0) {
+    return 'A page with this slug already exists.'
+  }
+  return true
+}
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -47,7 +64,8 @@ export const Pages: CollectionConfig = {
       name: 'slug',
       type: 'text',
       required: true,
-      unique: true,
+      index: true,
+      validate: validateUniqueSlug,
       admin: {
         position: 'sidebar',
         description: 'URL path for this page (e.g. "about" becomes /about).',

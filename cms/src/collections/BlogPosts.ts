@@ -1,4 +1,21 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, TextFieldSingleValidation } from 'payload'
+
+const validateUniqueSlug: TextFieldSingleValidation = async (value, { payload, id }) => {
+  if (!value || !payload) return true
+  const existing = await payload.find({
+    collection: 'blog-posts',
+    where: {
+      slug: { equals: value },
+      ...(id ? { id: { not_equals: id } } : {}),
+    },
+    limit: 1,
+    depth: 0,
+  })
+  if (existing.docs.length > 0) {
+    return 'A blog post with this slug already exists.'
+  }
+  return true
+}
 
 export const BlogPosts: CollectionConfig = {
   slug: 'blog-posts',
@@ -28,7 +45,8 @@ export const BlogPosts: CollectionConfig = {
       name: 'slug',
       type: 'text',
       required: true,
-      unique: true,
+      index: true,
+      validate: validateUniqueSlug,
       admin: {
         position: 'sidebar',
         description: 'URL path for this post (e.g. "my-first-post" becomes /blog/my-first-post).',

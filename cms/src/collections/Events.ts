@@ -1,4 +1,21 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, TextFieldSingleValidation } from 'payload'
+
+const validateUniqueSlug: TextFieldSingleValidation = async (value, { payload, id }) => {
+  if (!value || !payload) return true
+  const existing = await payload.find({
+    collection: 'events',
+    where: {
+      slug: { equals: value },
+      ...(id ? { id: { not_equals: id } } : {}),
+    },
+    limit: 1,
+    depth: 0,
+  })
+  if (existing.docs.length > 0) {
+    return 'An event with this slug already exists.'
+  }
+  return true
+}
 
 export const Events: CollectionConfig = {
   slug: 'events',
@@ -28,7 +45,8 @@ export const Events: CollectionConfig = {
       name: 'slug',
       type: 'text',
       required: true,
-      unique: true,
+      index: true,
+      validate: validateUniqueSlug,
       admin: {
         position: 'sidebar',
       },
