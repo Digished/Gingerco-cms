@@ -65,6 +65,16 @@ export const TeamMembers: CollectionConfig = {
       name: 'bio',
       type: 'textarea',
       maxLength: 500,
+      admin: {
+        description: 'Short biography shown in the profile header (max 500 chars).',
+      },
+    },
+    {
+      name: 'profileContent',
+      type: 'richText',
+      admin: {
+        description: 'Extended profile content shown as the body section of the team member profile page. Supports rich text formatting.',
+      },
     },
     {
       name: 'specialties',
