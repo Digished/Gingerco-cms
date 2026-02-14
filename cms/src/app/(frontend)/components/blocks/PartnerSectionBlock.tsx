@@ -39,9 +39,6 @@ export async function PartnerSectionBlock({ block }: { block: any }) {
                 ) : (
                   <span className="partner-name-fallback">{partner.name}</span>
                 )}
-                {partner.type && (
-                  <span className="partner-type-badge">{partner.type}</span>
-                )}
               </div>
             )
 

@@ -93,6 +93,7 @@ export function Footer({ footer }: { footer: any }) {
   const columns = footer?.columns || []
   const copyright = footer?.copyright || `All rights reserved to Ginger & Co`
   const contactLabel = footer?.contactLabel || 'For more information contact:'
+  const contactPhone = footer?.contactPhone || '+43 676 7261062'
   const contactEmail = footer?.contactEmail || 'info@gingerandco.at'
 
   // Split brand name for line break (e.g. "Ginger & Co." -> "Ginger &" + "Co.")
@@ -202,10 +203,17 @@ export function Footer({ footer }: { footer: any }) {
       {/* Footer bottom */}
       <div className="footer-bottom">
         <p className="footer-copyright">&copy; {new Date().getFullYear()} {copyright}</p>
-        {contactEmail && (
+        {(contactPhone || contactEmail) && (
           <div className="footer-inquiry">
             {contactLabel && <span>{contactLabel}</span>}
-            <a href={`mailto:${contactEmail}`} className="contact-item">{contactEmail}</a>
+            <div className="footer-inquiry-items">
+              {contactPhone && (
+                <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="contact-item">{contactPhone}</a>
+              )}
+              {contactEmail && (
+                <a href={`mailto:${contactEmail}`} className="contact-item">{contactEmail}</a>
+              )}
+            </div>
           </div>
         )}
       </div>

@@ -125,6 +125,14 @@ export const Footer: GlobalConfig = {
       },
     },
     {
+      name: 'contactPhone',
+      type: 'text',
+      defaultValue: '+43 676 7261062',
+      admin: {
+        description: 'Contact phone number shown in the footer bottom',
+      },
+    },
+    {
       name: 'contactEmail',
       type: 'text',
       defaultValue: 'info@gingerandco.at',
