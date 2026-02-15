@@ -163,24 +163,27 @@ export default buildConfig({
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),
-    s3Storage({
-      enabled: Boolean(process.env.SUPABASE_S3_ACCESS_KEY),
-      collections: {
-        media: {
-          prefix: 'media',
-        },
-      },
-      bucket: process.env.SUPABASE_S3_BUCKET || 'media',
-      config: {
-        endpoint: process.env.SUPABASE_S3_ENDPOINT || '',
-        credentials: {
-          accessKeyId: process.env.SUPABASE_S3_ACCESS_KEY || '',
-          secretAccessKey: process.env.SUPABASE_S3_SECRET_KEY || '',
-        },
-        region: process.env.SUPABASE_S3_REGION || 'eu-central-1',
-        forcePathStyle: true,
-      },
-    }),
+    ...(process.env.SUPABASE_S3_ACCESS_KEY
+      ? [
+          s3Storage({
+            collections: {
+              media: {
+                prefix: 'media',
+              },
+            },
+            bucket: process.env.SUPABASE_S3_BUCKET || 'media',
+            config: {
+              endpoint: process.env.SUPABASE_S3_ENDPOINT,
+              credentials: {
+                accessKeyId: process.env.SUPABASE_S3_ACCESS_KEY,
+                secretAccessKey: process.env.SUPABASE_S3_SECRET_KEY || '',
+              },
+              region: process.env.SUPABASE_S3_REGION || 'eu-central-1',
+              forcePathStyle: true,
+            },
+          }),
+        ]
+      : []),
   ],
 
   upload: {
