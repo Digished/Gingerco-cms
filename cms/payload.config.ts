@@ -72,6 +72,7 @@ export default buildConfig({
 
   plugins: [
     formBuilderPlugin({
+      beforeEmail: async () => [],
       fields: {
         text: true,
         textarea: true,
@@ -172,8 +173,8 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     meta: {
-      titleSuffix: ' - Ginger & Co. Admin',
-      title: 'Ginger & Co. Admin',
+      titleSuffix: ' - Gingerandco Admin',
+      title: 'Gingerandco Admin',
     },
   },
 

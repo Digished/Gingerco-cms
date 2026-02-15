@@ -16,6 +16,11 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "pages_blocks_blog_list" ADD COLUMN IF NOT EXISTS "background_color" varchar DEFAULT 'white';
   `)
 
+  // Add hashtagAlign to footer table
+  await db.execute(sql`
+  ALTER TABLE "footer" ADD COLUMN IF NOT EXISTS "hashtag_align" varchar DEFAULT 'left';
+  `)
+
   // Version tables
   await db.execute(sql`
   ALTER TABLE "_pages_v_blocks_content" ADD COLUMN IF NOT EXISTS "background_color" varchar DEFAULT 'white';
@@ -44,6 +49,10 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
   ALTER TABLE "pages_blocks_countdown_timer" DROP COLUMN IF EXISTS "background_color";
   ALTER TABLE "pages_blocks_events_list" DROP COLUMN IF EXISTS "background_color";
   ALTER TABLE "pages_blocks_blog_list" DROP COLUMN IF EXISTS "background_color";
+  `)
+
+  await db.execute(sql`
+  ALTER TABLE "footer" DROP COLUMN IF EXISTS "hashtag_align";
   `)
 
   // Drop background_color from version tables

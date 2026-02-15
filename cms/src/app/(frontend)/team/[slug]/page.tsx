@@ -133,9 +133,6 @@ export default async function TeamMemberProfile({ params }: Args) {
           </section>
         )}
 
-        <div className="team-profile-back">
-          <a href="/" className="btn btn-outline">&larr; Back</a>
-        </div>
       </main>
     )
   } catch {

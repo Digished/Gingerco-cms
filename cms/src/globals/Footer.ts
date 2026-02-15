@@ -19,6 +19,19 @@ export const Footer: GlobalConfig = {
       },
     },
     {
+      name: 'hashtagAlign',
+      type: 'select',
+      defaultValue: 'left',
+      options: [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center' },
+        { label: 'Right', value: 'right' },
+      ],
+      admin: {
+        description: 'Position the hashtag to the left, center, or right of the viewport',
+      },
+    },
+    {
       name: 'logo',
       type: 'upload',
       relationTo: 'media',

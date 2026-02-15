@@ -35,15 +35,9 @@ export default async function Page({ params }: Args) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const layout = (page as any).layout || []
-    const hasHero = layout.length > 0 && layout[0].blockType === 'hero'
 
     return (
       <main>
-        {!hasHero && (
-          <div className="page-title">
-            <h1>{page.title}</h1>
-          </div>
-        )}
         <RenderBlocks blocks={layout} />
       </main>
     )

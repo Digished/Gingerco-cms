@@ -88,6 +88,7 @@ function FooterIcon({ icon }: { icon: string }) {
 
 export function Footer({ footer }: { footer: any }) {
   const hashtag = footer?.hashtag || '#NOPAINNOGINGER'
+  const hashtagAlign = footer?.hashtagAlign || 'left'
   const logo = footer?.logo
   const brandName = footer?.brandName || 'Ginger & Co.'
   const columns = footer?.columns || []
@@ -105,7 +106,7 @@ export function Footer({ footer }: { footer: any }) {
     <footer className="site-footer">
       {/* Hashtag */}
       {hashtag && (
-        <div className="footer-hashtag-wrapper">
+        <div className={`footer-hashtag-wrapper footer-hashtag-${hashtagAlign}`}>
           <span className="footer-hashtag">{hashtag}</span>
         </div>
       )}

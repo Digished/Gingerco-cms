@@ -883,15 +883,27 @@ select[multiple] {
 }
 
 .footer-hashtag-wrapper {
-  text-align: left;
   margin-bottom: 2rem;
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+  padding: 0 1.5rem;
+}
+
+.footer-hashtag-left {
+  text-align: left;
+}
+
+.footer-hashtag-center {
+  text-align: center;
+}
+
+.footer-hashtag-right {
+  text-align: right;
 }
 
 .footer-hashtag {
-  background: var(--color-primary);
+  background: #D4AF37;
   color: #000;
   padding: 0.6rem 1.5rem;
   border-radius: 20px;
@@ -1111,16 +1123,7 @@ select[multiple] {
 }
 
 /* --- Page Title --- */
-.page-title {
-  padding: 4rem 1.5rem 2rem;
-  text-align: center;
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-
-.page-title h1 {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-}
+/* page-title removed - page titles no longer displayed in UI */
 
 /* --- Countdown Timer Block --- */
 .block-countdown {
@@ -2105,14 +2108,14 @@ select[multiple] {
 .team-profile-hero {
   background: #000;
   color: var(--color-white);
-  padding: 4rem 5%;
+  padding: 3.5rem 1.5rem;
 }
 
 .team-profile-hero-inner {
-  max-width: 1200px;
+  max-width: var(--max-width);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 45% 1fr;
   gap: 3rem;
   align-items: start;
 }
@@ -2230,7 +2233,8 @@ select[multiple] {
 .team-profile-extra-photos {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: 0.75rem;
+  margin-top: auto;
 }
 
 .team-profile-extra-photo img {
@@ -2247,12 +2251,12 @@ select[multiple] {
 
 /* Profile Body - Rich text section */
 .team-profile-body {
-  padding: 4rem 5%;
+  padding: 3.5rem 1.5rem;
   background: var(--color-bg);
 }
 
 .team-profile-body-inner {
-  max-width: 800px;
+  max-width: var(--max-width);
   margin: 0 auto;
 }
 
@@ -2310,40 +2314,17 @@ select[multiple] {
   color: var(--color-primary-dark);
 }
 
-/* Back button */
-.team-profile-back {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem 5% 4rem;
-}
-
-.btn-outline {
-  display: inline-block;
-  padding: 0.6rem 1.5rem;
-  border: 2px solid var(--color-secondary);
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: all 0.3s;
-  text-decoration: none;
-  color: var(--color-secondary);
-}
-
-.btn-outline:hover {
-  background: var(--color-secondary);
-  color: var(--color-white);
-}
-
 @media (max-width: 768px) {
+  .team-profile-hero {
+    padding: 2rem 1rem;
+  }
+
   .team-profile-hero-inner {
     grid-template-columns: 1fr;
   }
 
   .team-profile-photo-col {
-    max-width: 350px;
-    margin: 0 auto;
+    max-width: 100%;
   }
 
   .team-profile-info h1 {
@@ -2364,11 +2345,11 @@ select[multiple] {
   }
 
   .team-profile-extra-photos {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .team-profile-body {
-    padding: 3rem 5%;
+    padding: 2.5rem 1rem;
   }
 }
 
