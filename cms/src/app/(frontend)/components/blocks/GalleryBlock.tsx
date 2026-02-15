@@ -17,7 +17,7 @@ export function GalleryBlock({ block }: { block: any }) {
             if (!img?.url) return null
             return (
               <div key={item.id || i} className="gallery-item">
-                <img src={img.url} alt={img.alt || item.caption || ''} />
+                <img src={img.url} alt={img.alt || item.caption || ''} loading="lazy" />
                 {item.caption && (
                   <div className="gallery-caption">{item.caption}</div>
                 )}

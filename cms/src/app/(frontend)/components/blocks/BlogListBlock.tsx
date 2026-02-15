@@ -44,7 +44,7 @@ export async function BlogListBlock({ block }: { block: any }) {
               <article key={post.id} className="blog-card">
                 {post.featuredImage?.url && (
                   <div className="blog-card-image">
-                    <img src={post.featuredImage.url} alt={post.featuredImage.alt || post.title} />
+                    <img src={post.featuredImage.url} alt={post.featuredImage.alt || post.title} loading="lazy" />
                   </div>
                 )}
                 <div className="blog-card-body">

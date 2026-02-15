@@ -156,7 +156,7 @@ function renderNode(node: any, key: number): React.ReactNode {
     if (value?.url) {
       return (
         <figure key={key}>
-          <img src={value.url} alt={value.alt || ''} />
+          <img src={value.url} alt={value.alt || ''} loading="lazy" />
         </figure>
       )
     }

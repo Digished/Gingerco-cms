@@ -9,7 +9,7 @@ export function CTABlock({ block }: { block: any }) {
   return (
     <section className={`block-cta ${bgClass}`}>
       {backgroundImage?.url && (
-        <img src={backgroundImage.url} alt="" className="cta-bg" />
+        <img src={backgroundImage.url} alt="" className="cta-bg" loading="lazy" />
       )}
       <div className="cta-content">
         <h2>{heading}</h2>

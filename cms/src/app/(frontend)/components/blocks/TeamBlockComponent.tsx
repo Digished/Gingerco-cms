@@ -44,7 +44,7 @@ export async function TeamBlockComponent({ block }: { block: any }) {
                   <a href={profileHref} className="team-card-photo-link">
                     <div className="team-card-photo">
                       {member.photo?.url ? (
-                        <img src={member.photo.url} alt={member.photo.alt || member.name} />
+                        <img src={member.photo.url} alt={member.photo.alt || member.name} loading="lazy" />
                       ) : (
                         <div className="team-card-placeholder">
                           <span>{member.name.charAt(0)}</span>

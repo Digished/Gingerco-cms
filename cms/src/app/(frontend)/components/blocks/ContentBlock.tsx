@@ -15,7 +15,7 @@ export function ContentBlock({ block }: { block: any }) {
         </div>
         {image?.url && (layout === 'text-image' || layout === 'image-text') && (
           <div className="content-image">
-            <img src={image.url} alt={image.alt || ''} />
+            <img src={image.url} alt={image.alt || ''} loading="lazy" />
           </div>
         )}
       </div>

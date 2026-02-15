@@ -45,7 +45,7 @@ export async function EventsListBlock({ block }: { block: any }) {
                 <article className="event-card">
                   {event.featuredImage?.url && (
                     <div className="event-card-image">
-                      <img src={event.featuredImage.url} alt={event.featuredImage.alt || event.title} />
+                      <img src={event.featuredImage.url} alt={event.featuredImage.alt || event.title} loading="lazy" />
                     </div>
                   )}
                   <div className="event-card-body">

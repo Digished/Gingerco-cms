@@ -49,7 +49,7 @@ export default async function BlogPost({ params }: Args) {
         </div>
         {post.featuredImage?.url && (
           <div className="blog-post-featured">
-            <img src={post.featuredImage.url} alt={post.featuredImage.alt || post.title} />
+            <img src={post.featuredImage.url} alt={post.featuredImage.alt || post.title} loading="lazy" />
           </div>
         )}
         <div className="rich-text">

@@ -40,7 +40,7 @@ export default async function TeamMemberProfile({ params }: Args) {
             {/* Main photo - left column */}
             <div className="team-profile-photo-col">
               {member.photo?.url ? (
-                <img src={member.photo.url} alt={member.photo.alt || member.name} className="team-profile-photo" />
+                <img src={member.photo.url} alt={member.photo.alt || member.name} className="team-profile-photo" loading="lazy" />
               ) : (
                 <div className="team-profile-placeholder">
                   <span>{member.name.charAt(0)}</span>
@@ -115,7 +115,7 @@ export default async function TeamMemberProfile({ params }: Args) {
                 <div className="team-profile-extra-photos">
                   {extraPhotos.map((photo: any, i: number) => (
                     <div key={i} className="team-profile-extra-photo">
-                      <img src={photo.url} alt={photo.alt || `${member.name} photo ${i + 2}`} />
+                      <img src={photo.url} alt={photo.alt || `${member.name} photo ${i + 2}`} loading="lazy" />
                     </div>
                   ))}
                 </div>
