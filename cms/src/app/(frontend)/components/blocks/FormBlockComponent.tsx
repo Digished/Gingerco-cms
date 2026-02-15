@@ -4,8 +4,10 @@
 import React, { useState } from 'react'
 
 export function FormBlockComponent({ block }: { block: any }) {
-  const { heading, description, form, backgroundColor } = block
+  const { heading, description, form, backgroundColor, accentColor = 'gold', formStyle = 'default' } = block
   const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
+  const accentClass = `form-accent-${accentColor}`
+  const styleClass = `form-style-${formStyle}`
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -78,7 +80,7 @@ export function FormBlockComponent({ block }: { block: any }) {
   }
 
   return (
-    <section className={`block-form ${bgClass}`}>
+    <section className={`block-form ${bgClass} ${accentClass} ${styleClass}`}>
       <div className="form-inner">
         {heading && <h2>{heading}</h2>}
         {description && <p className="form-description">{description}</p>}

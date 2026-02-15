@@ -31,5 +31,33 @@ export const FormBlock: Block = {
         { label: 'Dark', value: 'dark' },
       ],
     },
+    {
+      name: 'accentColor',
+      type: 'select',
+      defaultValue: 'gold',
+      options: [
+        { label: 'Gold', value: 'gold' },
+        { label: 'Coral', value: 'coral' },
+        { label: 'Dark', value: 'dark' },
+        { label: 'White', value: 'white' },
+      ],
+      admin: {
+        description: 'Accent color for form borders, focus states, and submit button',
+      },
+    },
+    {
+      name: 'formStyle',
+      type: 'select',
+      defaultValue: 'default',
+      options: [
+        { label: 'Default', value: 'default' },
+        { label: 'Bordered', value: 'bordered' },
+        { label: 'Minimal', value: 'minimal' },
+        { label: 'Rounded', value: 'rounded' },
+      ],
+      admin: {
+        description: 'Visual style of the form fields and container',
+      },
+    },
   ],
 }

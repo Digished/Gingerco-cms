@@ -269,14 +269,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary {
-  background: var(--color-bg-dark, #1a1a1a);
+  background: #D4AF37;
   color: white;
-  border-color: var(--color-bg-dark, #1a1a1a);
+  border-color: #D4AF37;
 }
 
 .btn-primary:hover {
-  background: #000;
-  border-color: #000;
+  background: #B8960E;
+  border-color: #B8960E;
 }
 
 .btn-dark {
@@ -479,8 +479,8 @@ select[multiple] {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: rgba(232, 93, 58, 0.1);
-  color: var(--color-primary);
+  background: rgba(212, 175, 55, 0.12);
+  color: #D4AF37;
   margin-bottom: 0.75rem;
 }
 
@@ -508,7 +508,7 @@ select[multiple] {
   margin-top: 1rem;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: #D4AF37;
 }
 
 .events-empty {
@@ -789,7 +789,7 @@ select[multiple] {
 }
 
 .form-submit-btn {
-  background: var(--color-secondary);
+  background: #D4AF37;
   color: var(--color-white);
   padding: 1rem 2rem;
   border: none;
@@ -804,8 +804,62 @@ select[multiple] {
 }
 
 .form-submit-btn:hover {
-  background: #000;
+  background: #B8960E;
 }
+
+/* Form Accent Colors */
+.form-accent-gold .form-field input:focus,
+.form-accent-gold .form-field textarea:focus,
+.form-accent-gold .form-field select:focus { border-color: #D4AF37; }
+.form-accent-gold .form-submit-btn { background: #D4AF37; }
+.form-accent-gold .form-submit-btn:hover { background: #B8960E; }
+.form-accent-gold .required-mark { color: #D4AF37; }
+.form-accent-gold .form-checkbox input[type="checkbox"] { accent-color: #D4AF37; }
+
+.form-accent-coral .form-field input:focus,
+.form-accent-coral .form-field textarea:focus,
+.form-accent-coral .form-field select:focus { border-color: #E85D3A; }
+.form-accent-coral .form-submit-btn { background: #E85D3A; }
+.form-accent-coral .form-submit-btn:hover { background: #D14A28; }
+.form-accent-coral .required-mark { color: #E85D3A; }
+.form-accent-coral .form-checkbox input[type="checkbox"] { accent-color: #E85D3A; }
+
+.form-accent-dark .form-field input:focus,
+.form-accent-dark .form-field textarea:focus,
+.form-accent-dark .form-field select:focus { border-color: #1a1a1a; }
+.form-accent-dark .form-submit-btn { background: #1a1a1a; }
+.form-accent-dark .form-submit-btn:hover { background: #000; }
+.form-accent-dark .required-mark { color: #1a1a1a; }
+.form-accent-dark .form-checkbox input[type="checkbox"] { accent-color: #1a1a1a; }
+
+.form-accent-white .form-field input:focus,
+.form-accent-white .form-field textarea:focus,
+.form-accent-white .form-field select:focus { border-color: #fff; }
+.form-accent-white .form-submit-btn { background: #fff; color: #1a1a1a; }
+.form-accent-white .form-submit-btn:hover { background: #f0f0f0; }
+.form-accent-white .required-mark { color: #fff; }
+
+/* Form Style: Bordered */
+.form-style-bordered .form-inner { border: 2px solid var(--color-border); }
+.form-style-bordered .form-field input,
+.form-style-bordered .form-field textarea,
+.form-style-bordered .form-field select { border-width: 2px; }
+
+/* Form Style: Minimal */
+.form-style-minimal .form-inner { background: transparent; padding: 0; box-shadow: none; }
+.form-style-minimal .form-field input,
+.form-style-minimal .form-field textarea,
+.form-style-minimal .form-field select { border: none; border-bottom: 2px solid #ddd; border-radius: 0; padding-left: 0; }
+.form-style-minimal .form-field input:focus,
+.form-style-minimal .form-field textarea:focus,
+.form-style-minimal .form-field select:focus { border-bottom-color: #D4AF37; }
+
+/* Form Style: Rounded */
+.form-style-rounded .form-inner { border-radius: 24px; }
+.form-style-rounded .form-field input,
+.form-style-rounded .form-field textarea,
+.form-style-rounded .form-field select { border-radius: 12px; }
+.form-style-rounded .form-submit-btn { border-radius: 50px; }
 
 .form-submit-btn:disabled {
   opacity: 0.7;
@@ -2117,7 +2171,7 @@ select[multiple] {
   display: grid;
   grid-template-columns: 45% 1fr;
   gap: 3rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 /* Main photo - left column */
@@ -2127,8 +2181,8 @@ select[multiple] {
 
 .team-profile-photo {
   width: 100%;
+  height: 100%;
   border-radius: 8px;
-  aspect-ratio: 3/4;
   object-fit: cover;
 }
 
@@ -2149,7 +2203,8 @@ select[multiple] {
 .team-profile-right-col {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
+  min-height: 100%;
 }
 
 /* Info block */

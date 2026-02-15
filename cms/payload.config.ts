@@ -164,6 +164,12 @@ export default buildConfig({
     }),
   ],
 
+  upload: {
+    limits: {
+      fileSize: 50 * 1024 * 1024, // 50MB
+    },
+  },
+
   sharp,
 
   typescript: {

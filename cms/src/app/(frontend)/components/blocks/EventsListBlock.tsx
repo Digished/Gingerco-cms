@@ -11,10 +11,7 @@ export async function EventsListBlock({ block }: { block: any }) {
   try {
     const payload = await getPayload({ config: configPromise })
 
-    const where: any = {
-      _status: { equals: 'published' },
-      date: { greater_than_equal: new Date().toISOString() },
-    }
+    const where: any = {}
 
     if (filterByType !== 'all') {
       where.eventType = { equals: filterByType }
@@ -25,6 +22,7 @@ export async function EventsListBlock({ block }: { block: any }) {
       where,
       sort: 'date',
       limit: showCount,
+      depth: 1,
     })
 
     events = result.docs
