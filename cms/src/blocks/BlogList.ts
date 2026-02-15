@@ -45,5 +45,15 @@ export const BlogList: Block = {
         { label: 'List', value: 'list' },
       ],
     },
+    {
+      name: 'backgroundColor',
+      type: 'select',
+      defaultValue: 'white',
+      options: [
+        { label: 'White', value: 'white' },
+        { label: 'Light Gray', value: 'light-gray' },
+        { label: 'Dark', value: 'dark' },
+      ],
+    },
   ],
 }

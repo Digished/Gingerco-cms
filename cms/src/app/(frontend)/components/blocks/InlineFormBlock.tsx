@@ -73,13 +73,29 @@ export function InlineFormBlock({ formData }: { formData: any }) {
     <form onSubmit={handleSubmit} className="inline-form">
       {fields.map((field: any, i: number) => {
         const name = field.name || field.label
+        const label = field.label || field.name || ''
         const blockType = field.blockType
 
         if (blockType === 'checkbox') {
+          if (field.options && field.options.length > 0) {
+            return (
+              <div key={i} className="form-field">
+                <label>{label}{field.required && <span className="required-mark"> *</span>}</label>
+                <div className="checkbox-group">
+                  {field.options.map((opt: any, j: number) => (
+                    <div key={j} className="form-checkbox">
+                      <input type="checkbox" id={`inline-${name}-${j}`} name={name} value={opt.value} />
+                      <label htmlFor={`inline-${name}-${j}`}>{opt.label}</label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          }
           return (
             <div key={i} className="form-field form-checkbox">
               <input type="checkbox" id={`inline-${name}`} name={name} required={field.required} />
-              <label htmlFor={`inline-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <label htmlFor={`inline-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
             </div>
           )
         }
@@ -87,7 +103,7 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         if (blockType === 'textarea') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`inline-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <label htmlFor={`inline-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
               <textarea id={`inline-${name}`} name={name} required={field.required} />
             </div>
           )
@@ -96,9 +112,9 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         if (blockType === 'select') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`inline-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <select id={`inline-${name}`} name={name} required={field.required}>
-                <option value="">Select...</option>
+              <label htmlFor={`inline-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+              <select id={`inline-${name}`} name={name} required={field.required} multiple={field.multiple || false}>
+                {!field.multiple && <option value="">Select...</option>}
                 {field.options?.map((opt: any, j: number) => (
                   <option key={j} value={opt.value}>{opt.label}</option>
                 ))}
@@ -110,7 +126,7 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         if (blockType === 'email') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`inline-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <label htmlFor={`inline-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
               <input type="email" id={`inline-${name}`} name={name} required={field.required} />
             </div>
           )
@@ -119,7 +135,7 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         if (blockType === 'number') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`inline-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <label htmlFor={`inline-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
               <input type="number" id={`inline-${name}`} name={name} required={field.required} />
             </div>
           )
@@ -135,7 +151,7 @@ export function InlineFormBlock({ formData }: { formData: any }) {
 
         return (
           <div key={i} className="form-field">
-            <label htmlFor={`inline-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+            <label htmlFor={`inline-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
             <input type="text" id={`inline-${name}`} name={name} required={field.required} />
           </div>
         )

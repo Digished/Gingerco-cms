@@ -21,5 +21,15 @@ export const FormBlock: Block = {
       relationTo: 'forms',
       required: true,
     },
+    {
+      name: 'backgroundColor',
+      type: 'select',
+      defaultValue: 'white',
+      options: [
+        { label: 'White', value: 'white' },
+        { label: 'Light Gray', value: 'light-gray' },
+        { label: 'Dark', value: 'dark' },
+      ],
+    },
   ],
 }

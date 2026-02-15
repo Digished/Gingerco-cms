@@ -4,7 +4,8 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
 export async function BlogListBlock({ block }: { block: any }) {
-  const { heading, showCount = 6, filterByCategory = 'all', layout = 'grid' } = block
+  const { heading, showCount = 6, filterByCategory = 'all', layout = 'grid', backgroundColor } = block
+  const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   let posts: any[] = []
   try {
@@ -32,7 +33,7 @@ export async function BlogListBlock({ block }: { block: any }) {
   }
 
   return (
-    <section className="block-blog">
+    <section className={`block-blog ${bgClass}`}>
       <div className="blog-inner">
         {heading && <h2>{heading}</h2>}
         {posts.length === 0 ? (

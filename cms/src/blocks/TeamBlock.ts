@@ -44,5 +44,15 @@ export const TeamBlock: Block = {
         { label: '4 Columns', value: '4' },
       ],
     },
+    {
+      name: 'backgroundColor',
+      type: 'select',
+      defaultValue: 'white',
+      options: [
+        { label: 'White', value: 'white' },
+        { label: 'Light Gray', value: 'light-gray' },
+        { label: 'Dark', value: 'dark' },
+      ],
+    },
   ],
 }

@@ -300,9 +300,42 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
 }
 
+/* --- Global Background Color Classes --- */
+.bg-white { background: white; }
+.bg-light-gray { background: #f5f5f5; }
+.bg-dark { background: #1a1a1a; color: white; }
+.bg-dark h2, .bg-dark h3, .bg-dark h4 { color: white; }
+.bg-dark p, .bg-dark span { color: rgba(255, 255, 255, 0.85); }
+.bg-dark a { color: var(--color-accent); }
+
+/* --- Checkbox Group & Multi-select Styling --- */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.checkbox-group .form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-group .form-checkbox label {
+  font-weight: 400;
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+select[multiple] {
+  min-height: 100px;
+}
+
 /* --- Content Block --- */
 .block-content {
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
 }
 
 .block-content .content-inner {
@@ -383,7 +416,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Events List Block --- */
 .block-events {
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
   background: var(--color-white);
 }
 
@@ -487,7 +520,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Gallery Block --- */
 .block-gallery {
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
 }
 
 .block-gallery .gallery-inner {
@@ -557,7 +590,7 @@ h1, h2, h3, h4, h5, h6 {
 /* --- CTA Block --- */
 .block-cta {
   position: relative;
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
   text-align: center;
   background: var(--color-bg-dark);
   overflow: hidden;
@@ -601,7 +634,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- FAQ Block --- */
 .block-faq {
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
   background: var(--color-white);
 }
 
@@ -665,7 +698,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Form Block --- */
 .block-form {
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
 }
 
 .block-form .form-inner {
@@ -1091,7 +1124,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Countdown Timer Block --- */
 .block-countdown {
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
   text-align: center;
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
 }
@@ -1155,7 +1188,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Team Block --- */
 .block-team {
-  padding: 5rem 5%;
+  padding: 3.5rem 5%;
   background: var(--color-white);
 }
 
@@ -1312,7 +1345,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- About Section Block --- */
 .block-about {
-  padding: 5rem 5%;
+  padding: 3.5rem 5%;
 }
 
 .block-about.bg-white { background: white; }
@@ -1399,7 +1432,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Showcase Section Block --- */
 .block-showcase {
-  padding: 5rem 5%;
+  padding: 3.5rem 5%;
 }
 
 .block-showcase.bg-white { background: white; }
@@ -1537,7 +1570,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Community / Testimonials Block --- */
 .block-community {
-  padding: 5rem 5%;
+  padding: 3.5rem 5%;
   background: white;
 }
 
@@ -1677,7 +1710,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Blog Block --- */
 .block-blog {
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
   background: var(--color-white);
 }
 
@@ -1889,7 +1922,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .event-overview {
-  padding: 5rem 0;
+  padding: 3.5rem 0;
 }
 
 .event-overview .rich-text p {
@@ -1901,7 +1934,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .event-structure {
-  padding: 5rem 0;
+  padding: 3.5rem 0;
   background: #1a1a1a;
   color: white;
 }
@@ -1953,7 +1986,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .event-sessions {
-  padding: 5rem 0;
+  padding: 3.5rem 0;
   background: #f5f5f5;
 }
 
@@ -2039,7 +2072,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .event-cta {
-  padding: 5rem 0;
+  padding: 3.5rem 0;
   background: #1a1a1a;
   color: white;
 }
@@ -2341,7 +2374,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Bullet List Block --- */
 .block-bullet-list {
-  padding: 5rem 5%;
+  padding: 3.5rem 5%;
 }
 
 .block-bullet-list.bg-dark {
@@ -2435,7 +2468,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Split Content Block (Columns with Form) --- */
 .block-split-content {
-  padding: 5rem 5%;
+  padding: 3.5rem 5%;
 }
 
 .block-split-content.bg-dark {
@@ -2784,7 +2817,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Partner Section Block --- */
 .block-partners {
-  padding: 5rem 5%;
+  padding: 3.5rem 5%;
   background: var(--color-white);
 }
 
@@ -2908,7 +2941,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Event Sponsors (Event Detail Page) --- */
 .event-sponsors {
-  padding: 5rem 0;
+  padding: 3.5rem 0;
   background: #f5f5f5;
 }
 
@@ -2964,7 +2997,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Coming Soon Block --- */
 .block-coming-soon {
-  padding: 5rem 5%;
+  padding: 3.5rem 5%;
   text-align: center;
   background: #f5f5f5;
 }

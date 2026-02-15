@@ -29,7 +29,8 @@ function resolveLinkClient(link: any): { href: string; target?: string; rel?: st
 }
 
 export function CountdownTimerBlock({ block }: { block: any }) {
-  const { heading, targetDate, description, link, expiredMessage } = block
+  const { heading, targetDate, description, link, expiredMessage, backgroundColor } = block
+  const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
   const [timeLeft, setTimeLeft] = useState(getTimeLeft(targetDate))
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export function CountdownTimerBlock({ block }: { block: any }) {
   const resolved = link?.label ? resolveLinkClient(link) : null
 
   return (
-    <section className="block-countdown">
+    <section className={`block-countdown ${bgClass}`}>
       <div className="countdown-inner">
         <h2>{heading}</h2>
         {timeLeft ? (

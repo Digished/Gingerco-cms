@@ -64,12 +64,13 @@ function renderTextNode(node: any, key: number): React.ReactNode {
 }
 
 export function FAQBlock({ block }: { block: any }) {
-  const { heading, items } = block
+  const { heading, items, backgroundColor } = block
+  const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   if (!items || items.length === 0) return null
 
   return (
-    <section className="block-faq">
+    <section className={`block-faq ${bgClass}`}>
       <div className="faq-inner">
         {heading && <h2>{heading}</h2>}
         {items.map((item: any, i: number) => (

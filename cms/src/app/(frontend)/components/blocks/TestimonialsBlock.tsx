@@ -52,12 +52,13 @@ function VideoTestimonial({ item }: { item: any }) {
 }
 
 export function TestimonialsBlock({ block }: { block: any }) {
-  const { heading, intro, subLabel, items } = block
+  const { heading, intro, subLabel, items, backgroundColor } = block
+  const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   if (!items || items.length === 0) return null
 
   return (
-    <section className="block-community">
+    <section className={`block-community ${bgClass}`}>
       <div className="community-container">
         {heading && <h2>{heading}</h2>}
         {intro && <p className="community-intro">{intro}</p>}

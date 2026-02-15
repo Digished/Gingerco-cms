@@ -3,10 +3,11 @@ import React from 'react'
 import { resolveLink } from '../resolveLink'
 
 export function CTABlock({ block }: { block: any }) {
-  const { heading, description, links, backgroundImage } = block
+  const { heading, description, links, backgroundImage, backgroundColor } = block
+  const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   return (
-    <section className="block-cta">
+    <section className={`block-cta ${bgClass}`}>
       {backgroundImage?.url && (
         <img src={backgroundImage.url} alt="" className="cta-bg" />
       )}

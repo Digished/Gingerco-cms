@@ -41,5 +41,15 @@ export const CallToAction: Block = {
       type: 'upload',
       relationTo: 'media',
     },
+    {
+      name: 'backgroundColor',
+      type: 'select',
+      defaultValue: 'dark',
+      options: [
+        { label: 'White', value: 'white' },
+        { label: 'Light Gray', value: 'light-gray' },
+        { label: 'Dark', value: 'dark' },
+      ],
+    },
   ],
 }

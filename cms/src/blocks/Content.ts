@@ -32,5 +32,15 @@ export const Content: Block = {
           siblingData?.layout === 'text-image' || siblingData?.layout === 'image-text',
       },
     },
+    {
+      name: 'backgroundColor',
+      type: 'select',
+      defaultValue: 'white',
+      options: [
+        { label: 'White', value: 'white' },
+        { label: 'Light Gray', value: 'light-gray' },
+        { label: 'Dark', value: 'dark' },
+      ],
+    },
   ],
 }

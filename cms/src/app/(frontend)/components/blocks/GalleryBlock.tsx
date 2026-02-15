@@ -2,12 +2,13 @@
 import React from 'react'
 
 export function GalleryBlock({ block }: { block: any }) {
-  const { heading, images, columns = '3' } = block
+  const { heading, images, columns = '3', backgroundColor } = block
+  const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   if (!images || images.length === 0) return null
 
   return (
-    <section className="block-gallery">
+    <section className={`block-gallery ${bgClass}`}>
       <div className="gallery-inner">
         {heading && <h2>{heading}</h2>}
         <div className={`gallery-grid cols-${columns}`}>

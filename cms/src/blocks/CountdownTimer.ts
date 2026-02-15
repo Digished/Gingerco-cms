@@ -83,5 +83,15 @@ export const CountdownTimer: Block = {
         description: 'Message shown after the countdown reaches zero.',
       },
     },
+    {
+      name: 'backgroundColor',
+      type: 'select',
+      defaultValue: 'dark',
+      options: [
+        { label: 'White', value: 'white' },
+        { label: 'Light Gray', value: 'light-gray' },
+        { label: 'Dark', value: 'dark' },
+      ],
+    },
   ],
 }

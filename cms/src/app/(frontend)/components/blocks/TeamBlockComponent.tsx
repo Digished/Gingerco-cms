@@ -4,7 +4,8 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
 export async function TeamBlockComponent({ block }: { block: any }) {
-  const { heading, description, showAll, selectedMembers, columns = '3' } = block
+  const { heading, description, showAll, selectedMembers, columns = '3', backgroundColor } = block
+  const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   let members: any[] = []
 
@@ -29,7 +30,7 @@ export async function TeamBlockComponent({ block }: { block: any }) {
   if (members.length === 0) return null
 
   return (
-    <section className="block-team">
+    <section className={`block-team ${bgClass}`}>
       <div className="team-inner">
         {heading && <h2>{heading}</h2>}
         {description && <p className="team-description">{description}</p>}

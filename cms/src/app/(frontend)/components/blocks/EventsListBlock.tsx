@@ -4,7 +4,8 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
 export async function EventsListBlock({ block }: { block: any }) {
-  const { heading, showCount = 6, filterByType = 'all', layout = 'grid' } = block
+  const { heading, showCount = 6, filterByType = 'all', layout = 'grid', backgroundColor } = block
+  const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   let events: any[] = []
   try {
@@ -32,7 +33,7 @@ export async function EventsListBlock({ block }: { block: any }) {
   }
 
   return (
-    <section className="block-events">
+    <section className={`block-events ${bgClass}`}>
       <div className="events-inner">
         {heading && <h2>{heading}</h2>}
         {events.length === 0 ? (
