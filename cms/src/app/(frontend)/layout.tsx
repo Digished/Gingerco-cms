@@ -59,11 +59,11 @@ export default async function FrontendLayout({ children }: { children: React.Rea
 
   try {
     const payload = await getPayload({ config: configPromise })
-    header = await payload.findGlobal({ slug: 'header' })
-    footer = await payload.findGlobal({ slug: 'footer' })
-    settings = await payload.findGlobal({ slug: 'site-settings' })
+    try { header = await payload.findGlobal({ slug: 'header' }) } catch { /* column may not exist yet */ }
+    try { footer = await payload.findGlobal({ slug: 'footer' }) } catch { /* column may not exist yet */ }
+    try { settings = await payload.findGlobal({ slug: 'site-settings' }) } catch { /* column may not exist yet */ }
   } catch {
-    // Globals may not exist yet on first deploy
+    // Payload may not be ready on first deploy
   }
 
   const primaryColor = settings?.primaryColor || '#E85D3A'
