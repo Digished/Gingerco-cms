@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
-import { resolveLink } from '../resolveLink'
+import { LinkButton } from '../LinkButton'
 import { VideoEmbed } from '../VideoEmbed'
 
 export function ShowcaseSectionBlock({ block }: { block: any }) {
@@ -48,19 +48,13 @@ export function ShowcaseSectionBlock({ block }: { block: any }) {
 
           {links && links.length > 0 && (
             <div className="showcase-actions">
-              {links.map((link: any, i: number) => {
-                const resolved = resolveLink(link)
-                return (
-                  <a
-                    key={link.id || i}
-                    href={resolved.href}
-                    className={`btn-showcase btn-showcase-${link.style || 'outline'}`}
-                    {...(resolved.target ? { target: resolved.target, rel: resolved.rel } : {})}
-                  >
-                    {link.label}
-                  </a>
-                )
-              })}
+              {links.map((link: any, i: number) => (
+                <LinkButton
+                  key={link.id || i}
+                  link={link}
+                  className={`btn-showcase btn-showcase-${link.style || 'outline'}`}
+                />
+              ))}
             </div>
           )}
         </div>

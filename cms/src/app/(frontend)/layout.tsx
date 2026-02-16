@@ -5,6 +5,7 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
+import { FloatingButtons } from './components/FloatingButtons'
 
 import './globals.css'
 
@@ -109,6 +110,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         <Header header={header} />
         {children}
         <Footer footer={footer} />
+        <FloatingButtons buttons={settings?.floatingButtons || []} />
       </body>
     </html>
   )

@@ -2,6 +2,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { MobileMenuToggle } from './MobileMenuToggle'
+import { LinkButton } from './LinkButton'
 import { resolveLink } from './resolveLink'
 
 export function Header({ header }: { header: any }) {
@@ -9,6 +10,11 @@ export function Header({ header }: { header: any }) {
   const navItems = header?.navItems || []
 
   const navLinks = navItems.map((item: any, i: number) => {
+    // Popup form action uses the client-side LinkButton
+    if (item.linkAction === 'popup-form') {
+      return <LinkButton key={i} link={item} className="nav-popup-btn" />
+    }
+
     const resolved = resolveLink(item)
 
     return (

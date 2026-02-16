@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react'
-import { resolveLink } from '../resolveLink'
+import { LinkButton } from '../LinkButton'
 
 function getTimeLeft(targetDate: string) {
   const diff = new Date(targetDate).getTime() - Date.now()
@@ -28,8 +28,6 @@ export function CountdownTimerBlock({ block }: { block: any }) {
     }, 1000)
     return () => clearInterval(timer)
   }, [targetDate])
-
-  const resolved = link?.label ? resolveLink(link) : null
 
   return (
     <section className={`block-countdown ${bgClass}`}>
@@ -58,15 +56,12 @@ export function CountdownTimerBlock({ block }: { block: any }) {
           <p className="countdown-expired">{expiredMessage || 'This event has started!'}</p>
         )}
         {description && <p className="countdown-description">{description}</p>}
-        {resolved && (
-          <a
-            href={resolved.href}
+        {link?.label && (
+          <LinkButton
+            link={link}
             className="btn btn-primary"
             style={{ marginTop: '1.5rem' }}
-            {...(resolved.target ? { target: resolved.target, rel: resolved.rel } : {})}
-          >
-            {link.label}
-          </a>
+          />
         )}
       </div>
     </section>

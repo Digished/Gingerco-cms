@@ -163,6 +163,24 @@ export const Footer: GlobalConfig = {
                 description: 'Open link in a new tab',
               },
             },
+            {
+              name: 'linkAction',
+              type: 'select',
+              defaultValue: 'navigate',
+              options: [
+                { label: 'Navigate (link)', value: 'navigate' },
+                { label: 'Open Popup Form', value: 'popup-form' },
+              ],
+            },
+            {
+              name: 'popupForm',
+              type: 'relationship',
+              relationTo: 'forms',
+              admin: {
+                description: 'Form to display in a popup when clicked.',
+                condition: (_, siblingData) => siblingData?.linkAction === 'popup-form',
+              },
+            },
           ],
         },
       ],

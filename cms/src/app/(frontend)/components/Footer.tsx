@@ -2,6 +2,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { resolveLink } from './resolveLink'
+import { LinkButton } from './LinkButton'
 
 function FooterIcon({ icon }: { icon: string }) {
   switch (icon) {
@@ -141,6 +142,11 @@ export function Footer({ footer }: { footer: any }) {
               // Column with icons (social/connect style)
               <div className="social-links">
                 {col.links.map((link: any, j: number) => {
+                  if (link.linkAction === 'popup-form') {
+                    return (
+                      <LinkButton key={j} link={link} className="social-link" />
+                    )
+                  }
                   const { href } = resolveLink(link)
                   const isExternal = link.newTab || (href.startsWith('http') || href.startsWith('mailto:'))
 
@@ -172,6 +178,11 @@ export function Footer({ footer }: { footer: any }) {
               // Column without icons (plain list style)
               <ul>
                 {col.links?.map((link: any, j: number) => {
+                  if (link.linkAction === 'popup-form') {
+                    return (
+                      <li key={j}><LinkButton link={link} className="footer-popup-btn" /></li>
+                    )
+                  }
                   const { href } = resolveLink(link)
                   const isExternal = link.newTab || href.startsWith('http')
 

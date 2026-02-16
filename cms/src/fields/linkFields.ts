@@ -83,4 +83,22 @@ export const linkFields: Field[] = [
     type: 'checkbox',
     defaultValue: false,
   },
+  {
+    name: 'linkAction',
+    type: 'select',
+    defaultValue: 'navigate',
+    options: [
+      { label: 'Navigate (link)', value: 'navigate' },
+      { label: 'Open Popup Form', value: 'popup-form' },
+    ],
+  },
+  {
+    name: 'popupForm',
+    type: 'relationship',
+    relationTo: 'forms',
+    admin: {
+      description: 'Form to display in a popup when this button is clicked.',
+      condition: (_, siblingData) => siblingData?.linkAction === 'popup-form',
+    },
+  },
 ]

@@ -72,7 +72,6 @@ export default buildConfig({
 
   plugins: [
     formBuilderPlugin({
-      beforeEmail: async () => [],
       fields: {
         text: true,
         textarea: true,

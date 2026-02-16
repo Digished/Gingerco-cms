@@ -128,6 +128,113 @@ export const SiteSettings: GlobalConfig = {
           ],
         },
         {
+          label: 'Floating Buttons',
+          description: 'Floating action buttons displayed in the bottom-right corner of the site.',
+          fields: [
+            {
+              name: 'floatingButtons',
+              type: 'array',
+              label: 'Buttons',
+              maxRows: 5,
+              admin: {
+                description: 'Add up to 5 floating action buttons. They stack vertically above the primary button.',
+              },
+              fields: [
+                {
+                  name: 'label',
+                  type: 'text',
+                  required: true,
+                  admin: { description: 'Tooltip / accessible label for the button.' },
+                },
+                {
+                  name: 'icon',
+                  type: 'select',
+                  required: true,
+                  options: [
+                    { label: 'WhatsApp', value: 'whatsapp' },
+                    { label: 'Phone', value: 'phone' },
+                    { label: 'Email', value: 'email' },
+                    { label: 'Instagram', value: 'instagram' },
+                    { label: 'TikTok', value: 'tiktok' },
+                    { label: 'Facebook', value: 'facebook' },
+                    { label: 'Chat / Message', value: 'chat' },
+                    { label: 'Calendar / Book', value: 'calendar' },
+                    { label: 'Arrow Up (scroll to top)', value: 'arrow-up' },
+                  ],
+                },
+                {
+                  name: 'color',
+                  type: 'text',
+                  defaultValue: '#25D366',
+                  admin: { description: 'Button background colour (hex). Default is WhatsApp green.' },
+                },
+                {
+                  name: 'action',
+                  type: 'select',
+                  required: true,
+                  options: [
+                    { label: 'Open URL / Link', value: 'url' },
+                    { label: 'WhatsApp Chat', value: 'whatsapp' },
+                    { label: 'Phone Call', value: 'phone' },
+                    { label: 'Send Email', value: 'email' },
+                    { label: 'Open Popup Form', value: 'popup-form' },
+                    { label: 'Scroll to Top', value: 'scroll-top' },
+                  ],
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  admin: {
+                    description: 'URL to open (for "Open URL" action).',
+                    condition: (_, siblingData) => siblingData?.action === 'url',
+                  },
+                },
+                {
+                  name: 'whatsappNumber',
+                  type: 'text',
+                  admin: {
+                    description: 'Phone number with country code, e.g. +436767261062',
+                    condition: (_, siblingData) => siblingData?.action === 'whatsapp',
+                  },
+                },
+                {
+                  name: 'whatsappMessage',
+                  type: 'text',
+                  admin: {
+                    description: 'Pre-filled message (optional).',
+                    condition: (_, siblingData) => siblingData?.action === 'whatsapp',
+                  },
+                },
+                {
+                  name: 'phoneNumber',
+                  type: 'text',
+                  admin: {
+                    description: 'Phone number to call.',
+                    condition: (_, siblingData) => siblingData?.action === 'phone',
+                  },
+                },
+                {
+                  name: 'emailAddress',
+                  type: 'text',
+                  admin: {
+                    description: 'Email address to open.',
+                    condition: (_, siblingData) => siblingData?.action === 'email',
+                  },
+                },
+                {
+                  name: 'popupForm',
+                  type: 'relationship',
+                  relationTo: 'forms',
+                  admin: {
+                    description: 'Form to display in a popup.',
+                    condition: (_, siblingData) => siblingData?.action === 'popup-form',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
           label: 'SEO & Analytics',
           fields: [
             {

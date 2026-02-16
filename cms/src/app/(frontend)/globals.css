@@ -2941,15 +2941,14 @@ select[multiple] {
   gap: 0.75rem;
   padding: 1.5rem;
   border-radius: 12px;
-  background: var(--color-white);
-  border: 1px solid var(--color-border);
+  background: transparent;
+  border: none;
   transition: transform 0.3s, box-shadow 0.3s;
   min-width: 150px;
 }
 
 .block-partners.bg-dark .partner-item {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: transparent;
 }
 
 .partner-item:hover {
@@ -3017,8 +3016,8 @@ select[multiple] {
   gap: 0.5rem;
   padding: 1.5rem 2rem;
   border-radius: 12px;
-  background: white;
-  border: 1px solid var(--color-border);
+  background: transparent;
+  border: none;
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
@@ -3140,4 +3139,128 @@ select[multiple] {
 /* --- Section Spacing --- */
 .block-content:nth-child(even) {
   background: var(--color-white);
+}
+
+/* --- Floating Action Buttons --- */
+.fab-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 9999;
+}
+
+.fab-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  animation: fabSlideUp 0.25s ease-out;
+}
+
+@keyframes fabSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+
+.fab-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.fab-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.fab-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s, background 0.3s;
+}
+
+.fab-toggle:hover {
+  transform: scale(1.08);
+}
+
+.fab-toggle-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+  transition: transform 0.3s;
+}
+
+.fab-toggle-close {
+  font-size: 2rem;
+  transform: rotate(0deg);
+}
+
+/* Nav popup button styling (for header popup-form links) */
+.nav-popup-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-popup-btn:hover {
+  color: var(--color-primary);
+}
+
+/* Footer popup button styling */
+.footer-popup-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.footer-popup-btn:hover {
+  color: var(--color-primary);
+}
+
+@media (max-width: 480px) {
+  .fab-container {
+    bottom: 1rem;
+    right: 1rem;
+  }
+  .fab-btn {
+    width: 46px;
+    height: 46px;
+  }
+  .fab-toggle {
+    width: 52px;
+    height: 52px;
+  }
 }
