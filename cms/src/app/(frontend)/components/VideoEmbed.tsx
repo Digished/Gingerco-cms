@@ -58,7 +58,6 @@ export function VideoEmbed({
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         referrerPolicy="no-referrer-when-downgrade"
-        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
       />
     )
   }

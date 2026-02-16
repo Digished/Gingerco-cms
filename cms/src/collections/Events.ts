@@ -247,31 +247,69 @@ export const Events: CollectionConfig = {
           label: 'Registration',
           fields: [
             {
-              name: 'registrationEnabled',
-              type: 'checkbox',
-              defaultValue: true,
-            },
-            {
-              name: 'registrationForm',
-              type: 'relationship',
-              relationTo: 'forms',
+              name: 'ctaLabel',
+              type: 'text',
+              defaultValue: 'Register Now',
               admin: {
-                description: 'Select which form to use for registration.',
-                condition: (_, siblingData) => siblingData?.registrationEnabled,
+                description: 'Button text for the registration CTA.',
               },
             },
             {
-              name: 'registrationDeadline',
-              type: 'date',
+              name: 'ctaAction',
+              type: 'select',
+              defaultValue: 'navigate',
+              options: [
+                { label: 'Navigate to URL', value: 'navigate' },
+                { label: 'Open Popup Form', value: 'popup-form' },
+              ],
               admin: {
-                condition: (_, siblingData) => siblingData?.registrationEnabled,
+                description: 'What happens when the CTA button is clicked.',
               },
             },
             {
               name: 'externalRegistrationUrl',
               type: 'text',
               admin: {
-                description: 'External registration link (overrides built-in form).',
+                description: 'Registration URL (external ticketing page, etc.).',
+                condition: (_, siblingData) => siblingData?.ctaAction === 'navigate',
+              },
+            },
+            {
+              name: 'ctaNewTab',
+              type: 'checkbox',
+              defaultValue: true,
+              admin: {
+                description: 'Open link in new tab.',
+                condition: (_, siblingData) => siblingData?.ctaAction === 'navigate',
+              },
+            },
+            {
+              name: 'registrationForm',
+              type: 'relationship',
+              relationTo: 'forms',
+              admin: {
+                description: 'Select which form to show in the popup.',
+                condition: (_, siblingData) => siblingData?.ctaAction === 'popup-form',
+              },
+            },
+            {
+              name: 'ctaRedirectUrl',
+              type: 'text',
+              admin: {
+                description: 'Optional: Redirect to this URL after form is submitted.',
+                condition: (_, siblingData) => siblingData?.ctaAction === 'popup-form',
+              },
+            },
+            {
+              name: 'registrationDeadline',
+              type: 'date',
+            },
+            {
+              name: 'registrationEnabled',
+              type: 'checkbox',
+              defaultValue: true,
+              admin: {
+                description: 'Uncheck to hide the registration CTA section entirely.',
               },
             },
           ],

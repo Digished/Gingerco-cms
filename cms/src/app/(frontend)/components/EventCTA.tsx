@@ -2,54 +2,77 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react'
-import { resolveLink } from './resolveLink'
 
-/**
- * A link/button that either navigates or opens a popup form,
- * depending on the `linkAction` field value.
- */
-export function LinkButton({
-  link,
-  className,
-  style,
-}: {
-  link: any
-  className?: string
-  style?: React.CSSProperties
-}) {
+interface EventCTAProps {
+  event: any
+  currency: string
+}
+
+export function EventCTA({ event, currency }: EventCTAProps) {
   const [modalOpen, setModalOpen] = useState(false)
 
-  if (link.linkAction === 'popup-form') {
-    const formData = typeof link.popupForm === 'object' ? link.popupForm : null
-    const redirectUrl = link.popupRedirectUrl || null
-    return (
-      <>
-        <button className={className} style={style} onClick={() => setModalOpen(true)}>
-          {link.label}
-        </button>
-        {modalOpen && formData && (
-          <FormModal formData={formData} redirectUrl={redirectUrl} onClose={() => setModalOpen(false)} />
-        )}
-      </>
-    )
-  }
+  const label = event.ctaLabel || 'Register Now'
+  const action = event.ctaAction || 'navigate'
+  const formData = typeof event.registrationForm === 'object' ? event.registrationForm : null
+  const redirectUrl = event.ctaRedirectUrl || null
 
-  const resolved = resolveLink(link)
+  // Determine if there's a valid CTA to show
+  const hasUrl = action === 'navigate' && event.externalRegistrationUrl
+  const hasForm = action === 'popup-form' && formData
+  const hasCta = hasUrl || hasForm
+
+  if (!hasCta) return null
+
   return (
-    <a
-      href={resolved.href}
-      className={className}
-      style={style}
-      {...(resolved.target ? { target: resolved.target, rel: resolved.rel } : {})}
-    >
-      {link.label}
-    </a>
+    <section className="event-cta">
+      <div className="event-container" style={{ textAlign: 'center' }}>
+        <h2>Ready to Join?</h2>
+        {event.price != null && (
+          <p className="event-cta-price">
+            {event.price === 0 ? 'Free Event' : `From ${currency}${event.price}`}
+          </p>
+        )}
+
+        {hasUrl && (
+          <a
+            href={event.externalRegistrationUrl}
+            className="btn btn-primary"
+            {...(event.ctaNewTab !== false ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          >
+            {label}
+          </a>
+        )}
+
+        {hasForm && (
+          <>
+            <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
+              {label}
+            </button>
+            {modalOpen && (
+              <FormModal
+                formData={formData}
+                redirectUrl={redirectUrl}
+                onClose={() => setModalOpen(false)}
+              />
+            )}
+          </>
+        )}
+      </div>
+    </section>
   )
 }
 
-/* ── Popup form modal ── */
+/* ── Popup form modal with redirect support ── */
 
-function FormModal({ formData, redirectUrl, onClose }: { formData: any; redirectUrl?: string | null; onClose: () => void }) {
+function FormModal({
+  formData,
+  redirectUrl,
+  onClose,
+}: {
+  formData: any
+  redirectUrl: string | null
+  onClose: () => void
+}) {
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
@@ -72,7 +95,7 @@ function FormModal({ formData, redirectUrl, onClose }: { formData: any; redirect
   )
 }
 
-function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: string | null }) {
+function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl: string | null }) {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -113,9 +136,14 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
         body: JSON.stringify({ form: formData.id, submissionData }),
       })
       if (res.ok) {
-          if (redirectUrl) { window.location.href = redirectUrl; return }
-          setSubmitted(true)
-        } else { setError('Something went wrong. Please try again.') }
+        if (redirectUrl) {
+          window.location.href = redirectUrl
+          return
+        }
+        setSubmitted(true)
+      } else {
+        setError('Something went wrong. Please try again.')
+      }
     } catch {
       setError('Network error. Please try again.')
     } finally {
@@ -126,7 +154,7 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
   if (submitted) {
     return (
       <div className="form-message success">
-        {formData.confirmationMessage || 'Thank you! Your submission has been received.'}
+        {formData.confirmationMessage || 'Thank you! Your registration has been received.'}
       </div>
     )
   }
@@ -140,24 +168,24 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
         if (blockType === 'checkbox') {
           return (
             <div key={i} className="form-field form-checkbox">
-              <input type="checkbox" id={`lbf-${name}`} name={name} required={field.required} />
-              <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <input type="checkbox" id={`ecta-${name}`} name={name} required={field.required} />
+              <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
             </div>
           )
         }
         if (blockType === 'textarea') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <textarea id={`lbf-${name}`} name={name} required={field.required} rows={4} />
+              <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <textarea id={`ecta-${name}`} name={name} required={field.required} rows={4} />
             </div>
           )
         }
         if (blockType === 'select') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <select id={`lbf-${name}`} name={name} required={field.required}>
+              <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <select id={`ecta-${name}`} name={name} required={field.required}>
                 <option value="">Select...</option>
                 {field.options?.map((opt: any, j: number) => (
                   <option key={j} value={opt.value}>{opt.label}</option>
@@ -169,16 +197,16 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
         if (blockType === 'email') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <input type="email" id={`lbf-${name}`} name={name} required={field.required} />
+              <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <input type="email" id={`ecta-${name}`} name={name} required={field.required} />
             </div>
           )
         }
         if (blockType === 'number') {
           return (
             <div key={i} className="form-field">
-              <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <input type="number" id={`lbf-${name}`} name={name} required={field.required} />
+              <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+              <input type="number" id={`ecta-${name}`} name={name} required={field.required} />
             </div>
           )
         }
@@ -187,8 +215,8 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
         }
         return (
           <div key={i} className="form-field">
-            <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-            <input type="text" id={`lbf-${name}`} name={name} required={field.required} />
+            <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+            <input type="text" id={`ecta-${name}`} name={name} required={field.required} />
           </div>
         )
       })}
@@ -204,11 +232,11 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
             <div key={di} className="declaration-item">
               <input
                 type="checkbox"
-                id={`lbf-consent-${si}-${di}`}
+                id={`ecta-consent-${si}-${di}`}
                 name={`consent_${decl.id || decl.title}`}
                 required={decl.required}
               />
-              <label htmlFor={`lbf-consent-${si}-${di}`}>
+              <label htmlFor={`ecta-consent-${si}-${di}`}>
                 {decl.title && <strong>{decl.title}</strong>}
                 {decl.description && <span> {decl.description}</span>}
                 {decl.required && <span className="required-mark"> *</span>}

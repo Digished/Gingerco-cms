@@ -101,4 +101,12 @@ export const linkFields: Field[] = [
       condition: (_, siblingData) => siblingData?.linkAction === 'popup-form',
     },
   },
+  {
+    name: 'popupRedirectUrl',
+    type: 'text',
+    admin: {
+      description: 'Optional: Redirect to this URL after the popup form is submitted.',
+      condition: (_, siblingData) => siblingData?.linkAction === 'popup-form',
+    },
+  },
 ]

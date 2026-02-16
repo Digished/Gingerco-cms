@@ -5,6 +5,7 @@ import configPromise from '@payload-config'
 import type { Metadata } from 'next'
 import { RichText } from '../../components/RichText'
 import { VideoEmbed } from '../../components/VideoEmbed'
+import { EventCTA } from '../../components/EventCTA'
 
 export const dynamic = 'force-dynamic'
 
@@ -255,26 +256,10 @@ export default async function EventDetail({ params }: Args) {
           </section>
         )}
 
-        {/* Registration CTA - always visible */}
-        <section className="event-cta">
-          <div className="event-container" style={{ textAlign: 'center' }}>
-            <h2>Ready to Join?</h2>
-            {event.price != null && (
-              <p className="event-cta-price">
-                {event.price === 0 ? 'Free Event' : `From ${currency}${event.price}`}
-              </p>
-            )}
-            {event.externalRegistrationUrl ? (
-              <a href={event.externalRegistrationUrl} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
-                Get Tickets
-              </a>
-            ) : (
-              <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: '0.5rem' }}>
-                Registration details coming soon.
-              </p>
-            )}
-          </div>
-        </section>
+        {/* Registration CTA */}
+        {event.registrationEnabled !== false && (
+          <EventCTA event={event} currency={currency} />
+        )}
       </main>
     )
   } catch {
