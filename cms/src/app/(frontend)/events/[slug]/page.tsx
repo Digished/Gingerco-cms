@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import type { Metadata } from 'next'
 import { RichText } from '../../components/RichText'
+import { VideoEmbed } from '../../components/VideoEmbed'
 
 export const dynamic = 'force-dynamic'
 
@@ -215,9 +216,7 @@ export default async function EventDetail({ params }: Args) {
           <section className="event-video-section">
             <div className="event-container">
               <div className="event-video-wrapper">
-                <video controls preload="none" style={{ width: '100%', borderRadius: '8px' }}>
-                  <source src={event.videoUrl} type="video/mp4" />
-                </video>
+                <VideoEmbed url={event.videoUrl} />
               </div>
             </div>
           </section>

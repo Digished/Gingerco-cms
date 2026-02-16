@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import React, { useState, useRef } from 'react'
+import { VideoEmbed } from '../VideoEmbed'
 
 function Stars({ count }: { count: number }) {
   return (
@@ -12,12 +13,20 @@ function Stars({ count }: { count: number }) {
   )
 }
 
+/** Detect YouTube / Vimeo so we know to use iframe instead of native video. */
+function isEmbedUrl(url: string): boolean {
+  return /youtube\.com|youtu\.be|vimeo\.com/.test(url)
+}
+
 function VideoTestimonial({ item }: { item: any }) {
   const [playing, setPlaying] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const embed = item.videoUrl && isEmbedUrl(item.videoUrl)
 
   const handlePlay = () => {
-    if (videoRef.current) {
+    if (embed) {
+      setPlaying(true)
+    } else if (videoRef.current) {
       videoRef.current.play()
       setPlaying(true)
     }
@@ -32,20 +41,27 @@ function VideoTestimonial({ item }: { item: any }) {
       onClick={!playing ? handlePlay : undefined}
     >
       <h4>{item.name}</h4>
-      <video
-        ref={videoRef}
-        controls={playing}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          borderRadius: '8px',
-          display: playing ? 'block' : 'none',
-        }}
-        preload="none"
-      >
-        {item.videoUrl && <source src={item.videoUrl} type="video/mp4" />}
-      </video>
+      {playing && embed ? (
+        <VideoEmbed
+          url={item.videoUrl}
+          style={{ height: '100%', objectFit: 'cover' }}
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          controls={playing}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: '8px',
+            display: playing ? 'block' : 'none',
+          }}
+          preload="none"
+        >
+          {item.videoUrl && <source src={item.videoUrl} />}
+        </video>
+      )}
       {!playing && <div className="play-button-overlay">&#9654;</div>}
     </div>
   )

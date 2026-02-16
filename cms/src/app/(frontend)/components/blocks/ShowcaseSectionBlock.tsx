@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import { resolveLink } from '../resolveLink'
+import { VideoEmbed } from '../VideoEmbed'
 
 export function ShowcaseSectionBlock({ block }: { block: any }) {
   const {
@@ -20,10 +21,7 @@ export function ShowcaseSectionBlock({ block }: { block: any }) {
           {sectionHeading && <h2>{sectionHeading}</h2>}
           <div className="showcase-media">
             {mediaType === 'video' && videoUrl ? (
-              <video controls style={{ width: '100%', height: '100%', borderRadius: '8px' }}>
-                <source src={videoUrl} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              <VideoEmbed url={videoUrl} style={{ height: '100%' }} />
             ) : image?.url ? (
               <img src={image.url} alt={image.alt || sectionHeading || ''} loading="lazy" />
             ) : null}
