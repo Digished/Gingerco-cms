@@ -239,7 +239,6 @@ export default async function EventDetail({ params }: Args) {
                       ) : (
                         <span className="sponsor-name">{s.name}</span>
                       )}
-                      {s.type && <span className="sponsor-type">{s.type}</span>}
                     </div>
                   )
                   if (s.url) {

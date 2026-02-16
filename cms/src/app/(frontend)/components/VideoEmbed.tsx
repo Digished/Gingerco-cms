@@ -2,29 +2,36 @@
 import React from 'react'
 
 /**
- * Detects YouTube / Vimeo / Google Drive URLs and returns the appropriate embed src.
- * Returns null for direct file URLs (MP4 etc.) so the caller can
- * fall back to a native <video> element.
+ * Detects YouTube / Vimeo URLs and returns the appropriate embed src.
+ * Returns null for direct file URLs so the caller falls back to <video>.
  */
-function getEmbedInfo(url: string): { src: string; provider: string } | null {
+function getEmbedUrl(url: string): string | null {
   // YouTube: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID
   const ytMatch = url.match(
     /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/,
   )
-  if (ytMatch) return { src: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`, provider: 'youtube' }
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`
 
   // Vimeo: vimeo.com/ID, player.vimeo.com/video/ID
   const vimeoMatch = url.match(
     /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/,
   )
-  if (vimeoMatch) return { src: `https://player.vimeo.com/video/${vimeoMatch[1]}`, provider: 'vimeo' }
+  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`
 
-  // Google Drive: drive.google.com/file/d/ID/... or drive.google.com/open?id=ID
+  return null
+}
+
+/**
+ * Google Drive URLs are converted to a direct download/stream URL
+ * that works reliably with native <video> elements.
+ * The file MUST be shared publicly ("Anyone with the link").
+ */
+function getDriveDirectUrl(url: string): string | null {
   const driveMatch = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/)
-  if (driveMatch) return { src: `https://drive.google.com/file/d/${driveMatch[1]}/preview`, provider: 'gdrive' }
+  if (driveMatch) return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`
 
   const driveOpenMatch = url.match(/drive\.google\.com\/open\?id=([\w-]+)/)
-  if (driveOpenMatch) return { src: `https://drive.google.com/file/d/${driveOpenMatch[1]}/preview`, provider: 'gdrive' }
+  if (driveOpenMatch) return `https://drive.google.com/uc?export=download&id=${driveOpenMatch[1]}`
 
   return null
 }
@@ -42,12 +49,12 @@ export function VideoEmbed({
   controls = true,
   preload = 'none',
 }: VideoEmbedProps) {
-  const embed = getEmbedInfo(url)
-
-  if (embed) {
+  // YouTube / Vimeo → iframe embed
+  const embedSrc = getEmbedUrl(url)
+  if (embedSrc) {
     return (
       <iframe
-        src={embed.src}
+        src={embedSrc}
         style={{
           width: '100%',
           aspectRatio: '16/9',
@@ -62,7 +69,22 @@ export function VideoEmbed({
     )
   }
 
-  // Direct file URL — use native <video>
+  // Google Drive → native <video> with direct download URL
+  const driveUrl = getDriveDirectUrl(url)
+  if (driveUrl) {
+    return (
+      <video
+        controls
+        preload="metadata"
+        style={{ width: '100%', aspectRatio: '16/9', borderRadius: '8px', background: '#000', ...style }}
+      >
+        <source src={driveUrl} />
+        Your browser does not support the video tag.
+      </video>
+    )
+  }
+
+  // Direct file URL → native <video>
   return (
     <video
       controls={controls}

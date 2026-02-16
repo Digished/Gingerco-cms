@@ -17,9 +17,6 @@ export const metadata: Metadata = {
     template: '%s | Ginger & Co.',
   },
   description: 'Vienna-based Afrobeats fitness company.',
-  icons: {
-    icon: '/favicon.svg',
-  },
 }
 
 const fontMap: Record<string, string> = {
@@ -67,6 +64,8 @@ export default async function FrontendLayout({ children }: { children: React.Rea
     // Payload may not be ready on first deploy
   }
 
+  const faviconUrl = typeof settings?.favicon === 'object' ? settings.favicon.url : null
+
   const primaryColor = settings?.primaryColor || '#E85D3A'
   const secondaryColor = settings?.secondaryColor || '#F4A261'
   const backgroundColor = settings?.backgroundColor || '#FFFAF5'
@@ -104,6 +103,8 @@ export default async function FrontendLayout({ children }: { children: React.Rea
             <link rel="stylesheet" href={googleFontsUrl} />
           </>
         )}
+        {faviconUrl && <link rel="icon" href={faviconUrl} />}
+        {!faviconUrl && <link rel="icon" href="/favicon.svg" />}
         <style dangerouslySetInnerHTML={{ __html: themeVars }} />
       </head>
       <body>

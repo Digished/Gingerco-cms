@@ -90,8 +90,8 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
     const data = new FormData(e.currentTarget)
     const submissionData: any[] = []
 
-    fields.forEach((field: any) => {
-      const name = field.name || field.label
+    fields.forEach((field: any, idx: number) => {
+      const name = field.name || field.label || field.blockName || `field-${idx}`
       const value = data.get(name)
       if (value !== null) {
         submissionData.push({ field: name, value: String(value) })
@@ -133,65 +133,7 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
 
   return (
     <form onSubmit={handleSubmit} className="modal-form">
-      {fields.map((field: any, i: number) => {
-        const name = field.name || field.label
-        const blockType = field.blockType
-
-        if (blockType === 'checkbox') {
-          return (
-            <div key={i} className="form-field form-checkbox">
-              <input type="checkbox" id={`lbf-${name}`} name={name} required={field.required} />
-              <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-            </div>
-          )
-        }
-        if (blockType === 'textarea') {
-          return (
-            <div key={i} className="form-field">
-              <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <textarea id={`lbf-${name}`} name={name} required={field.required} rows={4} />
-            </div>
-          )
-        }
-        if (blockType === 'select') {
-          return (
-            <div key={i} className="form-field">
-              <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <select id={`lbf-${name}`} name={name} required={field.required}>
-                <option value="">Select...</option>
-                {field.options?.map((opt: any, j: number) => (
-                  <option key={j} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-          )
-        }
-        if (blockType === 'email') {
-          return (
-            <div key={i} className="form-field">
-              <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <input type="email" id={`lbf-${name}`} name={name} required={field.required} />
-            </div>
-          )
-        }
-        if (blockType === 'number') {
-          return (
-            <div key={i} className="form-field">
-              <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <input type="number" id={`lbf-${name}`} name={name} required={field.required} />
-            </div>
-          )
-        }
-        if (blockType === 'message') {
-          return <div key={i} className="form-field form-message-field"><p>{field.message}</p></div>
-        }
-        return (
-          <div key={i} className="form-field">
-            <label htmlFor={`lbf-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-            <input type="text" id={`lbf-${name}`} name={name} required={field.required} />
-          </div>
-        )
-      })}
+      {fields.map((field: any, i: number) => renderFormField(field, i, 'lbf'))}
 
       {arrivalNotice && (
         <div className="arrival-notice"><strong>Important:</strong> {arrivalNotice}</div>
@@ -244,6 +186,77 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
         </button>
       </div>
     </form>
+  )
+}
+
+/* ── Shared form field renderer ── */
+
+function renderFormField(field: any, i: number, prefix: string) {
+  const name = field.name || field.label || field.blockName || `field-${i}`
+  const label = field.label || field.name || field.blockName || ''
+  const blockType = field.blockType
+
+  if (blockType === 'checkbox') {
+    return (
+      <div key={i} className="form-field form-checkbox">
+        <input type="checkbox" id={`${prefix}-${name}`} name={name} required={field.required} />
+        <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+      </div>
+    )
+  }
+  if (blockType === 'textarea') {
+    return (
+      <div key={i} className="form-field">
+        <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+        <textarea id={`${prefix}-${name}`} name={name} placeholder={label} required={field.required} rows={4} />
+      </div>
+    )
+  }
+  if (blockType === 'select') {
+    return (
+      <div key={i} className="form-field">
+        <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+        <select id={`${prefix}-${name}`} name={name} required={field.required}>
+          <option value="">Select...</option>
+          {field.options?.map((opt: any, j: number) => (
+            <option key={j} value={opt.value || opt.label}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
+    )
+  }
+  if (blockType === 'email') {
+    return (
+      <div key={i} className="form-field">
+        <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+        <input type="email" id={`${prefix}-${name}`} name={name} placeholder={label} required={field.required} />
+      </div>
+    )
+  }
+  if (blockType === 'number') {
+    return (
+      <div key={i} className="form-field">
+        <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+        <input type="number" id={`${prefix}-${name}`} name={name} placeholder={label} required={field.required} />
+      </div>
+    )
+  }
+  if (blockType === 'message') {
+    const msg = field.message
+    if (msg?.root?.children) {
+      return <div key={i} className="form-field form-message-field"><div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} /></div>
+    }
+    if (typeof msg === 'string') {
+      return <div key={i} className="form-field form-message-field"><p>{msg}</p></div>
+    }
+    return null
+  }
+  // Default: text input
+  return (
+    <div key={i} className="form-field">
+      <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+      <input type="text" id={`${prefix}-${name}`} name={name} placeholder={label} required={field.required} />
+    </div>
   )
 }
 

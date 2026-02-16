@@ -12,16 +12,19 @@ export function EventCTA({ event, currency }: EventCTAProps) {
   const [modalOpen, setModalOpen] = useState(false)
 
   const label = event.ctaLabel || 'Register Now'
-  const action = event.ctaAction || 'navigate'
   const formData = typeof event.registrationForm === 'object' ? event.registrationForm : null
   const redirectUrl = event.ctaRedirectUrl || null
 
-  // Determine if there's a valid CTA to show
+  // Smart detection: if a form is configured, use popup mode.
+  // If an external URL is set (and no form), navigate.
+  const action = formData
+    ? 'popup-form'
+    : (event.ctaAction || 'navigate')
+
   const hasUrl = action === 'navigate' && event.externalRegistrationUrl
   const hasForm = action === 'popup-form' && formData
-  const hasCta = hasUrl || hasForm
 
-  if (!hasCta) return null
+  if (!hasUrl && !hasForm) return null
 
   return (
     <section className="event-cta">
@@ -62,7 +65,7 @@ export function EventCTA({ event, currency }: EventCTAProps) {
   )
 }
 
-/* ── Popup form modal with redirect support ── */
+/* ── Popup form modal ── */
 
 function FormModal({
   formData,
@@ -89,13 +92,15 @@ function FormModal({
       <div className="popup-content" onClick={(e) => e.stopPropagation()}>
         <button className="popup-close" onClick={onClose} aria-label="Close">&times;</button>
         {formData.title && <h2>{formData.title}</h2>}
-        <InlineForm formData={formData} redirectUrl={redirectUrl} />
+        <PopupForm formData={formData} redirectUrl={redirectUrl} />
       </div>
     </div>
   )
 }
 
-function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl: string | null }) {
+/* ── Form rendering (shared with LinkButton pattern) ── */
+
+function PopupForm({ formData, redirectUrl }: { formData: any; redirectUrl: string | null }) {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -114,7 +119,7 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl: str
     const submissionData: any[] = []
 
     fields.forEach((field: any) => {
-      const name = field.name || field.label
+      const name = field.name || field.label || field.blockName
       const value = data.get(name)
       if (value !== null) {
         submissionData.push({ field: name, value: String(value) })
@@ -136,10 +141,7 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl: str
         body: JSON.stringify({ form: formData.id, submissionData }),
       })
       if (res.ok) {
-        if (redirectUrl) {
-          window.location.href = redirectUrl
-          return
-        }
+        if (redirectUrl) { window.location.href = redirectUrl; return }
         setSubmitted(true)
       } else {
         setError('Something went wrong. Please try again.')
@@ -161,65 +163,7 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl: str
 
   return (
     <form onSubmit={handleSubmit} className="modal-form">
-      {fields.map((field: any, i: number) => {
-        const name = field.name || field.label
-        const blockType = field.blockType
-
-        if (blockType === 'checkbox') {
-          return (
-            <div key={i} className="form-field form-checkbox">
-              <input type="checkbox" id={`ecta-${name}`} name={name} required={field.required} />
-              <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-            </div>
-          )
-        }
-        if (blockType === 'textarea') {
-          return (
-            <div key={i} className="form-field">
-              <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <textarea id={`ecta-${name}`} name={name} required={field.required} rows={4} />
-            </div>
-          )
-        }
-        if (blockType === 'select') {
-          return (
-            <div key={i} className="form-field">
-              <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <select id={`ecta-${name}`} name={name} required={field.required}>
-                <option value="">Select...</option>
-                {field.options?.map((opt: any, j: number) => (
-                  <option key={j} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-          )
-        }
-        if (blockType === 'email') {
-          return (
-            <div key={i} className="form-field">
-              <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <input type="email" id={`ecta-${name}`} name={name} required={field.required} />
-            </div>
-          )
-        }
-        if (blockType === 'number') {
-          return (
-            <div key={i} className="form-field">
-              <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-              <input type="number" id={`ecta-${name}`} name={name} required={field.required} />
-            </div>
-          )
-        }
-        if (blockType === 'message') {
-          return <div key={i} className="form-field form-message-field"><p>{field.message}</p></div>
-        }
-        return (
-          <div key={i} className="form-field">
-            <label htmlFor={`ecta-${name}`}>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
-            <input type="text" id={`ecta-${name}`} name={name} required={field.required} />
-          </div>
-        )
-      })}
+      {fields.map((field: any, i: number) => renderFormField(field, i, 'ecta'))}
 
       {arrivalNotice && (
         <div className="arrival-notice"><strong>Important:</strong> {arrivalNotice}</div>
@@ -272,6 +216,77 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl: str
         </button>
       </div>
     </form>
+  )
+}
+
+/* ── Shared form field renderer ── */
+
+function renderFormField(field: any, i: number, prefix: string) {
+  const name = field.name || field.label || field.blockName || `field-${i}`
+  const label = field.label || field.name || field.blockName || ''
+  const blockType = field.blockType
+
+  if (blockType === 'checkbox') {
+    return (
+      <div key={i} className="form-field form-checkbox">
+        <input type="checkbox" id={`${prefix}-${name}`} name={name} required={field.required} />
+        <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+      </div>
+    )
+  }
+  if (blockType === 'textarea') {
+    return (
+      <div key={i} className="form-field">
+        <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+        <textarea id={`${prefix}-${name}`} name={name} placeholder={label} required={field.required} rows={4} />
+      </div>
+    )
+  }
+  if (blockType === 'select') {
+    return (
+      <div key={i} className="form-field">
+        <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+        <select id={`${prefix}-${name}`} name={name} required={field.required}>
+          <option value="">Select...</option>
+          {field.options?.map((opt: any, j: number) => (
+            <option key={j} value={opt.value || opt.label}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
+    )
+  }
+  if (blockType === 'email') {
+    return (
+      <div key={i} className="form-field">
+        <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+        <input type="email" id={`${prefix}-${name}`} name={name} placeholder={label} required={field.required} />
+      </div>
+    )
+  }
+  if (blockType === 'number') {
+    return (
+      <div key={i} className="form-field">
+        <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+        <input type="number" id={`${prefix}-${name}`} name={name} placeholder={label} required={field.required} />
+      </div>
+    )
+  }
+  if (blockType === 'message') {
+    const msg = field.message
+    if (msg?.root?.children) {
+      return <div key={i} className="form-field form-message-field"><div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} /></div>
+    }
+    if (typeof msg === 'string') {
+      return <div key={i} className="form-field form-message-field"><p>{msg}</p></div>
+    }
+    return null
+  }
+  // Default: text input
+  return (
+    <div key={i} className="form-field">
+      <label htmlFor={`${prefix}-${name}`}>{label}{field.required && <span className="required-mark"> *</span>}</label>
+      <input type="text" id={`${prefix}-${name}`} name={name} placeholder={label} required={field.required} />
+    </div>
   )
 }
 

@@ -40,6 +40,14 @@ export const SiteSettings: GlobalConfig = {
               name: 'address',
               type: 'textarea',
             },
+            {
+              name: 'favicon',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                description: 'Site favicon. Upload a .ico, .png (32x32 or 64x64), or .svg file.',
+              },
+            },
           ],
         },
         {
