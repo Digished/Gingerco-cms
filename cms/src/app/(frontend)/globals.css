@@ -587,6 +587,22 @@ select[multiple] {
   opacity: 1;
 }
 
+.gallery-item--video {
+  aspect-ratio: 16/9;
+}
+
+.gallery-video-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-video-wrapper iframe,
+.gallery-video-wrapper video {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
 /* --- CTA Block --- */
 .block-cta {
   position: relative;

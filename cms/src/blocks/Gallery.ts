@@ -12,15 +12,53 @@ export const Gallery: Block = {
       type: 'text',
     },
     {
+      name: 'items',
+      type: 'array',
+      label: 'Gallery Items',
+      minRows: 1,
+      fields: [
+        {
+          name: 'mediaType',
+          type: 'select',
+          defaultValue: 'image',
+          options: [
+            { label: 'Image', value: 'image' },
+            { label: 'Video (URL)', value: 'video' },
+          ],
+        },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (_, siblingData) => siblingData?.mediaType !== 'video',
+          },
+        },
+        {
+          name: 'videoUrl',
+          type: 'text',
+          label: 'Video URL',
+          admin: {
+            description: 'YouTube, Vimeo, or direct video URL',
+            condition: (_, siblingData) => siblingData?.mediaType === 'video',
+          },
+        },
+        {
+          name: 'caption',
+          type: 'text',
+        },
+      ],
+    },
+    // Keep legacy "images" field so existing data still loads
+    {
       name: 'images',
       type: 'array',
-      minRows: 1,
+      admin: { hidden: true },
       fields: [
         {
           name: 'image',
           type: 'upload',
           relationTo: 'media',
-          required: true,
         },
         {
           name: 'caption',
