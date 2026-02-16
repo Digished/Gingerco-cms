@@ -19,6 +19,10 @@ function getEmbedUrl(url: string): string | null {
   )
   if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`
 
+  // Google Drive: drive.google.com/file/d/ID/...
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/)
+  if (driveMatch) return `https://drive.google.com/file/d/${driveMatch[1]}/preview`
+
   return null
 }
 

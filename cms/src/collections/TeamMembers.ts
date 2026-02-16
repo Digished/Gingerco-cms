@@ -38,6 +38,19 @@ export const TeamMembers: CollectionConfig = {
       },
     },
     {
+      name: 'profileTheme',
+      type: 'select',
+      defaultValue: 'standard',
+      options: [
+        { label: 'Standard (1 photo, compact)', value: 'standard' },
+        { label: 'Featured (3 photos, L-shape)', value: 'featured' },
+      ],
+      admin: {
+        description: 'Choose "Featured" for CEO/key members (uses 3 photos in an L-shaped layout). "Standard" is a compact single-photo layout.',
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'photo',
       type: 'upload',
       relationTo: 'media',

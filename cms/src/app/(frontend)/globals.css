@@ -1963,6 +1963,7 @@ select[multiple] {
   z-index: 2;
   max-width: 800px;
   padding: 0 1.5rem;
+  text-align: center;
 }
 
 .event-hero-content h1 {
@@ -2169,7 +2170,28 @@ select[multiple] {
 }
 
 /* --- Team Profile Page --- */
-/* --- Team Profile Page --- */
+
+/* Back link bar */
+.team-profile-back {
+  background: #000;
+  padding: 1rem 1.5rem 0;
+}
+
+.team-profile-back .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+  max-width: var(--max-width);
+}
+
+.team-profile-back .back-link:hover {
+  color: var(--color-accent);
+}
+
 .team-profile {
   /* No top/bottom padding - hero is full-bleed */
 }
@@ -2421,6 +2443,65 @@ select[multiple] {
 
   .team-profile-body {
     padding: 2.5rem 1rem;
+  }
+}
+
+/* ── Standard theme: compact single-photo layout ── */
+.team-profile-standard {
+  padding: 3rem 1.5rem;
+}
+
+.team-profile-standard-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.team-profile-standard-photo img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.team-profile-placeholder-sm {
+  width: 100%;
+  aspect-ratio: 3/4;
+  font-size: 3.5rem;
+}
+
+.team-profile-standard-info .team-profile-info h1 {
+  font-size: 2rem;
+}
+
+@media (max-width: 768px) {
+  .team-profile-standard-inner {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+
+  .team-profile-standard-photo {
+    max-width: 240px;
+    margin: 0 auto;
+  }
+
+  .team-profile-standard-info .team-profile-info h1 {
+    text-align: center;
+  }
+
+  .team-profile-standard-info .team-profile-role {
+    text-align: center;
+  }
+
+  .team-profile-standard-info .team-profile-specialties {
+    justify-content: center;
+  }
+
+  .team-profile-standard-info .team-profile-social {
+    justify-content: center;
   }
 }
 
@@ -3100,6 +3181,7 @@ select[multiple] {
 .event-hero-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1.5rem;
   margin-top: 1.5rem;
   flex-wrap: wrap;
