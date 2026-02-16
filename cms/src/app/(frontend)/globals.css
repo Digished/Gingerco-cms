@@ -2446,18 +2446,23 @@ select[multiple] {
   }
 }
 
-/* ── Standard theme: compact single-photo layout ── */
+/* ── Standard theme: centered single-photo layout ── */
 .team-profile-standard {
-  padding: 3rem 1.5rem;
+  padding: 3.5rem 1.5rem;
 }
 
 .team-profile-standard-inner {
-  max-width: var(--max-width);
+  max-width: 600px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 2.5rem;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.team-profile-standard-photo {
+  width: 280px;
+  margin-bottom: 2rem;
 }
 
 .team-profile-standard-photo img {
@@ -2473,35 +2478,34 @@ select[multiple] {
   font-size: 3.5rem;
 }
 
-.team-profile-standard-info .team-profile-info h1 {
-  font-size: 2rem;
+.team-profile-standard-details {
+  width: 100%;
 }
 
-@media (max-width: 768px) {
-  .team-profile-standard-inner {
-    grid-template-columns: 1fr;
-    max-width: 400px;
-  }
+.team-profile-standard-details .team-profile-info h1 {
+  font-size: 2rem;
+  text-align: center;
+}
 
+.team-profile-standard-details .team-profile-role {
+  text-align: center;
+}
+
+.team-profile-standard-details .team-profile-bio p {
+  text-align: center;
+}
+
+.team-profile-standard-details .team-profile-specialties {
+  justify-content: center;
+}
+
+.team-profile-standard-details .team-profile-social {
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
   .team-profile-standard-photo {
-    max-width: 240px;
-    margin: 0 auto;
-  }
-
-  .team-profile-standard-info .team-profile-info h1 {
-    text-align: center;
-  }
-
-  .team-profile-standard-info .team-profile-role {
-    text-align: center;
-  }
-
-  .team-profile-standard-info .team-profile-specialties {
-    justify-content: center;
-  }
-
-  .team-profile-standard-info .team-profile-social {
-    justify-content: center;
+    width: 220px;
   }
 }
 

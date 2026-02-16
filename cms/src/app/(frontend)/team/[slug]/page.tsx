@@ -103,13 +103,13 @@ function FeaturedLayout({ member, specialties, extraPhotos }: { member: any; spe
   )
 }
 
-/* ── Standard Theme: Compact single-photo layout ── */
+/* ── Standard Theme: Centered single-photo layout ── */
 
 function StandardLayout({ member, specialties }: { member: any; specialties: string[] }) {
   return (
     <section className="team-profile-hero team-profile-standard">
       <div className="team-profile-standard-inner">
-        {/* Compact photo */}
+        {/* Centered photo */}
         <div className="team-profile-standard-photo">
           {member.photo?.url ? (
             <img src={member.photo.url} alt={member.photo.alt || member.name} loading="lazy" />
@@ -120,8 +120,8 @@ function StandardLayout({ member, specialties }: { member: any; specialties: str
           )}
         </div>
 
-        {/* Info beside photo */}
-        <div className="team-profile-standard-info">
+        {/* Details below photo */}
+        <div className="team-profile-standard-details">
           <ProfileInfo member={member} specialties={specialties} />
         </div>
       </div>
