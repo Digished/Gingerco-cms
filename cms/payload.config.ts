@@ -6,6 +6,7 @@ import { lexicalEditor, FixedToolbarFeature, TextStateFeature, defaultColors } f
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { migrations } from './src/migrations'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { s3Storage } from '@payloadcms/storage-s3'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 
 import { Users } from './src/collections/Users'
@@ -162,6 +163,27 @@ export default buildConfig({
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),
+    ...(process.env.SUPABASE_S3_ENDPOINT
+      ? [
+          s3Storage({
+            collections: {
+              media: {
+                prefix: 'media',
+              },
+            },
+            bucket: process.env.SUPABASE_S3_BUCKET || 'media',
+            config: {
+              endpoint: process.env.SUPABASE_S3_ENDPOINT,
+              credentials: {
+                accessKeyId: process.env.SUPABASE_S3_ACCESS_KEY || '',
+                secretAccessKey: process.env.SUPABASE_S3_SECRET_KEY || '',
+              },
+              region: process.env.SUPABASE_S3_REGION || 'eu-central-1',
+              forcePathStyle: true,
+            },
+          }),
+        ]
+      : []),
   ],
 
   upload: {
