@@ -156,14 +156,9 @@ export default buildConfig({
         },
       },
     }),
-    vercelBlobStorage({
-      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
-      collections: {
-        media: true,
-      },
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
-    }),
-    ...(process.env.SUPABASE_S3_ENDPOINT && !process.env.BLOB_READ_WRITE_TOKEN
+    // S3 takes priority when configured (supports large video uploads).
+    // Vercel Blob is the fallback when S3 is not available.
+    ...(process.env.SUPABASE_S3_ENDPOINT
       ? [
           s3Storage({
             collections: {
@@ -184,6 +179,13 @@ export default buildConfig({
           }),
         ]
       : []),
+    vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN) && !process.env.SUPABASE_S3_ENDPOINT,
+      collections: {
+        media: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN || '',
+    }),
   ],
 
   upload: {

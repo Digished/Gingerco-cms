@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { Block, CollectionConfig } from 'payload'
 import { Hero } from '../blocks/Hero'
 import { Content } from '../blocks/Content'
 import { AboutSection } from '../blocks/AboutSection'
@@ -17,6 +17,24 @@ import { SplitContent } from '../blocks/SplitContent'
 import { PopupModal } from '../blocks/PopupModal'
 import { PartnerSection } from '../blocks/PartnerSection'
 import { ComingSoon } from '../blocks/ComingSoon'
+
+/** Inject a hidden toggle into every block so editors can hide blocks without deleting them. */
+function withVisibility(blocks: Block[]): Block[] {
+  return blocks.map((block) => ({
+    ...block,
+    fields: [
+      {
+        name: 'hidden',
+        type: 'checkbox' as const,
+        defaultValue: false,
+        admin: {
+          description: 'Hide this block on the frontend without deleting it.',
+        },
+      },
+      ...block.fields,
+    ],
+  }))
+}
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -56,7 +74,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       required: true,
-      blocks: [Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList, BulletList, SplitContent, PopupModal, PartnerSection, ComingSoon],
+      blocks: withVisibility([Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList, BulletList, SplitContent, PopupModal, PartnerSection, ComingSoon]),
     },
     {
       name: 'meta',

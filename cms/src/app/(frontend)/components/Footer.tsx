@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import Link from 'next/link'
+import { resolveLink } from './resolveLink'
 
 function FooterIcon({ icon }: { icon: string }) {
   switch (icon) {
@@ -140,9 +141,7 @@ export function Footer({ footer }: { footer: any }) {
               // Column with icons (social/connect style)
               <div className="social-links">
                 {col.links.map((link: any, j: number) => {
-                  const href = link.linkType === 'page' && link.page
-                    ? `/${(typeof link.page === 'object' ? link.page.slug : '')}`
-                    : link.url || '#'
+                  const { href } = resolveLink(link)
                   const isExternal = link.newTab || (href.startsWith('http') || href.startsWith('mailto:'))
 
                   if (isExternal || link.linkType === 'custom') {
@@ -173,9 +172,7 @@ export function Footer({ footer }: { footer: any }) {
               // Column without icons (plain list style)
               <ul>
                 {col.links?.map((link: any, j: number) => {
-                  const href = link.linkType === 'page' && link.page
-                    ? `/${(typeof link.page === 'object' ? link.page.slug : '')}`
-                    : link.url || '#'
+                  const { href } = resolveLink(link)
                   const isExternal = link.newTab || href.startsWith('http')
 
                   return (

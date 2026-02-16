@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react'
+import { resolveLink } from '../resolveLink'
 
 function getTimeLeft(targetDate: string) {
   const diff = new Date(targetDate).getTime() - Date.now()
@@ -11,20 +12,6 @@ function getTimeLeft(targetDate: string) {
     hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
     minutes: Math.floor((diff / (1000 * 60)) % 60),
     seconds: Math.floor((diff / 1000) % 60),
-  }
-}
-
-function resolveLinkClient(link: any): { href: string; target?: string; rel?: string } {
-  let href = '#'
-  if (link.linkType === 'page' && link.page) {
-    const slug = typeof link.page === 'object' ? link.page.slug : null
-    href = slug === 'home' ? '/' : `/${slug}`
-  } else if (link.url) {
-    href = link.url
-  }
-  return {
-    href,
-    ...(link.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}),
   }
 }
 
@@ -42,7 +29,7 @@ export function CountdownTimerBlock({ block }: { block: any }) {
     return () => clearInterval(timer)
   }, [targetDate])
 
-  const resolved = link?.label ? resolveLinkClient(link) : null
+  const resolved = link?.label ? resolveLink(link) : null
 
   return (
     <section className={`block-countdown ${bgClass}`}>

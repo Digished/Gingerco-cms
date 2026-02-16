@@ -2,22 +2,21 @@
 import React from 'react'
 import Link from 'next/link'
 import { MobileMenuToggle } from './MobileMenuToggle'
+import { resolveLink } from './resolveLink'
 
 export function Header({ header }: { header: any }) {
   const logo = header?.logo
   const navItems = header?.navItems || []
 
   const navLinks = navItems.map((item: any, i: number) => {
-    const href = item.linkType === 'page' && item.page
-      ? `/${(typeof item.page === 'object' ? item.page.slug : '')}`
-      : item.url || '#'
+    const resolved = resolveLink(item)
 
     return (
       <Link
         key={i}
-        href={href}
-        target={item.newTab ? '_blank' : undefined}
-        rel={item.newTab ? 'noopener noreferrer' : undefined}
+        href={resolved.href}
+        target={resolved.target as any}
+        rel={resolved.rel}
       >
         {item.label}
       </Link>

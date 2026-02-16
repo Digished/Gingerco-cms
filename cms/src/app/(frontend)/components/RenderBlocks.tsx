@@ -46,6 +46,7 @@ export function RenderBlocks({ blocks }: { blocks: any[] }) {
   return (
     <>
       {blocks.map((block, i) => {
+        if (block.hidden) return null
         const Component = blockComponents[block.blockType]
         if (!Component) return null
         return <Component key={block.id || i} block={block} />
