@@ -19,7 +19,7 @@ export default async function EventDetail({ params }: Args) {
 
     const result = await payload.find({
       collection: 'events',
-      where: { slug: { equals: slug } },
+      where: { slug: { equals: slug }, _status: { equals: 'published' } },
       limit: 1,
       depth: 2,
     })
@@ -292,7 +292,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     const payload = await getPayload({ config: configPromise })
     const result = await payload.find({
       collection: 'events',
-      where: { slug: { equals: slug } },
+      where: { slug: { equals: slug }, _status: { equals: 'published' } },
       limit: 1,
     })
 

@@ -11,7 +11,9 @@ export async function EventsListBlock({ block }: { block: any }) {
   try {
     const payload = await getPayload({ config: configPromise })
 
-    const where: any = {}
+    const where: any = {
+      _status: { equals: 'published' },
+    }
 
     if (filterByType !== 'all') {
       where.eventType = { equals: filterByType }
