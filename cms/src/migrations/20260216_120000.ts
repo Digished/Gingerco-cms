@@ -1,6 +1,11 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
+  // ── S3 storage: add "prefix" column required by @payloadcms/storage-s3 plugin ──
+  await db.execute(sql`
+  ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "prefix" varchar;
+  `)
+
   // ── Block visibility: add "hidden" column to every block table and its version counterpart ──
   await db.execute(sql`
   ALTER TABLE "pages_blocks_hero" ADD COLUMN IF NOT EXISTS "hidden" boolean DEFAULT false;
@@ -158,6 +163,11 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
+  // Drop S3 prefix column
+  await db.execute(sql`
+  ALTER TABLE "media" DROP COLUMN IF EXISTS "prefix";
+  `)
+
   // Drop link relationship columns
   await db.execute(sql`
   ALTER TABLE "header_nav_items" DROP COLUMN IF EXISTS "link_collection";
