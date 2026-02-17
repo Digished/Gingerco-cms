@@ -64,7 +64,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
     // Payload may not be ready on first deploy
   }
 
-  const faviconUrl = typeof settings?.favicon === 'object' ? settings.favicon.url : null
+  const faviconUrl = (settings?.favicon && typeof settings.favicon === 'object') ? settings.favicon.url : null
 
   const primaryColor = settings?.primaryColor || '#E85D3A'
   const secondaryColor = settings?.secondaryColor || '#F4A261'
