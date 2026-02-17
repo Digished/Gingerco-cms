@@ -22,16 +22,16 @@ function getEmbedUrl(url: string): string | null {
 }
 
 /**
- * Google Drive URLs are converted to a direct download/stream URL
- * that works reliably with native <video> elements.
+ * Google Drive URLs are converted to the /preview embed URL
+ * which works reliably inside an iframe.
  * The file MUST be shared publicly ("Anyone with the link").
  */
-function getDriveDirectUrl(url: string): string | null {
+function getDriveEmbedUrl(url: string): string | null {
   const driveMatch = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/)
-  if (driveMatch) return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`
+  if (driveMatch) return `https://drive.google.com/file/d/${driveMatch[1]}/preview`
 
   const driveOpenMatch = url.match(/drive\.google\.com\/open\?id=([\w-]+)/)
-  if (driveOpenMatch) return `https://drive.google.com/uc?export=download&id=${driveOpenMatch[1]}`
+  if (driveOpenMatch) return `https://drive.google.com/file/d/${driveOpenMatch[1]}/preview`
 
   return null
 }
@@ -69,18 +69,22 @@ export function VideoEmbed({
     )
   }
 
-  // Google Drive → native <video> with direct download URL
-  const driveUrl = getDriveDirectUrl(url)
-  if (driveUrl) {
+  // Google Drive → iframe with /preview embed URL
+  const driveEmbedSrc = getDriveEmbedUrl(url)
+  if (driveEmbedSrc) {
     return (
-      <video
-        controls
-        preload="metadata"
-        style={{ width: '100%', aspectRatio: '16/9', borderRadius: '8px', background: '#000', ...style }}
-      >
-        <source src={driveUrl} />
-        Your browser does not support the video tag.
-      </video>
+      <iframe
+        src={driveEmbedSrc}
+        style={{
+          width: '100%',
+          aspectRatio: '16/9',
+          border: 'none',
+          borderRadius: '8px',
+          ...style,
+        }}
+        allow="autoplay; encrypted-media"
+        allowFullScreen
+      />
     )
   }
 
