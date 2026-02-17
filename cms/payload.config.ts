@@ -152,6 +152,19 @@ export default buildConfig({
         admin: {
           group: 'Forms',
         },
+        fields: ({ defaultFields }) =>
+          defaultFields.map((f) => {
+            if ('name' in f && f.name === 'submissionData' && f.type === 'array') {
+              return {
+                ...f,
+                labels: {
+                  singular: 'Entry',
+                  plural: 'Submission Data',
+                },
+              }
+            }
+            return f
+          }),
       },
     }),
     // Vercel Blob for all uploaded media (images).

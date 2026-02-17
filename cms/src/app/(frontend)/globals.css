@@ -2835,6 +2835,7 @@ select[multiple] {
 .popup-content {
   background: var(--color-white);
   color: var(--color-text, #2D2D2D);
+  text-align: left;
   padding: 2.5rem;
   border-radius: 8px;
   max-width: 600px;
@@ -2912,6 +2913,15 @@ select[multiple] {
 .modal-form .form-field select:focus {
   outline: none;
   border-color: var(--color-accent);
+}
+
+.modal-form .form-field input:invalid:not(:placeholder-shown),
+.modal-form .form-field textarea:invalid:not(:placeholder-shown),
+.modal-form .form-field select:invalid,
+.form-field input:invalid:not(:placeholder-shown),
+.form-field textarea:invalid:not(:placeholder-shown),
+.form-field select:invalid {
+  border-color: #dc3545;
 }
 
 .modal-form .form-checkbox {

@@ -50,6 +50,8 @@ export function LinkButton({
 /* ── Popup form modal ── */
 
 function FormModal({ formData, redirectUrl, onClose }: { formData: any; redirectUrl?: string | null; onClose: () => void }) {
+  const [submitted, setSubmitted] = useState(false)
+
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
@@ -61,20 +63,33 @@ function FormModal({ formData, redirectUrl, onClose }: { formData: any; redirect
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  useEffect(() => {
+    if (submitted) {
+      const timer = setTimeout(() => onClose(), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [submitted, onClose])
+
   return (
     <div className="popup-overlay" onClick={onClose}>
       <div className="popup-content" onClick={(e) => e.stopPropagation()}>
         <button className="popup-close" onClick={onClose} aria-label="Close">&times;</button>
-        {formData.title && <h2>{formData.title}</h2>}
-        <InlineForm formData={formData} redirectUrl={redirectUrl} />
+        {submitted ? (
+          <div className="form-message success">
+            {formData.confirmationMessage || 'Thank you! Your submission has been received.'}
+          </div>
+        ) : (
+          <>
+            {formData.title && <h2>{formData.title}</h2>}
+            <InlineForm formData={formData} redirectUrl={redirectUrl} onSuccess={() => setSubmitted(true)} />
+          </>
+        )}
       </div>
     </div>
   )
 }
 
-function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: string | null }) {
-  const [submitted, setSubmitted] = useState(false)
-  const [error, setError] = useState('')
+function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redirectUrl?: string | null; onSuccess: () => void }) {
   const [submitting, setSubmitting] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState<Record<number, boolean>>({})
 
@@ -84,10 +99,14 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const form = e.currentTarget
+    if (!form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
     setSubmitting(true)
-    setError('')
 
-    const data = new FormData(e.currentTarget)
+    const data = new FormData(form)
     const submissionData: any[] = []
 
     fields.forEach((field: any, idx: number) => {
@@ -107,28 +126,16 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
     })
 
     try {
-      const res = await fetch('/api/form-submissions', {
+      await fetch('/api/form-submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ form: formData.id, submissionData }),
       })
-      if (res.ok) {
-          if (redirectUrl) { window.location.href = redirectUrl; return }
-          setSubmitted(true)
-        } else { setError('Something went wrong. Please try again.') }
-    } catch {
-      setError('Network error. Please try again.')
-    } finally {
-      setSubmitting(false)
-    }
-  }
+    } catch { /* submit silently */ }
 
-  if (submitted) {
-    return (
-      <div className="form-message success">
-        {formData.confirmationMessage || 'Thank you! Your submission has been received.'}
-      </div>
-    )
+    setSubmitting(false)
+    if (redirectUrl) { window.location.href = redirectUrl; return }
+    onSuccess()
   }
 
   return (
@@ -173,8 +180,6 @@ function InlineForm({ formData, redirectUrl }: { formData: any; redirectUrl?: st
           )}
         </div>
       ))}
-
-      {error && <div className="form-message error">{error}</div>}
 
       <div className="form-submit">
         <button type="submit" className="form-submit-btn" disabled={submitting}>

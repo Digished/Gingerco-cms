@@ -59,7 +59,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
     const payload = await getPayload({ config: configPromise })
     try { header = await payload.findGlobal({ slug: 'header' }) } catch { /* column may not exist yet */ }
     try { footer = await payload.findGlobal({ slug: 'footer' }) } catch { /* column may not exist yet */ }
-    try { settings = await payload.findGlobal({ slug: 'site-settings' }) } catch { /* column may not exist yet */ }
+    try { settings = await payload.findGlobal({ slug: 'site-settings', depth: 2 }) } catch { /* column may not exist yet */ }
   } catch {
     // Payload may not be ready on first deploy
   }
