@@ -47,9 +47,9 @@ export const Gallery: Block = {
           name: 'posterImage',
           type: 'upload',
           relationTo: 'media',
+          label: 'Video Placeholder Image',
           admin: {
-            description: 'Optional placeholder image shown before the video plays',
-            condition: (_, siblingData) => siblingData?.mediaType === 'video',
+            description: 'Optional image shown before the video plays. Only used when media type is Video.',
           },
         },
         {

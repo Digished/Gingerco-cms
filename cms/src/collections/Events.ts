@@ -93,8 +93,9 @@ export const Events: CollectionConfig = {
               name: 'videoPosterImage',
               type: 'upload',
               relationTo: 'media',
+              label: 'Video Placeholder Image',
               admin: {
-                description: 'Optional placeholder image shown before the video plays.',
+                description: 'Optional image shown before the video plays.',
               },
             },
             {
