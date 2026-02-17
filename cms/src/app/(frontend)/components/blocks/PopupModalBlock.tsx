@@ -3,6 +3,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react'
 
+function ensureAbsoluteUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) return url
+  return `https://${url}`
+}
+
 export function PopupModalBlock({ block }: { block: any }) {
   const { triggerLabel, triggerStyle, alignment, modalHeading, modalSubtitle, form } = block
   const [open, setOpen] = useState(false)
@@ -101,6 +106,8 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
       })
 
       if (res.ok) {
+        const redirectUrl = formData.confirmationType === 'redirect' && formData.redirect?.url
+        if (redirectUrl) { window.location.href = ensureAbsoluteUrl(redirectUrl); return }
         setSubmitted(true)
         onSuccess()
       } else {

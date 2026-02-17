@@ -4,6 +4,11 @@
 import React, { useState, useEffect } from 'react'
 import { resolveLink } from './resolveLink'
 
+function ensureAbsoluteUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) return url
+  return `https://${url}`
+}
+
 /**
  * A link/button that either navigates or opens a popup form,
  * depending on the `linkAction` field value.
@@ -136,7 +141,9 @@ function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redir
     } catch { /* submit silently */ }
 
     setSubmitting(false)
-    if (redirectUrl) { window.location.href = redirectUrl; return }
+    // Use explicit redirect URL if provided, otherwise check form builder's own redirect config
+    const finalRedirect = redirectUrl || (formData.confirmationType === 'redirect' && formData.redirect?.url)
+    if (finalRedirect) { window.location.href = ensureAbsoluteUrl(finalRedirect); return }
     onSuccess()
   }
 

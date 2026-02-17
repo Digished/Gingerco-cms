@@ -293,14 +293,6 @@ export const Events: CollectionConfig = {
               },
             },
             {
-              name: 'ctaRedirectUrl',
-              type: 'text',
-              admin: {
-                description: 'Optional: Redirect to this URL after form is submitted.',
-                condition: (_, siblingData) => siblingData?.ctaAction === 'popup-form',
-              },
-            },
-            {
               name: 'registrationDeadline',
               type: 'date',
             },

@@ -3,6 +3,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react'
 
+function ensureAbsoluteUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) return url
+  return `https://${url}`
+}
+
 export function InlineFormBlock({ formData }: { formData: any }) {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
@@ -53,6 +58,8 @@ export function InlineFormBlock({ formData }: { formData: any }) {
       })
 
       if (res.ok) {
+        const redirectUrl = formData.confirmationType === 'redirect' && formData.redirect?.url
+        if (redirectUrl) { window.location.href = ensureAbsoluteUrl(redirectUrl); return }
         setSubmitted(true)
       } else {
         setError('Something went wrong. Please try again.')

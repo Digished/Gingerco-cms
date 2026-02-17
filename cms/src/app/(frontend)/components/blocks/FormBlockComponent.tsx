@@ -3,6 +3,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react'
 
+function ensureAbsoluteUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) return url
+  return `https://${url}`
+}
+
 export function FormBlockComponent({ block }: { block: any }) {
   const { heading, description, form, backgroundColor, accentColor = 'gold', formStyle = 'default' } = block
   const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
@@ -59,6 +64,8 @@ export function FormBlockComponent({ block }: { block: any }) {
       })
 
       if (res.ok) {
+        const redirectUrl = formData.confirmationType === 'redirect' && formData.redirect?.url
+        if (redirectUrl) { window.location.href = ensureAbsoluteUrl(redirectUrl); return }
         setSubmitted(true)
       } else {
         setError('Something went wrong. Please try again.')

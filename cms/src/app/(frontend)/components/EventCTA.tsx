@@ -3,6 +3,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react'
 
+function ensureAbsoluteUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) return url
+  return `https://${url}`
+}
+
 interface EventCTAProps {
   event: any
   currency?: string
@@ -15,7 +20,6 @@ export function EventCTA({ event, currency = '€', variant = 'section' }: Event
 
   const label = event.ctaLabel || 'Register Now'
   const formData = (event.registrationForm && typeof event.registrationForm === 'object') ? event.registrationForm : null
-  const redirectUrl = event.ctaRedirectUrl || null
 
   // Smart detection: if a form is configured, use popup mode.
   // If an external URL is set (and no form), navigate.
@@ -48,7 +52,6 @@ export function EventCTA({ event, currency = '€', variant = 'section' }: Event
           {modalOpen && (
             <FormModal
               formData={formData}
-              redirectUrl={redirectUrl}
               onClose={() => setModalOpen(false)}
             />
           )}
@@ -78,11 +81,9 @@ export function EventCTA({ event, currency = '€', variant = 'section' }: Event
 
 function FormModal({
   formData,
-  redirectUrl,
   onClose,
 }: {
   formData: any
-  redirectUrl: string | null
   onClose: () => void
 }) {
   const [submitted, setSubmitted] = useState(false)
@@ -116,7 +117,7 @@ function FormModal({
         ) : (
           <>
             {formData.title && <h2>{formData.title}</h2>}
-            <PopupForm formData={formData} redirectUrl={redirectUrl} onSuccess={() => setSubmitted(true)} />
+            <PopupForm formData={formData} onSuccess={() => setSubmitted(true)} />
           </>
         )}
       </div>
@@ -126,7 +127,7 @@ function FormModal({
 
 /* ── Form rendering ── */
 
-function PopupForm({ formData, redirectUrl, onSuccess }: { formData: any; redirectUrl: string | null; onSuccess: () => void }) {
+function PopupForm({ formData, onSuccess }: { formData: any; onSuccess: () => void }) {
   const [submitting, setSubmitting] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState<Record<number, boolean>>({})
 
@@ -174,7 +175,8 @@ function PopupForm({ formData, redirectUrl, onSuccess }: { formData: any; redire
     } catch { /* submit silently */ }
 
     setSubmitting(false)
-    if (redirectUrl) { window.location.href = redirectUrl; return }
+    const redirectUrl = formData.confirmationType === 'redirect' && formData.redirect?.url
+    if (redirectUrl) { window.location.href = ensureAbsoluteUrl(redirectUrl); return }
     onSuccess()
   }
 
