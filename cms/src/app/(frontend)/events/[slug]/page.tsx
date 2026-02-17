@@ -215,7 +215,7 @@ export default async function EventDetail({ params }: Args) {
           <section className="event-video-section">
             <div className="event-container">
               <div className="event-video-wrapper">
-                <VideoEmbed url={event.videoUrl} />
+                <VideoEmbed url={event.videoUrl} posterImage={event.videoPosterImage?.url} />
               </div>
             </div>
           </section>

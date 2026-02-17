@@ -90,6 +90,14 @@ export const Events: CollectionConfig = {
               },
             },
             {
+              name: 'videoPosterImage',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                description: 'Optional placeholder image shown before the video plays.',
+              },
+            },
+            {
               name: 'eventType',
               type: 'select',
               options: [

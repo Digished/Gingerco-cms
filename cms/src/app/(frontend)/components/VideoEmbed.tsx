@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 
 /**
  * Detects YouTube / Vimeo URLs and returns the appropriate embed src.
@@ -41,6 +41,8 @@ interface VideoEmbedProps {
   style?: React.CSSProperties
   controls?: boolean
   preload?: 'none' | 'metadata' | 'auto'
+  /** Optional placeholder image URL shown before the video plays */
+  posterImage?: string
 }
 
 export function VideoEmbed({
@@ -48,33 +50,72 @@ export function VideoEmbed({
   style,
   controls = true,
   preload = 'none',
+  posterImage,
 }: VideoEmbedProps) {
-  // YouTube / Vimeo → iframe embed
-  const embedSrc = getEmbedUrl(url)
-  if (embedSrc) {
-    return (
-      <iframe
-        src={embedSrc}
-        style={{
-          width: '100%',
-          aspectRatio: '16/9',
-          border: 'none',
-          borderRadius: '8px',
-          ...style,
-        }}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        referrerPolicy="no-referrer-when-downgrade"
-      />
-    )
-  }
+  const [activated, setActivated] = useState(false)
 
-  // Google Drive → iframe with /preview embed URL
-  const driveEmbedSrc = getDriveEmbedUrl(url)
-  if (driveEmbedSrc) {
+  const embedSrc = getEmbedUrl(url) || getDriveEmbedUrl(url)
+
+  // Iframe-based embeds (YouTube / Vimeo / Google Drive)
+  if (embedSrc) {
+    // If we have a poster image and haven't been clicked yet, show the poster
+    if (posterImage && !activated) {
+      return (
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label="Play video"
+          onClick={() => setActivated(true)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActivated(true) }}
+          style={{
+            position: 'relative',
+            width: '100%',
+            aspectRatio: '16/9',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            cursor: 'pointer',
+            ...style,
+          }}
+        >
+          <img
+            src={posterImage}
+            alt="Video placeholder"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(0,0,0,0.3)',
+            }}
+          >
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: '50%',
+                background: 'rgba(0,0,0,0.6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontSize: 28,
+              }}
+            >
+              &#9654;
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    const isYtOrVimeo = getEmbedUrl(url) !== null
     return (
       <iframe
-        src={driveEmbedSrc}
+        src={embedSrc + (activated ? '&autoplay=1' : '')}
         style={{
           width: '100%',
           aspectRatio: '16/9',
@@ -82,8 +123,13 @@ export function VideoEmbed({
           borderRadius: '8px',
           ...style,
         }}
-        allow="autoplay; encrypted-media"
+        allow={
+          isYtOrVimeo
+            ? 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+            : 'autoplay; encrypted-media'
+        }
         allowFullScreen
+        referrerPolicy={isYtOrVimeo ? 'no-referrer-when-downgrade' : undefined}
       />
     )
   }
@@ -92,7 +138,8 @@ export function VideoEmbed({
   return (
     <video
       controls={controls}
-      preload={preload}
+      preload={posterImage ? 'none' : preload}
+      poster={posterImage || undefined}
       style={{ width: '100%', borderRadius: '8px', ...style }}
     >
       <source src={url} />
