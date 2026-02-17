@@ -24,10 +24,13 @@ export function InlineFormBlock({ formData }: { formData: any }) {
     const submissionData: any[] = []
 
     fields.forEach((field: any) => {
+      if (field.blockType === 'message') return
       const name = field.name || field.label
+      if (!name) return
       const value = data.get(name)
-      if (value !== null) {
-        submissionData.push({ field: name, value: String(value) })
+      const strValue = value !== null ? String(value) : ''
+      if (strValue || field.blockType === 'checkbox') {
+        submissionData.push({ field: name, value: strValue || '(empty)' })
       }
     })
 
@@ -64,7 +67,7 @@ export function InlineFormBlock({ formData }: { formData: any }) {
   if (submitted) {
     return (
       <div className="inline-form-success">
-        {formData.confirmationMessage || 'Thank you! Your submission has been received.'}
+        {renderConfirmation(formData.confirmationMessage) || 'Thank you! Your submission has been received.'}
       </div>
     )
   }
@@ -206,6 +209,15 @@ export function InlineFormBlock({ formData }: { formData: any }) {
       </button>
     </form>
   )
+}
+
+function renderConfirmation(msg: any): React.ReactNode {
+  if (!msg) return null
+  if (typeof msg === 'string') return msg
+  if (msg?.root?.children) {
+    return <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} />
+  }
+  return null
 }
 
 function serializeRichText(content: any): string {

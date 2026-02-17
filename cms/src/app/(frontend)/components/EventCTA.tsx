@@ -111,7 +111,7 @@ function FormModal({
         <button className="popup-close" onClick={onClose} aria-label="Close">&times;</button>
         {submitted ? (
           <div className="form-message success">
-            {formData.confirmationMessage || 'Thank you! Your registration has been received.'}
+            {renderConfirmation(formData.confirmationMessage) || 'Thank you! Your registration has been received.'}
           </div>
         ) : (
           <>
@@ -147,10 +147,13 @@ function PopupForm({ formData, redirectUrl, onSuccess }: { formData: any; redire
     const submissionData: any[] = []
 
     fields.forEach((field: any) => {
+      if (field.blockType === 'message') return
       const name = field.name || field.label || field.blockName
+      if (!name) return
       const value = data.get(name)
-      if (value !== null) {
-        submissionData.push({ field: name, value: String(value) })
+      const strValue = value !== null ? String(value) : ''
+      if (strValue || field.blockType === 'checkbox') {
+        submissionData.push({ field: name, value: strValue || '(empty)' })
       }
     })
 
@@ -300,6 +303,15 @@ function renderFormField(field: any, i: number, prefix: string) {
       <input type="text" id={`${prefix}-${name}`} name={name} placeholder={label} required={field.required} />
     </div>
   )
+}
+
+function renderConfirmation(msg: any): React.ReactNode {
+  if (!msg) return null
+  if (typeof msg === 'string') return msg
+  if (msg?.root?.children) {
+    return <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} />
+  }
+  return null
 }
 
 function serializeRichText(content: any): string {

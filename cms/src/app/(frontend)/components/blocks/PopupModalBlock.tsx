@@ -71,10 +71,13 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
     const submissionData: any[] = []
 
     fields.forEach((field: any) => {
+      if (field.blockType === 'message') return
       const name = field.name || field.label
+      if (!name) return
       const value = data.get(name)
-      if (value !== null) {
-        submissionData.push({ field: name, value: String(value) })
+      const strValue = value !== null ? String(value) : ''
+      if (strValue || field.blockType === 'checkbox') {
+        submissionData.push({ field: name, value: strValue || '(empty)' })
       }
     })
 
@@ -113,7 +116,7 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
   if (submitted) {
     return (
       <div className="form-message success">
-        {formData.confirmationMessage || 'Thank you! Your submission has been received.'}
+        {renderConfirmation(formData.confirmationMessage) || 'Thank you! Your submission has been received.'}
       </div>
     )
   }
@@ -250,6 +253,15 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
       </div>
     </form>
   )
+}
+
+function renderConfirmation(msg: any): React.ReactNode {
+  if (!msg) return null
+  if (typeof msg === 'string') return msg
+  if (msg?.root?.children) {
+    return <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} />
+  }
+  return null
 }
 
 function serializeRichText(content: any): string {
