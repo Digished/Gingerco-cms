@@ -60,10 +60,8 @@ export default async function EventDetail({ params }: Args) {
             <h1>{event.title}</h1>
             {event.shortDescription && <p>{event.shortDescription}</p>}
             <div className="event-hero-actions">
-              {event.externalRegistrationUrl && (
-                <a href={event.externalRegistrationUrl} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
-                  Get Tickets
-                </a>
+              {event.registrationEnabled !== false && (
+                <EventCTA event={event} currency={currency} variant="hero" />
               )}
               {event.price != null && (
                 <span className="event-hero-price">

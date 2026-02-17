@@ -5,14 +5,16 @@ import React, { useState, useEffect } from 'react'
 
 interface EventCTAProps {
   event: any
-  currency: string
+  currency?: string
+  /** 'section' = full CTA section with heading/price. 'hero' = just the button. */
+  variant?: 'section' | 'hero'
 }
 
-export function EventCTA({ event, currency }: EventCTAProps) {
+export function EventCTA({ event, currency = '€', variant = 'section' }: EventCTAProps) {
   const [modalOpen, setModalOpen] = useState(false)
 
   const label = event.ctaLabel || 'Register Now'
-  const formData = typeof event.registrationForm === 'object' ? event.registrationForm : null
+  const formData = (event.registrationForm && typeof event.registrationForm === 'object') ? event.registrationForm : null
   const redirectUrl = event.ctaRedirectUrl || null
 
   // Smart detection: if a form is configured, use popup mode.
@@ -26,6 +28,37 @@ export function EventCTA({ event, currency }: EventCTAProps) {
 
   if (!hasUrl && !hasForm) return null
 
+  const button = (
+    <>
+      {hasUrl && (
+        <a
+          href={event.externalRegistrationUrl}
+          className="btn btn-primary"
+          {...(event.ctaNewTab !== false ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        >
+          {label}
+        </a>
+      )}
+
+      {hasForm && (
+        <>
+          <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
+            {label}
+          </button>
+          {modalOpen && (
+            <FormModal
+              formData={formData}
+              redirectUrl={redirectUrl}
+              onClose={() => setModalOpen(false)}
+            />
+          )}
+        </>
+      )}
+    </>
+  )
+
+  if (variant === 'hero') return button
+
   return (
     <section className="event-cta">
       <div className="event-container" style={{ textAlign: 'center' }}>
@@ -35,31 +68,7 @@ export function EventCTA({ event, currency }: EventCTAProps) {
             {event.price === 0 ? 'Free Event' : `From ${currency}${event.price}`}
           </p>
         )}
-
-        {hasUrl && (
-          <a
-            href={event.externalRegistrationUrl}
-            className="btn btn-primary"
-            {...(event.ctaNewTab !== false ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-          >
-            {label}
-          </a>
-        )}
-
-        {hasForm && (
-          <>
-            <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
-              {label}
-            </button>
-            {modalOpen && (
-              <FormModal
-                formData={formData}
-                redirectUrl={redirectUrl}
-                onClose={() => setModalOpen(false)}
-              />
-            )}
-          </>
-        )}
+        {button}
       </div>
     </section>
   )

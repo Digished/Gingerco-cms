@@ -2834,6 +2834,7 @@ select[multiple] {
 
 .popup-content {
   background: var(--color-white);
+  color: var(--color-text, #2D2D2D);
   padding: 2.5rem;
   border-radius: 8px;
   max-width: 600px;
@@ -2849,7 +2850,7 @@ select[multiple] {
   right: 1rem;
   font-size: 2rem;
   font-weight: bold;
-  color: var(--color-text-light);
+  color: var(--color-text-light, #666);
   cursor: pointer;
   transition: color 0.3s;
   background: none;
@@ -2873,6 +2874,7 @@ select[multiple] {
   text-transform: uppercase;
   font-family: var(--font-heading);
   padding-right: 2rem;
+  color: var(--color-text, #2D2D2D);
 }
 
 .popup-subtitle {
