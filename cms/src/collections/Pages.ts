@@ -1,17 +1,46 @@
-import type { CollectionConfig } from 'payload'
+import type { Block, CollectionConfig } from 'payload'
 import { Hero } from '../blocks/Hero'
 import { Content } from '../blocks/Content'
+import { AboutSection } from '../blocks/AboutSection'
+import { ShowcaseSection } from '../blocks/ShowcaseSection'
 import { EventsList } from '../blocks/EventsList'
 import { Gallery } from '../blocks/Gallery'
 import { CallToAction } from '../blocks/CallToAction'
 import { FAQ } from '../blocks/FAQ'
 import { FormBlock } from '../blocks/FormBlock'
+import { CountdownTimer } from '../blocks/CountdownTimer'
+import { TeamBlock } from '../blocks/TeamBlock'
+import { Testimonials } from '../blocks/Testimonials'
+import { BlogList } from '../blocks/BlogList'
+import { BulletList } from '../blocks/BulletList'
+import { SplitContent } from '../blocks/SplitContent'
+import { PopupModal } from '../blocks/PopupModal'
+import { PartnerSection } from '../blocks/PartnerSection'
+import { ComingSoon } from '../blocks/ComingSoon'
+
+/** Inject a hidden toggle into every block so editors can hide blocks without deleting them. */
+function withVisibility(blocks: Block[]): Block[] {
+  return blocks.map((block) => ({
+    ...block,
+    fields: [
+      {
+        name: 'hidden',
+        type: 'checkbox' as const,
+        defaultValue: false,
+        admin: {
+          description: 'Hide this block on the frontend without deleting it.',
+        },
+      },
+      ...block.fields,
+    ],
+  }))
+}
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
+    defaultColumns: ['title', 'slug', '_status', 'updatedAt'],
     group: 'Content',
   },
   access: {
@@ -42,22 +71,10 @@ export const Pages: CollectionConfig = {
       },
     },
     {
-      name: 'status',
-      type: 'select',
-      defaultValue: 'draft',
-      options: [
-        { label: 'Draft', value: 'draft' },
-        { label: 'Published', value: 'published' },
-      ],
-      admin: {
-        position: 'sidebar',
-      },
-    },
-    {
       name: 'layout',
       type: 'blocks',
       required: true,
-      blocks: [Hero, Content, EventsList, Gallery, CallToAction, FAQ, FormBlock],
+      blocks: withVisibility([Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList, BulletList, SplitContent, PopupModal, PartnerSection, ComingSoon]),
     },
     {
       name: 'meta',

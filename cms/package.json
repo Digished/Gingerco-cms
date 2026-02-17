@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "payload generate:importmap && next build",
     "start": "next start",
     "lint": "next lint",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
@@ -13,15 +13,15 @@
     "generate:schema": "payload generate:db-schema"
   },
   "dependencies": {
-    "@payloadcms/db-postgres": "^3.0.0",
-    "@payloadcms/next": "^3.0.0",
-    "@payloadcms/plugin-form-builder": "^3.0.0",
-    "@payloadcms/richtext-lexical": "^3.0.0",
-    "@payloadcms/storage-vercel-blob": "^3.0.0",
+    "@payloadcms/db-postgres": "~3.75.0",
+    "@payloadcms/next": "~3.75.0",
+    "@payloadcms/plugin-form-builder": "~3.75.0",
+    "@payloadcms/richtext-lexical": "~3.75.0",
+    "@payloadcms/storage-vercel-blob": "~3.75.0",
     "cross-env": "^7.0.3",
     "graphql": "^16.8.1",
-    "next": "^15.0.0",
-    "payload": "^3.0.0",
+    "next": "~15.4.11",
+    "payload": "~3.75.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sharp": "^0.32.6"

@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const CallToAction: Block = {
   slug: 'cta',
@@ -22,16 +23,7 @@ export const CallToAction: Block = {
       minRows: 1,
       maxRows: 3,
       fields: [
-        {
-          name: 'label',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'url',
-          type: 'text',
-          required: true,
-        },
+        ...linkFields,
         {
           name: 'style',
           type: 'select',
@@ -48,6 +40,16 @@ export const CallToAction: Block = {
       name: 'backgroundImage',
       type: 'upload',
       relationTo: 'media',
+    },
+    {
+      name: 'backgroundColor',
+      type: 'select',
+      defaultValue: 'dark',
+      options: [
+        { label: 'White', value: 'white' },
+        { label: 'Light Gray', value: 'light-gray' },
+        { label: 'Dark', value: 'dark' },
+      ],
     },
   ],
 }

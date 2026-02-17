@@ -35,11 +35,54 @@ export const Header: GlobalConfig = {
           ],
         },
         {
+          name: 'linkCollection',
+          type: 'select',
+          defaultValue: 'pages',
+          options: [
+            { label: 'Page', value: 'pages' },
+            { label: 'Event', value: 'events' },
+            { label: 'Blog Post', value: 'blog-posts' },
+            { label: 'Team Member', value: 'team-members' },
+          ],
+          admin: {
+            condition: (_, siblingData) => siblingData?.linkType === 'page',
+          },
+        },
+        {
           name: 'page',
           type: 'relationship',
           relationTo: 'pages',
           admin: {
-            condition: (_, siblingData) => siblingData?.linkType === 'page',
+            condition: (_, siblingData) =>
+              siblingData?.linkType === 'page' &&
+              (!siblingData?.linkCollection || siblingData?.linkCollection === 'pages'),
+          },
+        },
+        {
+          name: 'event',
+          type: 'relationship',
+          relationTo: 'events',
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.linkType === 'page' && siblingData?.linkCollection === 'events',
+          },
+        },
+        {
+          name: 'blogPost',
+          type: 'relationship',
+          relationTo: 'blog-posts',
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.linkType === 'page' && siblingData?.linkCollection === 'blog-posts',
+          },
+        },
+        {
+          name: 'teamMember',
+          type: 'relationship',
+          relationTo: 'team-members',
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.linkType === 'page' && siblingData?.linkCollection === 'team-members',
           },
         },
         {
@@ -53,6 +96,24 @@ export const Header: GlobalConfig = {
           name: 'newTab',
           type: 'checkbox',
           defaultValue: false,
+        },
+        {
+          name: 'linkAction',
+          type: 'select',
+          defaultValue: 'navigate',
+          options: [
+            { label: 'Navigate (link)', value: 'navigate' },
+            { label: 'Open Popup Form', value: 'popup-form' },
+          ],
+        },
+        {
+          name: 'popupForm',
+          type: 'relationship',
+          relationTo: 'forms',
+          admin: {
+            description: 'Form to display in a popup when clicked.',
+            condition: (_, siblingData) => siblingData?.linkAction === 'popup-form',
+          },
         },
       ],
     },
