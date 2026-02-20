@@ -1,8 +1,26 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import type { Metadata } from 'next'
 import { RenderBlocks } from './components/RenderBlocks'
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const settings = await payload.findGlobal({ slug: 'site-settings' })
+
+    return {
+      title: (settings as any)?.seoTitle || 'Ginger & Co.',
+      description: (settings as any)?.siteDescription || 'Vienna-based Afrobeats fitness company.',
+    }
+  } catch (err) {
+    console.error('[Homepage] Failed to fetch site settings:', err)
+    return {
+      title: 'Ginger & Co.',
+    }
+  }
+}
 
 export default async function HomePage() {
   let homePageData = null
@@ -21,8 +39,8 @@ export default async function HomePage() {
     })
 
     homePageData = page.docs[0]
-  } catch {
-    // Database tables may not exist yet on first deploy
+  } catch (err) {
+    console.error('[Homepage] Failed to fetch home page:', err)
   }
 
   if (!homePageData) {
