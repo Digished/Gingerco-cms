@@ -3327,11 +3327,12 @@ select[multiple] {
   font-size: 1.75rem;
   line-height: 1;
   transition: transform 0.3s;
+  display: inline-block;
 }
 
 .fab-toggle-close {
   font-size: 2rem;
-  transform: rotate(0deg);
+  transform: rotate(45deg);
 }
 
 /* Nav popup button styling (for header popup-form links) */
