@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const FAQ: Block = {
   slug: 'faq',
@@ -11,6 +12,13 @@ export const FAQ: Block = {
       name: 'heading',
       type: 'text',
       defaultValue: 'Frequently Asked Questions',
+    },
+    {
+      name: 'headingColor',
+      type: 'text',
+      admin: {
+        description: 'Custom heading color for this section (hex, e.g. #E85D3A).',
+      },
     },
     {
       name: 'items',
@@ -26,6 +34,28 @@ export const FAQ: Block = {
           name: 'answer',
           type: 'richText',
           required: true,
+        },
+      ],
+    },
+    {
+      name: 'links',
+      type: 'array',
+      label: 'Action Buttons',
+      maxRows: 3,
+      admin: {
+        description: 'Add action buttons below the FAQ list.',
+      },
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
         },
       ],
     },

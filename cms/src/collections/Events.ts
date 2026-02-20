@@ -31,6 +31,19 @@ export const Events: CollectionConfig = {
       unique: true,
       admin: {
         position: 'sidebar',
+        description: 'URL-friendly identifier. Use underscores instead of spaces (e.g. "afrobeats_workshop_2025").',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value }: { value: string }) =>
+            typeof value === 'string'
+              ? value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '')
+              : value,
+        ],
+      },
+      validate: (value: string | null | undefined) => {
+        if (value && /\s/.test(value)) return 'Slug cannot contain spaces — use underscores instead.'
+        return true
       },
     },
     {

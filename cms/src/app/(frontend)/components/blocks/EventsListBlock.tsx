@@ -2,9 +2,10 @@
 import React from 'react'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import { LinkButton } from '../LinkButton'
 
 export async function EventsListBlock({ block }: { block: any }) {
-  const { heading, showCount = 6, filterByType = 'all', layout = 'grid', backgroundColor } = block
+  const { heading, headingColor, showCount = 6, filterByType = 'all', layout = 'grid', links, backgroundColor } = block
   const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   let events: any[] = []
@@ -35,7 +36,9 @@ export async function EventsListBlock({ block }: { block: any }) {
   return (
     <section className={`block-events ${bgClass}`}>
       <div className="events-inner">
-        {heading && <h2>{heading}</h2>}
+        {heading && (
+          <h2 style={headingColor ? { color: headingColor } : undefined}>{heading}</h2>
+        )}
         {events.length === 0 ? (
           <p className="events-empty">No upcoming events at the moment. Check back soon!</p>
         ) : (
@@ -77,6 +80,13 @@ export async function EventsListBlock({ block }: { block: any }) {
                   </div>
                 </article>
               </a>
+            ))}
+          </div>
+        )}
+        {links && links.length > 0 && (
+          <div className="block-actions">
+            {links.map((link: any, i: number) => (
+              <LinkButton key={link.id || i} link={link} className={`btn btn-${link.style || 'primary'}`} />
             ))}
           </div>
         )}

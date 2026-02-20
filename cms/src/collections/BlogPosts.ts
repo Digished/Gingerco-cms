@@ -31,7 +31,19 @@ export const BlogPosts: CollectionConfig = {
       unique: true,
       admin: {
         position: 'sidebar',
-        description: 'URL path for this post (e.g. "my-first-post" becomes /blog/my-first-post).',
+        description: 'URL path for this post. Use underscores instead of spaces (e.g. "my_first_post" becomes /blog/my_first_post).',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value }: { value: string }) =>
+            typeof value === 'string'
+              ? value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '')
+              : value,
+        ],
+      },
+      validate: (value: string | null | undefined) => {
+        if (value && /\s/.test(value)) return 'Slug cannot contain spaces — use underscores instead.'
+        return true
       },
     },
     {

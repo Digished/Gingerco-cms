@@ -25,8 +25,20 @@ export const TeamMembers: CollectionConfig = {
       required: true,
       unique: true,
       admin: {
-        description: 'URL-friendly identifier (e.g. "jane-doe"). Used for the team member profile page.',
+        description: 'URL-friendly identifier. Use underscores instead of spaces (e.g. "jane_doe"). Used for the team member profile page.',
         position: 'sidebar',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value }: { value: string }) =>
+            typeof value === 'string'
+              ? value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '')
+              : value,
+        ],
+      },
+      validate: (value: string | null | undefined) => {
+        if (value && /\s/.test(value)) return 'Slug cannot contain spaces — use underscores instead.'
+        return true
       },
     },
     {

@@ -10,6 +10,9 @@ export const Media: CollectionConfig = {
   },
   upload: {
     staticDir: 'media',
+    // Enable crop and focal point selection in the admin UI
+    crop: true,
+    focalPoint: true,
     imageSizes: [
       {
         name: 'thumbnail',
@@ -27,6 +30,13 @@ export const Media: CollectionConfig = {
         name: 'hero',
         width: 1920,
         height: undefined,
+        position: 'centre',
+      },
+      // Additional size for square/portrait crops (e.g. team profiles)
+      {
+        name: 'square',
+        width: 600,
+        height: 600,
         position: 'centre',
       },
     ],

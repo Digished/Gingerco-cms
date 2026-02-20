@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const Testimonials: Block = {
   slug: 'testimonials',
@@ -13,6 +14,13 @@ export const Testimonials: Block = {
       defaultValue: 'COMMUNITY',
       admin: {
         description: 'Main section heading',
+      },
+    },
+    {
+      name: 'headingColor',
+      type: 'text',
+      admin: {
+        description: 'Custom heading color for this section (hex, e.g. #E85D3A).',
       },
     },
     {
@@ -92,6 +100,28 @@ export const Testimonials: Block = {
             description: 'Direct URL to video file (MP4)',
             condition: (_, siblingData) => siblingData?.type === 'video',
           },
+        },
+      ],
+    },
+    {
+      name: 'links',
+      type: 'array',
+      label: 'Action Buttons',
+      maxRows: 3,
+      admin: {
+        description: 'Add action buttons below the testimonials.',
+      },
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
         },
       ],
     },

@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const EventsList: Block = {
   slug: 'eventsList',
@@ -11,6 +12,13 @@ export const EventsList: Block = {
       name: 'heading',
       type: 'text',
       defaultValue: 'Upcoming Events',
+    },
+    {
+      name: 'headingColor',
+      type: 'text',
+      admin: {
+        description: 'Custom heading color for this section (hex, e.g. #E85D3A).',
+      },
     },
     {
       name: 'showCount',
@@ -41,6 +49,28 @@ export const EventsList: Block = {
       options: [
         { label: 'Grid', value: 'grid' },
         { label: 'List', value: 'list' },
+      ],
+    },
+    {
+      name: 'links',
+      type: 'array',
+      label: 'Action Buttons',
+      maxRows: 3,
+      admin: {
+        description: 'Add action buttons below the events list.',
+      },
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
+        },
       ],
     },
     {

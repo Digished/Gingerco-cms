@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const AboutSection: Block = {
   slug: 'about-section',
@@ -12,6 +13,13 @@ export const AboutSection: Block = {
       type: 'text',
       required: true,
       defaultValue: 'ABOUT US',
+    },
+    {
+      name: 'headingColor',
+      type: 'text',
+      admin: {
+        description: 'Custom heading color for this section (hex, e.g. #E85D3A).',
+      },
     },
     {
       name: 'content',
@@ -74,6 +82,28 @@ export const AboutSection: Block = {
           admin: {
             description: 'Short description below the title',
           },
+        },
+      ],
+    },
+    {
+      name: 'links',
+      type: 'array',
+      label: 'Action Buttons',
+      maxRows: 3,
+      admin: {
+        description: 'Add action buttons below the content.',
+      },
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
         },
       ],
     },

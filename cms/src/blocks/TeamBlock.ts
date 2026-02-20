@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const TeamBlock: Block = {
   slug: 'team',
@@ -11,6 +12,13 @@ export const TeamBlock: Block = {
       name: 'heading',
       type: 'text',
       defaultValue: 'Meet Our Team',
+    },
+    {
+      name: 'headingColor',
+      type: 'text',
+      admin: {
+        description: 'Custom heading color for this section (hex, e.g. #E85D3A).',
+      },
     },
     {
       name: 'description',
@@ -42,6 +50,28 @@ export const TeamBlock: Block = {
         { label: '2 Columns', value: '2' },
         { label: '3 Columns', value: '3' },
         { label: '4 Columns', value: '4' },
+      ],
+    },
+    {
+      name: 'links',
+      type: 'array',
+      label: 'Action Buttons',
+      maxRows: 3,
+      admin: {
+        description: 'Add action buttons below the team grid.',
+      },
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
+        },
       ],
     },
     {

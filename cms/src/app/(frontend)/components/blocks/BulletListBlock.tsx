@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
+import { LinkButton } from '../LinkButton'
 
 const bulletSymbols: Record<string, string> = {
   dot: '\u2022',
@@ -11,11 +12,13 @@ const bulletSymbols: Record<string, string> = {
 export function BulletListBlock({ block }: { block: any }) {
   const {
     heading,
+    headingColor,
     description,
     columns = '1',
     lists = [],
     bulletColor = '#D4AF37',
     bulletStyle = 'dot',
+    links,
     backgroundColor = 'white',
   } = block
 
@@ -25,7 +28,9 @@ export function BulletListBlock({ block }: { block: any }) {
   return (
     <section className={`block-bullet-list ${bgClass}`}>
       <div className="bullet-list-inner">
-        {heading && <h2>{heading}</h2>}
+        {heading && (
+          <h2 style={headingColor ? { color: headingColor } : undefined}>{heading}</h2>
+        )}
         {description && <p className="bullet-list-description">{description}</p>}
         <div className={`bullet-list-grid cols-${columns}`}>
           {lists.map((list: any, i: number) => (
@@ -42,6 +47,13 @@ export function BulletListBlock({ block }: { block: any }) {
             </div>
           ))}
         </div>
+        {links && links.length > 0 && (
+          <div className="block-actions">
+            {links.map((link: any, i: number) => (
+              <LinkButton key={link.id || i} link={link} className={`btn btn-${link.style || 'primary'}`} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

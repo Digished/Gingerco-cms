@@ -67,7 +67,19 @@ export const Pages: CollectionConfig = {
       unique: true,
       admin: {
         position: 'sidebar',
-        description: 'URL path for this page (e.g. "about" becomes /about).',
+        description: 'URL path for this page (e.g. "about_us" becomes /about_us). Use underscores instead of spaces.',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value }: { value: string }) =>
+            typeof value === 'string'
+              ? value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '')
+              : value,
+        ],
+      },
+      validate: (value: string | null | undefined) => {
+        if (value && /\s/.test(value)) return 'Slug cannot contain spaces — use underscores instead.'
+        return true
       },
     },
     {

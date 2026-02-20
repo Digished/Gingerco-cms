@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react'
+import { LinkButton } from '../LinkButton'
 
 function FAQItem({ question, answer }: { question: string; answer: any }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -64,7 +65,7 @@ function renderTextNode(node: any, key: number): React.ReactNode {
 }
 
 export function FAQBlock({ block }: { block: any }) {
-  const { heading, items, backgroundColor } = block
+  const { heading, headingColor, items, links, backgroundColor } = block
   const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   if (!items || items.length === 0) return null
@@ -72,10 +73,19 @@ export function FAQBlock({ block }: { block: any }) {
   return (
     <section className={`block-faq ${bgClass}`}>
       <div className="faq-inner">
-        {heading && <h2>{heading}</h2>}
+        {heading && (
+          <h2 style={headingColor ? { color: headingColor } : undefined}>{heading}</h2>
+        )}
         {items.map((item: any, i: number) => (
           <FAQItem key={item.id || i} question={item.question} answer={item.answer} />
         ))}
+        {links && links.length > 0 && (
+          <div className="block-actions">
+            {links.map((link: any, i: number) => (
+              <LinkButton key={link.id || i} link={link} className={`btn btn-${link.style || 'primary'}`} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

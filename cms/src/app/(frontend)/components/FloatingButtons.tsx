@@ -97,7 +97,15 @@ const iconMap: Record<string, React.FC> = {
   'arrow-up': ArrowUpIcon,
 }
 
-export function FloatingButtons({ buttons }: { buttons: any[] }) {
+export function FloatingButtons({
+  buttons,
+  toggleIcon = 'plus',
+  toggleColor,
+}: {
+  buttons: any[]
+  toggleIcon?: string
+  toggleColor?: string
+}) {
   const [expanded, setExpanded] = useState(false)
 
   if (!buttons || buttons.length === 0) return null
@@ -111,6 +119,8 @@ export function FloatingButtons({ buttons }: { buttons: any[] }) {
     )
   }
 
+  const ToggleIconComponent = toggleIcon !== 'plus' ? (iconMap[toggleIcon] || null) : null
+
   return (
     <div className={`fab-container ${expanded ? 'fab-expanded' : ''}`}>
       {expanded && (
@@ -122,12 +132,17 @@ export function FloatingButtons({ buttons }: { buttons: any[] }) {
       )}
       <button
         className="fab-toggle"
+        style={toggleColor ? { background: toggleColor } : undefined}
         onClick={() => setExpanded(!expanded)}
         aria-label={expanded ? 'Close menu' : 'Open menu'}
       >
-        <span className={`fab-toggle-icon ${expanded ? 'fab-toggle-close' : ''}`}>
-          {expanded ? '\u00D7' : '+'}
-        </span>
+        {expanded ? (
+          <span className="fab-toggle-icon fab-toggle-close">&times;</span>
+        ) : ToggleIconComponent ? (
+          <ToggleIconComponent />
+        ) : (
+          <span className="fab-toggle-icon">+</span>
+        )}
       </button>
     </div>
   )

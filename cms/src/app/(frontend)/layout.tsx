@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type React from 'react'
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { Header } from './components/Header'
@@ -73,6 +74,10 @@ export default async function FrontendLayout({ children }: { children: React.Rea
   const headingFont = settings?.headingFont || 'Playfair Display'
   const bodyFont = settings?.bodyFont || 'Poppins'
   const buttonStyle = settings?.buttonStyle || 'rounded'
+  const googleAnalyticsId = settings?.googleAnalyticsId || ''
+  const seoIndexing = settings?.seoIndexing || 'index'
+  const fabToggleIcon = settings?.fabToggleIcon || 'plus'
+  const fabToggleColor = settings?.fabToggleColor || undefined
 
   const fonts = new Set([headingFont, bodyFont])
   const fontFamilies = Array.from(fonts).map(f => fontMap[f]).filter(Boolean).join('&family=')
@@ -91,6 +96,12 @@ export default async function FrontendLayout({ children }: { children: React.Rea
       --btn-radius: ${buttonRadiusMap[buttonStyle] || '50px'};
     }
     .btn { border-radius: var(--btn-radius); }
+    [style*="--section-heading-color"] h1,
+    [style*="--section-heading-color"] h2,
+    [style*="--section-heading-color"] h3,
+    [style*="--section-heading-color"] h4 {
+      color: var(--section-heading-color);
+    }
   `
 
   return (
@@ -105,13 +116,30 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         )}
         {faviconUrl && <link rel="icon" href={faviconUrl} />}
         {!faviconUrl && <link rel="icon" href="/favicon.svg" />}
+        {seoIndexing === 'noindex' && <meta name="robots" content="noindex, nofollow" />}
         <style dangerouslySetInnerHTML={{ __html: themeVars }} />
       </head>
       <body>
         <Header header={header} />
         {children}
         <Footer footer={footer} />
-        <FloatingButtons buttons={settings?.floatingButtons || []} />
+        <FloatingButtons
+          buttons={settings?.floatingButtons || []}
+          toggleIcon={fabToggleIcon}
+          toggleColor={fabToggleColor}
+        />
+        {/* Google Analytics */}
+        {googleAnalyticsId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${googleAnalyticsId}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   )

@@ -36,8 +36,8 @@ export default async function TeamMemberProfile({ params }: Args) {
 
     return (
       <main className="team-profile">
-        {/* Back button */}
-        <div className="team-profile-back">
+        {/* Back button - sticky so it follows the user while scrolling */}
+        <div className="team-profile-back team-profile-back--sticky">
           <Link href="/team" className="back-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="15,18 9,12 15,6" />

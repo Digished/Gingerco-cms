@@ -2,9 +2,10 @@
 import React from 'react'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import { LinkButton } from '../LinkButton'
 
 export async function TeamBlockComponent({ block }: { block: any }) {
-  const { heading, description, showAll, selectedMembers, columns = '3', backgroundColor } = block
+  const { heading, headingColor, description, showAll, selectedMembers, columns = '3', links, backgroundColor } = block
   const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   let members: any[] = []
@@ -32,7 +33,9 @@ export async function TeamBlockComponent({ block }: { block: any }) {
   return (
     <section className={`block-team ${bgClass}`}>
       <div className="team-inner">
-        {heading && <h2>{heading}</h2>}
+        {heading && (
+          <h2 style={headingColor ? { color: headingColor } : undefined}>{heading}</h2>
+        )}
         {description && <p className="team-description">{description}</p>}
         <div className={`team-grid cols-${columns}`}>
           {members.map((member: any) => {
@@ -113,6 +116,13 @@ export async function TeamBlockComponent({ block }: { block: any }) {
             )
           })}
         </div>
+        {links && links.length > 0 && (
+          <div className="block-actions">
+            {links.map((link: any, i: number) => (
+              <LinkButton key={link.id || i} link={link} className={`btn btn-${link.style || 'primary'}`} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

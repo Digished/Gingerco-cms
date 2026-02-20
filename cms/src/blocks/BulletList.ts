@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const BulletList: Block = {
   slug: 'bulletList',
@@ -12,6 +13,13 @@ export const BulletList: Block = {
       type: 'text',
       admin: {
         description: 'Section heading (e.g. "Partnership Benefits")',
+      },
+    },
+    {
+      name: 'headingColor',
+      type: 'text',
+      admin: {
+        description: 'Custom heading color for this section (hex, e.g. #E85D3A).',
       },
     },
     {
@@ -80,6 +88,28 @@ export const BulletList: Block = {
         { label: 'Dash', value: 'dash' },
         { label: 'Check', value: 'check' },
         { label: 'Arrow', value: 'arrow' },
+      ],
+    },
+    {
+      name: 'links',
+      type: 'array',
+      label: 'Action Buttons',
+      maxRows: 3,
+      admin: {
+        description: 'Add action buttons below the list.',
+      },
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
+        },
       ],
     },
     {

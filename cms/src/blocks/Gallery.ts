@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const Gallery: Block = {
   slug: 'gallery',
@@ -10,6 +11,25 @@ export const Gallery: Block = {
     {
       name: 'heading',
       type: 'text',
+    },
+    {
+      name: 'headingColor',
+      type: 'text',
+      admin: {
+        description: 'Custom heading color for this section (hex, e.g. #E85D3A).',
+      },
+    },
+    {
+      name: 'displayMode',
+      type: 'select',
+      defaultValue: 'grid',
+      options: [
+        { label: 'Grid', value: 'grid' },
+        { label: 'Carousel / Slideshow', value: 'carousel' },
+      ],
+      admin: {
+        description: 'Grid shows all images in columns. Carousel allows swiping through images with a peek of the next.',
+      },
     },
     {
       name: 'items',
@@ -83,6 +103,32 @@ export const Gallery: Block = {
         { label: '2 Columns', value: '2' },
         { label: '3 Columns', value: '3' },
         { label: '4 Columns', value: '4' },
+      ],
+      admin: {
+        description: 'Number of columns (only applies to Grid mode).',
+        condition: (_, siblingData) => siblingData?.displayMode !== 'carousel',
+      },
+    },
+    {
+      name: 'links',
+      type: 'array',
+      label: 'Action Buttons',
+      maxRows: 3,
+      admin: {
+        description: 'Add action buttons below the gallery.',
+      },
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
+        },
       ],
     },
     {

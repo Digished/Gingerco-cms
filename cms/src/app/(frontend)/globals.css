@@ -3362,3 +3362,163 @@ select[multiple] {
     height: 52px;
   }
 }
+
+/* --- Block Action Buttons (shared across all blocks) --- */
+.block-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* --- Section Heading Color (CSS variable override) --- */
+[style*="--section-heading-color"] h1,
+[style*="--section-heading-color"] h2,
+[style*="--section-heading-color"] h3,
+[style*="--section-heading-color"] h4 {
+  color: var(--section-heading-color);
+}
+
+/* --- Gallery Carousel --- */
+.gallery-carousel {
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.gallery-carousel-track-wrapper {
+  overflow: hidden;
+  /* Show current slide at ~85% width with a peek of the next */
+  padding-right: 15%;
+}
+
+.gallery-carousel-track {
+  display: flex;
+  gap: 1rem;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.gallery-carousel-slide {
+  flex: 0 0 85%;
+  min-width: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: opacity 0.3s, transform 0.3s;
+  opacity: 0.6;
+  transform: scale(0.97);
+}
+
+.gallery-carousel-slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.gallery-carousel-slide img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+}
+
+.gallery-carousel-caption {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+/* Navigation arrows */
+.gallery-carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.gallery-carousel-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.gallery-carousel-btn:not(:disabled):hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.gallery-carousel-btn--prev {
+  left: 0.75rem;
+}
+
+.gallery-carousel-btn--next {
+  right: calc(15% + 0.75rem);
+}
+
+/* Dot indicators */
+.gallery-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.gallery-carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-border);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.gallery-carousel-dot.active {
+  background: var(--color-primary);
+  transform: scale(1.25);
+}
+
+@media (max-width: 640px) {
+  .gallery-carousel-slide img {
+    height: 260px;
+  }
+  .gallery-carousel-slide {
+    flex: 0 0 88%;
+  }
+  .gallery-carousel-track-wrapper {
+    padding-right: 12%;
+  }
+  .gallery-carousel-btn--next {
+    right: calc(12% + 0.5rem);
+  }
+}
+
+/* --- Sticky Back to Team Button --- */
+.team-profile-back--sticky {
+  position: sticky;
+  top: var(--header-height, 80px);
+  z-index: 50;
+  padding: 0.6rem 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .team-profile-back--sticky {
+    padding: 0.5rem 1rem;
+  }
+  .gallery-carousel-btn {
+    width: 36px;
+    height: 36px;
+  }
+}

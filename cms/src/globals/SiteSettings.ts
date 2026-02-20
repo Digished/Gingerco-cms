@@ -140,6 +140,33 @@ export const SiteSettings: GlobalConfig = {
           description: 'Floating action buttons displayed in the bottom-right corner of the site.',
           fields: [
             {
+              name: 'fabToggleIcon',
+              type: 'select',
+              defaultValue: 'plus',
+              admin: {
+                description: 'Icon shown on the main toggle button when multiple floating buttons are configured. Defaults to "+" sign.',
+              },
+              options: [
+                { label: '+ (Plus sign)', value: 'plus' },
+                { label: 'WhatsApp', value: 'whatsapp' },
+                { label: 'Phone', value: 'phone' },
+                { label: 'Email', value: 'email' },
+                { label: 'Instagram', value: 'instagram' },
+                { label: 'TikTok', value: 'tiktok' },
+                { label: 'Facebook', value: 'facebook' },
+                { label: 'Chat / Message', value: 'chat' },
+                { label: 'Calendar / Book', value: 'calendar' },
+              ],
+            },
+            {
+              name: 'fabToggleColor',
+              type: 'text',
+              defaultValue: '#333333',
+              admin: {
+                description: 'Background color of the main toggle button (hex). Default is dark gray.',
+              },
+            },
+            {
               name: 'floatingButtons',
               type: 'array',
               label: 'Buttons',
@@ -257,7 +284,26 @@ export const SiteSettings: GlobalConfig = {
               name: 'googleAnalyticsId',
               type: 'text',
               admin: {
-                description: 'Google Analytics measurement ID (e.g. G-XXXXXXXXXX).',
+                description: 'Google Analytics measurement ID (e.g. G-XXXXXXXXXX). Leave empty to disable tracking.',
+              },
+            },
+            {
+              name: 'seoIndexing',
+              type: 'select',
+              defaultValue: 'index',
+              options: [
+                { label: 'Allow indexing (recommended for live sites)', value: 'index' },
+                { label: 'Block indexing (for development/staging)', value: 'noindex' },
+              ],
+              admin: {
+                description: 'Controls whether search engines can index your site. Set to "Allow indexing" when your site is live.',
+              },
+            },
+            {
+              name: 'canonicalUrl',
+              type: 'text',
+              admin: {
+                description: 'Your site\'s canonical base URL (e.g. https://www.gingerandco.at). Used for SEO and sitemaps.',
               },
             },
           ],

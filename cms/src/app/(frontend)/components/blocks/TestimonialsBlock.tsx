@@ -2,6 +2,7 @@
 'use client'
 import React, { useState, useRef } from 'react'
 import { VideoEmbed } from '../VideoEmbed'
+import { LinkButton } from '../LinkButton'
 
 function Stars({ count }: { count: number }) {
   return (
@@ -68,7 +69,7 @@ function VideoTestimonial({ item }: { item: any }) {
 }
 
 export function TestimonialsBlock({ block }: { block: any }) {
-  const { heading, intro, subLabel, items, backgroundColor } = block
+  const { heading, headingColor, intro, subLabel, items, links, backgroundColor } = block
   const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
 
   if (!items || items.length === 0) return null
@@ -76,7 +77,9 @@ export function TestimonialsBlock({ block }: { block: any }) {
   return (
     <section className={`block-community ${bgClass}`}>
       <div className="community-container">
-        {heading && <h2>{heading}</h2>}
+        {heading && (
+          <h2 style={headingColor ? { color: headingColor } : undefined}>{heading}</h2>
+        )}
         {intro && <p className="community-intro">{intro}</p>}
         {subLabel && <div className="testimonials-header">{subLabel}</div>}
         <div className="testimonials">
@@ -94,6 +97,13 @@ export function TestimonialsBlock({ block }: { block: any }) {
             )
           })}
         </div>
+        {links && links.length > 0 && (
+          <div className="block-actions">
+            {links.map((link: any, i: number) => (
+              <LinkButton key={link.id || i} link={link} className={`btn btn-${link.style || 'primary'}`} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )
