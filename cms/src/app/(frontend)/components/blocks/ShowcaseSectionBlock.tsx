@@ -21,7 +21,7 @@ export function ShowcaseSectionBlock({ block }: { block: any }) {
           {sectionHeading && <h2>{sectionHeading}</h2>}
           <div className="showcase-media">
             {mediaType === 'video' && videoUrl ? (
-              <VideoEmbed url={videoUrl} style={{ height: '100%' }} />
+              <VideoEmbed url={videoUrl} posterImage={block.posterImage?.url} style={{ height: '100%' }} />
             ) : image?.url ? (
               <img src={image.url} alt={image.alt || sectionHeading || ''} loading="lazy" />
             ) : null}

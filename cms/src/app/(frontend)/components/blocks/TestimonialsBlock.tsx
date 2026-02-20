@@ -13,9 +13,9 @@ function Stars({ count }: { count: number }) {
   )
 }
 
-/** Detect YouTube / Vimeo so we know to use iframe instead of native video. */
+/** Detect YouTube / Vimeo / Google Drive so we know to use iframe via VideoEmbed. */
 function isEmbedUrl(url: string): boolean {
-  return /youtube\.com|youtu\.be|vimeo\.com/.test(url)
+  return /youtube\.com|youtu\.be|vimeo\.com|drive\.google\.com/.test(url)
 }
 
 function VideoTestimonial({ item }: { item: any }) {

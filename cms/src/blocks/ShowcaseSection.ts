@@ -41,6 +41,15 @@ export const ShowcaseSection: Block = {
       },
     },
     {
+      name: 'posterImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Video Placeholder Image',
+      admin: {
+        description: 'Optional image shown before the video plays. Only used when media type is Video.',
+      },
+    },
+    {
       name: 'mediaPosition',
       type: 'select',
       defaultValue: 'left',

@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 
 /**
  * Detects YouTube / Vimeo URLs and returns the appropriate embed src.
@@ -22,16 +22,16 @@ function getEmbedUrl(url: string): string | null {
 }
 
 /**
- * Google Drive URLs are converted to a direct download/stream URL
- * that works reliably with native <video> elements.
+ * Google Drive URLs are converted to the /preview embed URL
+ * which works reliably inside an iframe.
  * The file MUST be shared publicly ("Anyone with the link").
  */
-function getDriveDirectUrl(url: string): string | null {
+function getDriveEmbedUrl(url: string): string | null {
   const driveMatch = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/)
-  if (driveMatch) return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`
+  if (driveMatch) return `https://drive.google.com/file/d/${driveMatch[1]}/preview`
 
   const driveOpenMatch = url.match(/drive\.google\.com\/open\?id=([\w-]+)/)
-  if (driveOpenMatch) return `https://drive.google.com/uc?export=download&id=${driveOpenMatch[1]}`
+  if (driveOpenMatch) return `https://drive.google.com/file/d/${driveOpenMatch[1]}/preview`
 
   return null
 }
@@ -41,6 +41,8 @@ interface VideoEmbedProps {
   style?: React.CSSProperties
   controls?: boolean
   preload?: 'none' | 'metadata' | 'auto'
+  /** Optional placeholder image URL shown before the video plays */
+  posterImage?: string
 }
 
 export function VideoEmbed({
@@ -48,13 +50,72 @@ export function VideoEmbed({
   style,
   controls = true,
   preload = 'none',
+  posterImage,
 }: VideoEmbedProps) {
-  // YouTube / Vimeo → iframe embed
-  const embedSrc = getEmbedUrl(url)
+  const [activated, setActivated] = useState(false)
+
+  const embedSrc = getEmbedUrl(url) || getDriveEmbedUrl(url)
+
+  // Iframe-based embeds (YouTube / Vimeo / Google Drive)
   if (embedSrc) {
+    // If we have a poster image and haven't been clicked yet, show the poster
+    if (posterImage && !activated) {
+      return (
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label="Play video"
+          onClick={() => setActivated(true)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActivated(true) }}
+          style={{
+            position: 'relative',
+            width: '100%',
+            aspectRatio: '16/9',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            cursor: 'pointer',
+            ...style,
+          }}
+        >
+          <img
+            src={posterImage}
+            alt="Video placeholder"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(0,0,0,0.3)',
+            }}
+          >
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: '50%',
+                background: 'rgba(0,0,0,0.6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontSize: 28,
+              }}
+            >
+              &#9654;
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    const isYtOrVimeo = getEmbedUrl(url) !== null
     return (
       <iframe
-        src={embedSrc}
+        src={embedSrc + (activated ? '&autoplay=1' : '')}
         style={{
           width: '100%',
           aspectRatio: '16/9',
@@ -62,25 +123,14 @@ export function VideoEmbed({
           borderRadius: '8px',
           ...style,
         }}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow={
+          isYtOrVimeo
+            ? 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+            : 'autoplay; encrypted-media'
+        }
         allowFullScreen
-        referrerPolicy="no-referrer-when-downgrade"
+        referrerPolicy={isYtOrVimeo ? 'no-referrer-when-downgrade' : undefined}
       />
-    )
-  }
-
-  // Google Drive → native <video> with direct download URL
-  const driveUrl = getDriveDirectUrl(url)
-  if (driveUrl) {
-    return (
-      <video
-        controls
-        preload="metadata"
-        style={{ width: '100%', aspectRatio: '16/9', borderRadius: '8px', background: '#000', ...style }}
-      >
-        <source src={driveUrl} />
-        Your browser does not support the video tag.
-      </video>
     )
   }
 
@@ -88,7 +138,8 @@ export function VideoEmbed({
   return (
     <video
       controls={controls}
-      preload={preload}
+      preload={posterImage ? 'none' : preload}
+      poster={posterImage || undefined}
       style={{ width: '100%', borderRadius: '8px', ...style }}
     >
       <source src={url} />

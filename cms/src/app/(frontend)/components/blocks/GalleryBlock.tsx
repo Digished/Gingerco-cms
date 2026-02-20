@@ -24,7 +24,7 @@ export function GalleryBlock({ block }: { block: any }) {
               return (
                 <div key={item.id || i} className="gallery-item gallery-item--video">
                   <div className="gallery-video-wrapper">
-                    <VideoEmbed url={item.videoUrl} style={{ aspectRatio: '16/9' }} />
+                    <VideoEmbed url={item.videoUrl} posterImage={item.posterImage?.url} style={{ aspectRatio: '16/9' }} />
                   </div>
                   {item.caption && (
                     <div className="gallery-caption">{item.caption}</div>
