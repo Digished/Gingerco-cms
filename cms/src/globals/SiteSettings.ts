@@ -26,7 +26,7 @@ export const SiteSettings: GlobalConfig = {
             {
               name: 'siteDescription',
               type: 'textarea',
-              defaultValue: 'Vienna-based Afrobeats fitness company.',
+              defaultValue: 'Vienna-based boutique fitness and lifestyle company',
             },
             {
               name: 'contactEmail',

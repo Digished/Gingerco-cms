@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     default: 'Ginger & Co.',
     template: '%s | Ginger & Co.',
   },
-  description: 'Vienna-based Afrobeats fitness company.',
+  description: 'Vienna-based boutique fitness and lifestyle company',
 }
 
 const fontMap: Record<string, string> = {

@@ -780,7 +780,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE "site_settings" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"site_name" varchar DEFAULT 'Ginger & Co.' NOT NULL,
-  	"site_description" varchar DEFAULT 'Vienna-based Afrobeats fitness company.',
+  	"site_description" varchar DEFAULT 'Vienna-based boutique fitness and lifestyle company',
   	"contact_email" varchar,
   	"contact_phone" varchar,
   	"address" varchar,
