@@ -589,11 +589,17 @@ select[multiple] {
 
 .gallery-item--video {
   aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .gallery-video-wrapper {
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .gallery-video-wrapper iframe,
@@ -601,6 +607,12 @@ select[multiple] {
   width: 100%;
   height: 100%;
   border-radius: 12px;
+  display: block;
+}
+
+.gallery-video-wrapper > div {
+  width: 100%;
+  height: 100%;
 }
 
 /* --- CTA Block --- */
