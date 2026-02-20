@@ -246,6 +246,14 @@ export const SiteSettings: GlobalConfig = {
           label: 'SEO & Analytics',
           fields: [
             {
+              name: 'seoTitle',
+              type: 'text',
+              defaultValue: 'Vienna-based boutique fitness and lifestyle company',
+              admin: {
+                description: 'Main SEO title for the homepage (shown in browser tab and search results).',
+              },
+            },
+            {
               name: 'defaultSeoImage',
               type: 'upload',
               relationTo: 'media',

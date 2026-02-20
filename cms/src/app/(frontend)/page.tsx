@@ -1,8 +1,25 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import type { Metadata } from 'next'
 import { RenderBlocks } from './components/RenderBlocks'
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const settings = await payload.findGlobal({ slug: 'site-settings' })
+
+    return {
+      title: (settings as any)?.seoTitle || 'Ginger & Co.',
+      description: (settings as any)?.siteDescription || 'Vienna-based Afrobeats fitness company.',
+    }
+  } catch {
+    return {
+      title: 'Ginger & Co.',
+    }
+  }
+}
 
 export default async function HomePage() {
   let homePageData = null
