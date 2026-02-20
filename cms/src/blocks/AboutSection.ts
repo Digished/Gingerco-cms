@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const AboutSection: Block = {
   slug: 'about-section',
@@ -74,6 +75,24 @@ export const AboutSection: Block = {
           admin: {
             description: 'Short description below the title',
           },
+        },
+      ],
+    },
+    {
+      name: 'links',
+      type: 'array',
+      maxRows: 3,
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary (Filled)', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
         },
       ],
     },

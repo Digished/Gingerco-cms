@@ -76,6 +76,18 @@ export const Gallery: Block = {
       ],
     },
     {
+      name: 'layoutMode',
+      type: 'select',
+      defaultValue: 'grid',
+      options: [
+        { label: 'Grid', value: 'grid' },
+        { label: 'Carousel / Slider', value: 'carousel' },
+      ],
+      admin: {
+        description: 'Display items in a grid layout or as a carousel/slider.',
+      },
+    },
+    {
       name: 'columns',
       type: 'select',
       defaultValue: '3',
@@ -84,6 +96,9 @@ export const Gallery: Block = {
         { label: '3 Columns', value: '3' },
         { label: '4 Columns', value: '4' },
       ],
+      admin: {
+        condition: (_, siblingData) => siblingData?.layoutMode === 'grid',
+      },
     },
     {
       name: 'backgroundColor',

@@ -11,12 +11,26 @@ import './globals.css'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  title: {
-    default: 'Ginger & Co.',
-    template: '%s | Ginger & Co.',
-  },
-  description: 'Vienna-based boutique fitness and lifestyle company',
+export async function generateMetadata(): Promise<Metadata> {
+  let seoTitle = 'Ginger & Co.'
+  let seoDescription = 'Vienna-based boutique fitness and lifestyle company'
+
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
+    if (settings?.seoTitle) seoTitle = settings.seoTitle
+    if (settings?.siteDescription) seoDescription = settings.siteDescription
+  } catch {
+    // Use defaults if settings can't be loaded
+  }
+
+  return {
+    title: {
+      default: seoTitle,
+      template: `%s | ${seoTitle}`,
+    },
+    description: seoDescription,
+  }
 }
 
 const fontMap: Record<string, string> = {
@@ -111,7 +125,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         <Header header={header} />
         {children}
         <Footer footer={footer} />
-        <FloatingButtons buttons={settings?.floatingButtons || []} />
+        <FloatingButtons buttons={settings?.floatingButtons || []} toggleIcon={settings?.toggleIcon} />
       </body>
     </html>
   )

@@ -85,7 +85,17 @@ function ArrowUpIcon() {
   )
 }
 
+function PlusIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  )
+}
+
 const iconMap: Record<string, React.FC> = {
+  plus: PlusIcon,
   whatsapp: WhatsAppIcon,
   phone: PhoneIcon,
   email: EmailIcon,
@@ -97,7 +107,7 @@ const iconMap: Record<string, React.FC> = {
   'arrow-up': ArrowUpIcon,
 }
 
-export function FloatingButtons({ buttons }: { buttons: any[] }) {
+export function FloatingButtons({ buttons, toggleIcon }: { buttons: any[]; toggleIcon?: string }) {
   const [expanded, setExpanded] = useState(false)
 
   if (!buttons || buttons.length === 0) return null
@@ -110,6 +120,8 @@ export function FloatingButtons({ buttons }: { buttons: any[] }) {
       </div>
     )
   }
+
+  const IconComponent = iconMap[toggleIcon || 'chat'] || ChatIcon
 
   return (
     <div className={`fab-container ${expanded ? 'fab-expanded' : ''}`}>
@@ -126,7 +138,7 @@ export function FloatingButtons({ buttons }: { buttons: any[] }) {
         aria-label={expanded ? 'Close menu' : 'Open menu'}
       >
         <span className={`fab-toggle-icon ${expanded ? 'fab-toggle-close' : ''}`}>
-          {expanded ? '\u00D7' : '+'}
+          {expanded ? '\u00D7' : <IconComponent />}
         </span>
       </button>
     </div>

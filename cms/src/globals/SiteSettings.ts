@@ -140,12 +140,32 @@ export const SiteSettings: GlobalConfig = {
           description: 'Floating action buttons displayed in the bottom-right corner of the site.',
           fields: [
             {
+              name: 'toggleIcon',
+              type: 'select',
+              defaultValue: 'chat',
+              options: [
+                { label: 'Plus Sign (+)', value: 'plus' },
+                { label: 'Chat / Message', value: 'chat' },
+                { label: 'WhatsApp', value: 'whatsapp' },
+                { label: 'Phone', value: 'phone' },
+                { label: 'Email', value: 'email' },
+                { label: 'Calendar / Book', value: 'calendar' },
+                { label: 'Instagram', value: 'instagram' },
+                { label: 'TikTok', value: 'tiktok' },
+                { label: 'Facebook', value: 'facebook' },
+                { label: 'Arrow Up', value: 'arrow-up' },
+              ],
+              admin: {
+                description: 'Icon to display on the toggle button (when there are multiple floating buttons). The × will show when expanded.',
+              },
+            },
+            {
               name: 'floatingButtons',
               type: 'array',
               label: 'Buttons',
               maxRows: 5,
               admin: {
-                description: 'Add up to 5 floating action buttons. They stack vertically above the primary button.',
+                description: 'Add up to 5 floating action buttons. They stack vertically above the toggle button.',
               },
               fields: [
                 {
