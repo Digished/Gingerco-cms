@@ -232,9 +232,14 @@ function FabFormModal({ formData, onClose }: { formData: any; onClose: () => voi
     const data = new FormData(e.currentTarget)
     const submissionData: any[] = []
     fields.forEach((field: any) => {
+      if (field.blockType === 'message') return
       const name = field.name || field.label
+      if (!name) return
       const value = data.get(name)
-      if (value !== null) submissionData.push({ field: name, value: String(value) })
+      const strValue = value !== null ? String(value) : ''
+      if (strValue || field.blockType === 'checkbox') {
+        submissionData.push({ field: name, value: strValue || '(empty)' })
+      }
     })
     try {
       const res = await fetch('/api/form-submissions', {
@@ -242,9 +247,19 @@ function FabFormModal({ formData, onClose }: { formData: any; onClose: () => voi
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ form: formData.id, submissionData }),
       })
-      if (res.ok) { setSubmitted(true) } else { setError('Something went wrong.') }
-    } catch { setError('Network error.') }
-    finally { setSubmitting(false) }
+      if (res.ok) {
+        setSubmitted(true)
+      } else {
+        const errBody = await res.text().catch(() => '(unreadable)')
+        console.error('[FAB form] Submission failed', res.status, errBody)
+        setError('Something went wrong. Please try again.')
+      }
+    } catch (err) {
+      console.error('[FAB form] Network error', err)
+      setError('Network error. Please check your connection.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -254,7 +269,7 @@ function FabFormModal({ formData, onClose }: { formData: any; onClose: () => voi
         {formData.title && <h2>{formData.title}</h2>}
         {submitted ? (
           <div className="form-message success">
-            {formData.confirmationMessage || 'Thank you! Your submission has been received.'}
+            {renderConfirmation(formData.confirmationMessage) || 'Thank you! Your submission has been received.'}
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="modal-form">
@@ -279,4 +294,22 @@ function FabFormModal({ formData, onClose }: { formData: any; onClose: () => voi
       </div>
     </div>
   )
+}
+
+function renderConfirmation(msg: any): React.ReactNode {
+  if (!msg) return null
+  if (typeof msg === 'string') return msg
+  if (msg?.root?.children) {
+    const html = msg.root.children
+      .map((node: any) => {
+        if (node.type === 'paragraph') {
+          const text = (node.children || []).map((c: any) => c.text || '').join('')
+          return `<p>${text}</p>`
+        }
+        return ''
+      })
+      .join('')
+    return <div dangerouslySetInnerHTML={{ __html: html }} />
+  }
+  return null
 }
