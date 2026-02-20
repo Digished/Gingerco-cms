@@ -102,6 +102,20 @@ export const Gallery: Block = {
       },
     },
     {
+      name: 'slidesPerView',
+      type: 'select',
+      defaultValue: '1',
+      options: [
+        { label: '1 Slide (Full Width)', value: '1' },
+        { label: '2 Slides', value: '2' },
+        { label: '3 Slides', value: '3' },
+      ],
+      admin: {
+        description: 'Number of slides visible at once in the carousel.',
+        condition: (_, siblingData) => siblingData?.layoutMode === 'carousel',
+      },
+    },
+    {
       name: 'backgroundColor',
       type: 'select',
       defaultValue: 'white',

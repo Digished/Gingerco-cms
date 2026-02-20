@@ -21,7 +21,7 @@ export const BlogPosts: CollectionConfig = {
   hooks: {
     beforeValidate: [
       ({ data }) => {
-        if (data.slug && typeof data.slug === 'string') {
+        if (data?.slug && typeof data.slug === 'string') {
           data.slug = data.slug.replace(/\s+/g, '_')
         }
         return data
