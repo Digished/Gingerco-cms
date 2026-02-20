@@ -125,7 +125,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         <Header header={header} />
         {children}
         <Footer footer={footer} />
-        <FloatingButtons buttons={settings?.floatingButtons || []} toggleIcon={settings?.toggleIcon} />
+        <FloatingButtons buttons={settings?.floatingButtons || []} toggleIcon={settings?.toggleIcon} toggleButtonColor={settings?.toggleButtonColor} />
       </body>
     </html>
   )

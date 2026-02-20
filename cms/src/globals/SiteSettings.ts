@@ -160,6 +160,14 @@ export const SiteSettings: GlobalConfig = {
               },
             },
             {
+              name: 'toggleButtonColor',
+              type: 'text',
+              defaultValue: '#E85D3A',
+              admin: {
+                description: 'Background color of the toggle button (hex code, e.g. #E85D3A)',
+              },
+            },
+            {
               name: 'floatingButtons',
               type: 'array',
               label: 'Buttons',

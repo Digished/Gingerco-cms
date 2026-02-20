@@ -107,7 +107,7 @@ const iconMap: Record<string, React.FC> = {
   'arrow-up': ArrowUpIcon,
 }
 
-export function FloatingButtons({ buttons, toggleIcon }: { buttons: any[]; toggleIcon?: string }) {
+export function FloatingButtons({ buttons, toggleIcon, toggleButtonColor }: { buttons: any[]; toggleIcon?: string; toggleButtonColor?: string }) {
   const [expanded, setExpanded] = useState(false)
 
   if (!buttons || buttons.length === 0) return null
@@ -134,6 +134,7 @@ export function FloatingButtons({ buttons, toggleIcon }: { buttons: any[]; toggl
       )}
       <button
         className="fab-toggle"
+        style={{ background: toggleButtonColor || '#E85D3A' }}
         onClick={() => setExpanded(!expanded)}
         aria-label={expanded ? 'Close menu' : 'Open menu'}
       >
