@@ -2175,6 +2175,9 @@ select[multiple] {
 .team-profile-back {
   background: #000;
   padding: 1rem 1.5rem 0;
+  position: sticky;
+  top: var(--header-height);
+  z-index: 50;
 }
 
 .team-profile-back .back-link {
