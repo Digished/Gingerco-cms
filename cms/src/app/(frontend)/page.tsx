@@ -21,8 +21,9 @@ export default async function HomePage() {
     })
 
     homePageData = page.docs[0]
-  } catch {
+  } catch (err) {
     // Database tables may not exist yet on first deploy
+    console.error('[HomePage] Failed to load page data:', err instanceof Error ? err.message : String(err))
   }
 
   if (!homePageData) {
