@@ -35,7 +35,7 @@ export const Events: CollectionConfig = {
       },
       hooks: {
         beforeValidate: [
-          ({ value }: { value: string }) =>
+          ({ value }: { value?: string | null }) =>
             typeof value === 'string'
               ? value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '')
               : value,
