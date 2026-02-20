@@ -1,7 +1,7 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
-  // Add alignment column to pre-existing link tables only.
+  // Add alignment column to ALL pre-existing link tables.
   // Tables for blocks that newly received a links field (eventsList, faq, team,
   // testimonials, partnerSection, gallery) are created fresh by Payload from the
   // updated schema and therefore already include the alignment column — no ALTER needed.
@@ -29,6 +29,18 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "pages_blocks_hero_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
   ALTER TABLE "_pages_v_blocks_hero_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
   `)
+
+  // Showcase section links (already existed)
+  await db.execute(sql`
+  ALTER TABLE "pages_blocks_showcase_section_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "_pages_v_blocks_showcase_section_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  `)
+
+  // Call to action links (already existed)
+  await db.execute(sql`
+  ALTER TABLE "pages_blocks_cta_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "_pages_v_blocks_cta_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  `)
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
@@ -41,5 +53,9 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
   ALTER TABLE "_pages_v_blocks_split_content_links" DROP COLUMN IF EXISTS "alignment";
   ALTER TABLE "pages_blocks_hero_links" DROP COLUMN IF EXISTS "alignment";
   ALTER TABLE "_pages_v_blocks_hero_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "pages_blocks_showcase_section_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "_pages_v_blocks_showcase_section_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "pages_blocks_cta_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "_pages_v_blocks_cta_links" DROP COLUMN IF EXISTS "alignment";
   `)
 }
