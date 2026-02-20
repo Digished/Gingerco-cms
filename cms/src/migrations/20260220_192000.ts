@@ -12,12 +12,13 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "_pages_v_blocks_gallery" ADD COLUMN IF NOT EXISTS "layout_mode" varchar DEFAULT 'grid';
   `)
 
-  // Create pages_blocks_content_links table
+  // Create pages_blocks_content_links table with proper schema
   await db.execute(sql`
   CREATE TABLE IF NOT EXISTS "pages_blocks_content_links" (
     "_order" integer,
     "_parent_id" varchar NOT NULL,
     "id" varchar PRIMARY KEY,
+    "_uuid" uuid,
     "label" varchar NOT NULL,
     "link_type" varchar DEFAULT 'custom',
     "link_collection" varchar DEFAULT 'pages',
@@ -32,6 +33,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     "popup_redirect_url" varchar,
     "style" varchar DEFAULT 'primary'
   );
+  CREATE INDEX IF NOT EXISTS "pages_blocks_content_links_parent_id_idx" on "pages_blocks_content_links" ("_parent_id");
   `)
 
   // Create pages_blocks_about_section_links table
@@ -40,6 +42,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     "_order" integer,
     "_parent_id" varchar NOT NULL,
     "id" varchar PRIMARY KEY,
+    "_uuid" uuid,
     "label" varchar NOT NULL,
     "link_type" varchar DEFAULT 'custom',
     "link_collection" varchar DEFAULT 'pages',
@@ -54,6 +57,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     "popup_redirect_url" varchar,
     "style" varchar DEFAULT 'primary'
   );
+  CREATE INDEX IF NOT EXISTS "pages_blocks_about_section_links_parent_id_idx" on "pages_blocks_about_section_links" ("_parent_id");
   `)
 
   // Create pages_blocks_split_content_links table
@@ -62,6 +66,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     "_order" integer,
     "_parent_id" varchar NOT NULL,
     "id" varchar PRIMARY KEY,
+    "_uuid" uuid,
     "label" varchar NOT NULL,
     "link_type" varchar DEFAULT 'custom',
     "link_collection" varchar DEFAULT 'pages',
@@ -76,14 +81,16 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     "popup_redirect_url" varchar,
     "style" varchar DEFAULT 'primary'
   );
+  CREATE INDEX IF NOT EXISTS "pages_blocks_split_content_links_parent_id_idx" on "pages_blocks_split_content_links" ("_parent_id");
   `)
 
-  // Create version tables for links
+  // Create version tables with proper schema
   await db.execute(sql`
   CREATE TABLE IF NOT EXISTS "_pages_v_blocks_content_links" (
     "_order" integer,
     "_parent_id" varchar NOT NULL,
     "id" varchar PRIMARY KEY,
+    "_uuid" uuid,
     "label" varchar NOT NULL,
     "link_type" varchar DEFAULT 'custom',
     "link_collection" varchar DEFAULT 'pages',
@@ -98,6 +105,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     "popup_redirect_url" varchar,
     "style" varchar DEFAULT 'primary'
   );
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_content_links_parent_id_idx" on "_pages_v_blocks_content_links" ("_parent_id");
   `)
 
   await db.execute(sql`
@@ -105,6 +113,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     "_order" integer,
     "_parent_id" varchar NOT NULL,
     "id" varchar PRIMARY KEY,
+    "_uuid" uuid,
     "label" varchar NOT NULL,
     "link_type" varchar DEFAULT 'custom',
     "link_collection" varchar DEFAULT 'pages',
@@ -119,6 +128,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     "popup_redirect_url" varchar,
     "style" varchar DEFAULT 'primary'
   );
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_about_section_links_parent_id_idx" on "_pages_v_blocks_about_section_links" ("_parent_id");
   `)
 
   await db.execute(sql`
@@ -126,6 +136,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     "_order" integer,
     "_parent_id" varchar NOT NULL,
     "id" varchar PRIMARY KEY,
+    "_uuid" uuid,
     "label" varchar NOT NULL,
     "link_type" varchar DEFAULT 'custom',
     "link_collection" varchar DEFAULT 'pages',
@@ -140,6 +151,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     "popup_redirect_url" varchar,
     "style" varchar DEFAULT 'primary'
   );
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_split_content_links_parent_id_idx" on "_pages_v_blocks_split_content_links" ("_parent_id");
   `)
 }
 
@@ -157,11 +169,11 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
 
   // Drop link tables
   await db.execute(sql`
-  DROP TABLE IF EXISTS "pages_blocks_content_links";
-  DROP TABLE IF EXISTS "pages_blocks_about_section_links";
-  DROP TABLE IF EXISTS "pages_blocks_split_content_links";
-  DROP TABLE IF EXISTS "_pages_v_blocks_content_links";
-  DROP TABLE IF EXISTS "_pages_v_blocks_about_section_links";
-  DROP TABLE IF EXISTS "_pages_v_blocks_split_content_links";
+  DROP TABLE IF EXISTS "pages_blocks_content_links" CASCADE;
+  DROP TABLE IF EXISTS "pages_blocks_about_section_links" CASCADE;
+  DROP TABLE IF EXISTS "pages_blocks_split_content_links" CASCADE;
+  DROP TABLE IF EXISTS "_pages_v_blocks_content_links" CASCADE;
+  DROP TABLE IF EXISTS "_pages_v_blocks_about_section_links" CASCADE;
+  DROP TABLE IF EXISTS "_pages_v_blocks_split_content_links" CASCADE;
   `)
 }
