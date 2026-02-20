@@ -3,8 +3,9 @@ import React from 'react'
 import { LinkButton } from '../LinkButton'
 
 export function CTABlock({ block }: { block: any }) {
-  const { heading, description, links, backgroundImage, backgroundColor } = block
+  const { heading, description, links, backgroundImage, backgroundColor, alignment = 'center' } = block
   const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
+  const alignmentClass = `align-${alignment}`
 
   return (
     <section className={`block-cta ${bgClass}`}>
@@ -15,7 +16,7 @@ export function CTABlock({ block }: { block: any }) {
         <h2>{heading}</h2>
         {description && <p className="cta-description">{description}</p>}
         {links && links.length > 0 && (
-          <div className="cta-links">
+          <div className={`cta-links ${alignmentClass}`}>
             {links.map((link: any, i: number) => (
               <LinkButton
                 key={link.id || i}

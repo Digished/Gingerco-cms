@@ -51,5 +51,18 @@ export const CallToAction: Block = {
         { label: 'Dark', value: 'dark' },
       ],
     },
+    {
+      name: 'alignment',
+      type: 'select',
+      defaultValue: 'center',
+      options: [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center' },
+        { label: 'Right', value: 'right' },
+      ],
+      admin: {
+        description: 'Align buttons to the left, center, or right.',
+      },
+    },
   ],
 }
