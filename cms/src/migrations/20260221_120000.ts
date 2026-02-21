@@ -11,25 +11,19 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`ALTER TABLE "_pages_v_blocks_hero_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
 
   // Hero-specific style enum (includes 'dark')
-  try {
-    await db.execute(sql`
-      CREATE TYPE "enum_pages_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
-    `)
-  } catch (error: any) {
-    if (!error.message.includes('already exists')) throw error
-  }
+  await db.execute(sql`DROP TYPE IF EXISTS "enum_pages_blocks_hero_links_style" CASCADE`)
+  await db.execute(sql`
+    CREATE TYPE "enum_pages_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
+  `)
   await db.execute(sql`
     ALTER TABLE "pages_blocks_hero_links"
     ALTER COLUMN "style" TYPE "enum_pages_blocks_hero_links_style" USING "style"::"enum_pages_blocks_hero_links_style";
   `)
 
-  try {
-    await db.execute(sql`
-      CREATE TYPE "enum__pages_v_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
-    `)
-  } catch (error: any) {
-    if (!error.message.includes('already exists')) throw error
-  }
+  await db.execute(sql`DROP TYPE IF EXISTS "enum__pages_v_blocks_hero_links_style" CASCADE`)
+  await db.execute(sql`
+    CREATE TYPE "enum__pages_v_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
+  `)
   await db.execute(sql`
     ALTER TABLE "_pages_v_blocks_hero_links"
     ALTER COLUMN "style" TYPE "enum__pages_v_blocks_hero_links_style" USING "style"::"enum__pages_v_blocks_hero_links_style";
@@ -50,13 +44,10 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   }
 
   for (const block of standardStyleBlocks) {
-    try {
-      await db.execute(sql`
-        CREATE TYPE "enum_pages_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
-      `)
-    } catch (error: any) {
-      if (!error.message.includes('already exists')) throw error
-    }
+    await db.execute(sql`DROP TYPE IF EXISTS "enum_pages_blocks_${block}_links_style" CASCADE`)
+    await db.execute(sql`
+      CREATE TYPE "enum_pages_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
+    `)
     await db.execute(sql`
       ALTER TABLE "pages_blocks_${block}_links"
       ALTER COLUMN "style" TYPE "enum_pages_blocks_${block}_links_style" USING "style"::"enum_pages_blocks_${block}_links_style";
@@ -64,13 +55,10 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   }
 
   for (const block of standardStyleBlocks) {
-    try {
-      await db.execute(sql`
-        CREATE TYPE "enum__pages_v_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
-      `)
-    } catch (error: any) {
-      if (!error.message.includes('already exists')) throw error
-    }
+    await db.execute(sql`DROP TYPE IF EXISTS "enum__pages_v_blocks_${block}_links_style" CASCADE`)
+    await db.execute(sql`
+      CREATE TYPE "enum__pages_v_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
+    `)
     await db.execute(sql`
       ALTER TABLE "_pages_v_blocks_${block}_links"
       ALTER COLUMN "style" TYPE "enum__pages_v_blocks_${block}_links_style" USING "style"::"enum__pages_v_blocks_${block}_links_style";
@@ -78,16 +66,10 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   }
 
   // Create alignment enum for all link tables
-  try {
-    await db.execute(sql`
-      CREATE TYPE "enum_link_alignment" AS ENUM('left', 'center', 'right');
-    `)
-  } catch (error: any) {
-    // Type already exists, that's fine
-    if (!error.message.includes('already exists')) {
-      throw error
-    }
-  }
+  await db.execute(sql`DROP TYPE IF EXISTS "enum_link_alignment" CASCADE`)
+  await db.execute(sql`
+    CREATE TYPE "enum_link_alignment" AS ENUM('left', 'center', 'right');
+  `)
 
   const allLinkBlocks = [
     'hero', 'content', 'about_section', 'split_content', 'showcase_section',
