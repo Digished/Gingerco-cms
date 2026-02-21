@@ -48,21 +48,6 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`ALTER TABLE "pages_blocks_gallery_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
   await db.execute(sql`ALTER TABLE "_pages_v_blocks_gallery_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
   await db.execute(sql`ALTER TABLE "_pages_v_blocks_gallery_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
-
-  await db.execute(sql`ALTER TABLE "pages_blocks_partner_section_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
-  await db.execute(sql`ALTER TABLE "pages_blocks_partner_section_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_partner_section_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_partner_section_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
-
-  await db.execute(sql`ALTER TABLE "pages_blocks_team_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
-  await db.execute(sql`ALTER TABLE "pages_blocks_team_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_team_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_team_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
-
-  await db.execute(sql`ALTER TABLE "pages_blocks_testimonials_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
-  await db.execute(sql`ALTER TABLE "pages_blocks_testimonials_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_testimonials_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_testimonials_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
@@ -110,19 +95,4 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`ALTER TABLE "pages_blocks_gallery_links" DROP COLUMN IF EXISTS "style"`)
   await db.execute(sql`ALTER TABLE "_pages_v_blocks_gallery_links" DROP COLUMN IF EXISTS "alignment"`)
   await db.execute(sql`ALTER TABLE "_pages_v_blocks_gallery_links" DROP COLUMN IF EXISTS "style"`)
-
-  await db.execute(sql`ALTER TABLE "pages_blocks_partner_section_links" DROP COLUMN IF EXISTS "alignment"`)
-  await db.execute(sql`ALTER TABLE "pages_blocks_partner_section_links" DROP COLUMN IF EXISTS "style"`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_partner_section_links" DROP COLUMN IF EXISTS "alignment"`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_partner_section_links" DROP COLUMN IF EXISTS "style"`)
-
-  await db.execute(sql`ALTER TABLE "pages_blocks_team_links" DROP COLUMN IF EXISTS "alignment"`)
-  await db.execute(sql`ALTER TABLE "pages_blocks_team_links" DROP COLUMN IF EXISTS "style"`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_team_links" DROP COLUMN IF EXISTS "alignment"`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_team_links" DROP COLUMN IF EXISTS "style"`)
-
-  await db.execute(sql`ALTER TABLE "pages_blocks_testimonials_links" DROP COLUMN IF EXISTS "alignment"`)
-  await db.execute(sql`ALTER TABLE "pages_blocks_testimonials_links" DROP COLUMN IF EXISTS "style"`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_testimonials_links" DROP COLUMN IF EXISTS "alignment"`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_testimonials_links" DROP COLUMN IF EXISTS "style"`)
 }
