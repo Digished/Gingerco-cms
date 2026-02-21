@@ -109,17 +109,4 @@ export const linkFields: Field[] = [
       condition: (_, siblingData) => siblingData?.linkAction === 'popup-form',
     },
   },
-  {
-    name: 'alignment',
-    type: 'select',
-    defaultValue: 'left',
-    options: [
-      { label: 'Left', value: 'left' },
-      { label: 'Center', value: 'center' },
-      { label: 'Right', value: 'right' },
-    ],
-    admin: {
-      description: 'Alignment of this link/button',
-    },
-  },
 ]
