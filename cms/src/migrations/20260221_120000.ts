@@ -2,21 +2,34 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
   // Create enum types for style and alignment fields in all link tables
-  // These columns were added as varchar in migration 20260220_210000
-  // Now we convert them to proper enum types
+  // Ensure columns exist first (in case migration 20260220_210000 didn't run)
+
+  // Add columns if they don't exist
+  await db.execute(sql`ALTER TABLE "pages_blocks_hero_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
+  await db.execute(sql`ALTER TABLE "pages_blocks_hero_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
+  await db.execute(sql`ALTER TABLE "_pages_v_blocks_hero_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
+  await db.execute(sql`ALTER TABLE "_pages_v_blocks_hero_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
 
   // Hero-specific style enum (includes 'dark')
-  await db.execute(sql`
-    CREATE TYPE "enum_pages_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
-  `)
+  try {
+    await db.execute(sql`
+      CREATE TYPE "enum_pages_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
+    `)
+  } catch (error: any) {
+    if (!error.message.includes('already exists')) throw error
+  }
   await db.execute(sql`
     ALTER TABLE "pages_blocks_hero_links"
     ALTER COLUMN "style" TYPE "enum_pages_blocks_hero_links_style" USING "style"::"enum_pages_blocks_hero_links_style";
   `)
 
-  await db.execute(sql`
-    CREATE TYPE "enum__pages_v_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
-  `)
+  try {
+    await db.execute(sql`
+      CREATE TYPE "enum__pages_v_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
+    `)
+  } catch (error: any) {
+    if (!error.message.includes('already exists')) throw error
+  }
   await db.execute(sql`
     ALTER TABLE "_pages_v_blocks_hero_links"
     ALTER COLUMN "style" TYPE "enum__pages_v_blocks_hero_links_style" USING "style"::"enum__pages_v_blocks_hero_links_style";
@@ -28,10 +41,22 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     'cta', 'events_list', 'faq', 'gallery', 'partner_section', 'team', 'testimonials'
   ];
 
+  // Add columns if they don't exist for standard blocks
   for (const block of standardStyleBlocks) {
-    await db.execute(sql`
-      CREATE TYPE "enum_pages_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
-    `)
+    await db.execute(sql`ALTER TABLE "pages_blocks_${block}_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
+    await db.execute(sql`ALTER TABLE "pages_blocks_${block}_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
+    await db.execute(sql`ALTER TABLE "_pages_v_blocks_${block}_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
+    await db.execute(sql`ALTER TABLE "_pages_v_blocks_${block}_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
+  }
+
+  for (const block of standardStyleBlocks) {
+    try {
+      await db.execute(sql`
+        CREATE TYPE "enum_pages_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
+      `)
+    } catch (error: any) {
+      if (!error.message.includes('already exists')) throw error
+    }
     await db.execute(sql`
       ALTER TABLE "pages_blocks_${block}_links"
       ALTER COLUMN "style" TYPE "enum_pages_blocks_${block}_links_style" USING "style"::"enum_pages_blocks_${block}_links_style";
@@ -39,9 +64,13 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   }
 
   for (const block of standardStyleBlocks) {
-    await db.execute(sql`
-      CREATE TYPE "enum__pages_v_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
-    `)
+    try {
+      await db.execute(sql`
+        CREATE TYPE "enum__pages_v_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
+      `)
+    } catch (error: any) {
+      if (!error.message.includes('already exists')) throw error
+    }
     await db.execute(sql`
       ALTER TABLE "_pages_v_blocks_${block}_links"
       ALTER COLUMN "style" TYPE "enum__pages_v_blocks_${block}_links_style" USING "style"::"enum__pages_v_blocks_${block}_links_style";
@@ -49,9 +78,16 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   }
 
   // Create alignment enum for all link tables
-  await db.execute(sql`
-    CREATE TYPE "enum_link_alignment" AS ENUM('left', 'center', 'right');
-  `)
+  try {
+    await db.execute(sql`
+      CREATE TYPE "enum_link_alignment" AS ENUM('left', 'center', 'right');
+    `)
+  } catch (error: any) {
+    // Type already exists, that's fine
+    if (!error.message.includes('already exists')) {
+      throw error
+    }
+  }
 
   const allLinkBlocks = [
     'hero', 'content', 'about_section', 'split_content', 'showcase_section',
