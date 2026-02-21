@@ -1,10 +1,7 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
-  // Add alignment and style columns to ALL pre-existing link tables.
-  // Tables for blocks that newly received a links field (eventsList, faq, team,
-  // testimonials, partnerSection, gallery) are created fresh by Payload from the
-  // updated schema and therefore already include these columns — no ALTER needed.
+  // Add alignment and style columns to ALL link tables (pre-existing and newly created).
 
   // Content block links (already existed)
   await db.execute(sql`
@@ -53,6 +50,54 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "_pages_v_blocks_cta_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
   ALTER TABLE "_pages_v_blocks_cta_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
   `)
+
+  // Events list links (newly added)
+  await db.execute(sql`
+  ALTER TABLE "pages_blocks_events_list_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "pages_blocks_events_list_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  ALTER TABLE "_pages_v_blocks_events_list_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "_pages_v_blocks_events_list_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  `)
+
+  // FAQ links (newly added)
+  await db.execute(sql`
+  ALTER TABLE "pages_blocks_faq_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "pages_blocks_faq_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  ALTER TABLE "_pages_v_blocks_faq_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "_pages_v_blocks_faq_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  `)
+
+  // Gallery links (newly added)
+  await db.execute(sql`
+  ALTER TABLE "pages_blocks_gallery_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "pages_blocks_gallery_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  ALTER TABLE "_pages_v_blocks_gallery_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "_pages_v_blocks_gallery_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  `)
+
+  // Partner section links (newly added)
+  await db.execute(sql`
+  ALTER TABLE "pages_blocks_partner_section_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "pages_blocks_partner_section_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  ALTER TABLE "_pages_v_blocks_partner_section_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "_pages_v_blocks_partner_section_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  `)
+
+  // Team block links (newly added)
+  await db.execute(sql`
+  ALTER TABLE "pages_blocks_team_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "pages_blocks_team_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  ALTER TABLE "_pages_v_blocks_team_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "_pages_v_blocks_team_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  `)
+
+  // Testimonials links (newly added)
+  await db.execute(sql`
+  ALTER TABLE "pages_blocks_testimonials_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "pages_blocks_testimonials_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  ALTER TABLE "_pages_v_blocks_testimonials_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left';
+  ALTER TABLE "_pages_v_blocks_testimonials_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary';
+  `)
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
@@ -81,5 +126,29 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
   ALTER TABLE "pages_blocks_cta_links" DROP COLUMN IF EXISTS "style";
   ALTER TABLE "_pages_v_blocks_cta_links" DROP COLUMN IF EXISTS "alignment";
   ALTER TABLE "_pages_v_blocks_cta_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "pages_blocks_events_list_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "pages_blocks_events_list_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "_pages_v_blocks_events_list_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "_pages_v_blocks_events_list_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "pages_blocks_faq_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "pages_blocks_faq_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "_pages_v_blocks_faq_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "_pages_v_blocks_faq_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "pages_blocks_gallery_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "pages_blocks_gallery_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "_pages_v_blocks_gallery_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "_pages_v_blocks_gallery_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "pages_blocks_partner_section_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "pages_blocks_partner_section_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "_pages_v_blocks_partner_section_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "_pages_v_blocks_partner_section_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "pages_blocks_team_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "pages_blocks_team_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "_pages_v_blocks_team_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "_pages_v_blocks_team_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "pages_blocks_testimonials_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "pages_blocks_testimonials_links" DROP COLUMN IF EXISTS "style";
+  ALTER TABLE "_pages_v_blocks_testimonials_links" DROP COLUMN IF EXISTS "alignment";
+  ALTER TABLE "_pages_v_blocks_testimonials_links" DROP COLUMN IF EXISTS "style";
   `)
 }
