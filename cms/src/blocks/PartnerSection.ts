@@ -33,7 +33,6 @@ export const PartnerSection: Block = {
       options: [
         { label: 'Logo Grid', value: 'grid' },
         { label: 'Logo Row (Scrollable)', value: 'row' },
-        { label: 'Carousel / Slide', value: 'slide' },
       ],
     },
     {

@@ -58,7 +58,7 @@ export function GalleryBlock({ block }: { block: any }) {
               style={{ transform: `translateX(-${currentSlide * itemWidthPct}%)` }}
             >
               {galleryItems.map((item, i) => (
-                <div key={item.id || i} style={{ flex: `0 0 ${itemWidthPct}%`, maxWidth: `${itemWidthPct}%` }}>
+                <div key={item.id || i} style={{ flex: `0 0 ${itemWidthPct}%`, maxWidth: `${itemWidthPct}%`, boxSizing: 'border-box', padding: '0 12px' }}>
                   {renderItem(item, i)}
                 </div>
               ))}
