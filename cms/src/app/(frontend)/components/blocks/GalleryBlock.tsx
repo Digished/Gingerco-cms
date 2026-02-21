@@ -5,7 +5,8 @@ import React, { useState } from 'react'
 import { VideoEmbed } from '../VideoEmbed'
 
 export function GalleryBlock({ block }: { block: any }) {
-  const { heading, columns = '3', backgroundColor, layoutMode = 'grid' } = block
+  const { heading, columns = '3', backgroundColor, layoutMode = 'grid', slidesPerView = '1' } = block
+  const slidesPerViewNum = parseInt(slidesPerView, 10) || 1
   const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
   const [currentSlide, setCurrentSlide] = useState(0)
 
@@ -45,32 +46,41 @@ export function GalleryBlock({ block }: { block: any }) {
   }
 
   if (isCarousel) {
+    const maxSlide = Math.max(0, galleryItems.length - slidesPerViewNum)
+    const itemWidthPct = 100 / slidesPerViewNum
     return (
       <section className={`block-gallery ${bgClass}`}>
         <div className="gallery-inner">
           {heading && <h2>{heading}</h2>}
           <div className="gallery-carousel-container">
-            <div className="gallery-carousel" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-              {galleryItems.map((item, i) => renderItem(item, i))}
+            <div
+              className="gallery-carousel"
+              style={{ transform: `translateX(-${currentSlide * itemWidthPct}%)` }}
+            >
+              {galleryItems.map((item, i) => (
+                <div key={item.id || i} style={{ flex: `0 0 ${itemWidthPct}%`, maxWidth: `${itemWidthPct}%` }}>
+                  {renderItem(item, i)}
+                </div>
+              ))}
             </div>
-            {galleryItems.length > 1 && (
+            {galleryItems.length > slidesPerViewNum && (
               <>
                 <button
                   className="carousel-nav carousel-prev"
-                  onClick={() => setCurrentSlide((prev) => (prev === 0 ? galleryItems.length - 1 : prev - 1))}
+                  onClick={() => setCurrentSlide((prev) => Math.max(0, prev - 1))}
                   aria-label="Previous slide"
                 >
                   ‹
                 </button>
                 <button
                   className="carousel-nav carousel-next"
-                  onClick={() => setCurrentSlide((prev) => (prev === galleryItems.length - 1 ? 0 : prev + 1))}
+                  onClick={() => setCurrentSlide((prev) => Math.min(maxSlide, prev + 1))}
                   aria-label="Next slide"
                 >
                   ›
                 </button>
                 <div className="carousel-dots">
-                  {galleryItems.map((_, i) => (
+                  {Array.from({ length: maxSlide + 1 }).map((_, i) => (
                     <button
                       key={i}
                       className={`carousel-dot ${currentSlide === i ? 'active' : ''}`}

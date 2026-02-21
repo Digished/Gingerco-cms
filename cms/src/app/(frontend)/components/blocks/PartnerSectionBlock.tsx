@@ -2,6 +2,7 @@
 import React from 'react'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import { PartnerCarousel } from './PartnerCarousel'
 
 export async function PartnerSectionBlock({ block }: { block: any }) {
   const { heading, description, partners: partnerIds, layout, backgroundColor } = block
@@ -29,30 +30,34 @@ export async function PartnerSectionBlock({ block }: { block: any }) {
       <div className="partners-inner">
         {heading && <h2>{heading}</h2>}
         {description && <p className="partners-description">{description}</p>}
-        <div className={`partners-display ${layout === 'row' ? 'partners-row' : 'partners-grid'}`}>
-          {partners.map((partner: any) => {
-            const logo = partner.logo
-            const content = (
-              <div key={partner.id} className="partner-item">
-                {logo?.url ? (
-                  <img src={logo.url} alt={partner.name} loading="lazy" />
-                ) : (
-                  <span className="partner-name-fallback">{partner.name}</span>
-                )}
-              </div>
-            )
-
-            if (partner.url) {
-              return (
-                <a key={partner.id} href={partner.url} target="_blank" rel="noopener noreferrer" className="partner-link">
-                  {content}
-                </a>
+        {layout === 'slide' ? (
+          <PartnerCarousel partners={partners} />
+        ) : (
+          <div className={`partners-display ${layout === 'row' ? 'partners-row' : 'partners-grid'}`}>
+            {partners.map((partner: any) => {
+              const logo = partner.logo
+              const content = (
+                <div key={partner.id} className="partner-item">
+                  {logo?.url ? (
+                    <img src={logo.url} alt={partner.name} loading="lazy" />
+                  ) : (
+                    <span className="partner-name-fallback">{partner.name}</span>
+                  )}
+                </div>
               )
-            }
 
-            return content
-          })}
-        </div>
+              if (partner.url) {
+                return (
+                  <a key={partner.id} href={partner.url} target="_blank" rel="noopener noreferrer" className="partner-link">
+                    {content}
+                  </a>
+                )
+              }
+
+              return content
+            })}
+          </div>
+        )}
       </div>
     </section>
   )
