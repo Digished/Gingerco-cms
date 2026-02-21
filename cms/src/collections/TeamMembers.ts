@@ -13,6 +13,16 @@ export const TeamMembers: CollectionConfig = {
     update: ({ req: { user } }) => Boolean(user),
     delete: ({ req: { user } }) => Boolean(user),
   },
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (data?.slug && typeof data.slug === 'string') {
+          data.slug = data.slug.replace(/\s+/g, '_')
+        }
+        return data
+      },
+    ],
+  },
   fields: [
     {
       name: 'name',

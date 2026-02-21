@@ -54,6 +54,16 @@ export const Pages: CollectionConfig = {
       autosave: true,
     },
   },
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (data?.slug && typeof data.slug === 'string') {
+          data.slug = data.slug.replace(/\s+/g, '_')
+        }
+        return data
+      },
+    ],
+  },
   fields: [
     {
       name: 'title',

@@ -9,7 +9,6 @@ export const linkFields: Field[] = [
   {
     name: 'label',
     type: 'text',
-    required: true,
   },
   {
     name: 'linkType',

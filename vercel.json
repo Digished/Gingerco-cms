@@ -1,0 +1,4 @@
+{
+  "buildCommand": "cd cms && npm run payload -- migrate && npm run build",
+  "outputDirectory": "cms/.next"
+}

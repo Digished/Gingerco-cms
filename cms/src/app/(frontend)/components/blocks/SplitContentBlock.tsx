@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { RichTextRenderer } from '../RichTextRenderer'
 import { InlineFormBlock } from './InlineFormBlock'
+import { ClientLinkButtons } from '../ClientLinkButtons'
 
 const layoutMap: Record<string, string> = {
   '50-50': '1fr 1fr',
@@ -58,6 +59,7 @@ export async function SplitContentBlock({ block }: { block: any }) {
     rightColumn,
     backgroundColor = 'white',
     verticalAlign = 'top',
+    links,
   } = block
 
   const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : ''
@@ -79,6 +81,11 @@ export async function SplitContentBlock({ block }: { block: any }) {
           <ColumnContent col={rightColumn} />
         </div>
       </div>
+      {links && links.length > 0 && (
+        <div className="split-content-links">
+          <ClientLinkButtons links={links} />
+        </div>
+      )}
     </section>
   )
 }

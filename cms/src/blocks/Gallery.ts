@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const Gallery: Block = {
   slug: 'gallery',
@@ -76,6 +77,18 @@ export const Gallery: Block = {
       ],
     },
     {
+      name: 'layoutMode',
+      type: 'select',
+      defaultValue: 'grid',
+      options: [
+        { label: 'Grid', value: 'grid' },
+        { label: 'Carousel / Slider', value: 'carousel' },
+      ],
+      admin: {
+        description: 'Display items in a grid layout or as a carousel/slider.',
+      },
+    },
+    {
       name: 'columns',
       type: 'select',
       defaultValue: '3',
@@ -84,6 +97,23 @@ export const Gallery: Block = {
         { label: '3 Columns', value: '3' },
         { label: '4 Columns', value: '4' },
       ],
+      admin: {
+        condition: (_, siblingData) => siblingData?.layoutMode === 'grid',
+      },
+    },
+    {
+      name: 'slidesPerView',
+      type: 'select',
+      defaultValue: '1',
+      options: [
+        { label: '1 Slide (Full Width)', value: '1' },
+        { label: '2 Slides', value: '2' },
+        { label: '3 Slides', value: '3' },
+      ],
+      admin: {
+        description: 'Number of slides visible at once in the carousel.',
+        condition: (_, siblingData) => siblingData?.layoutMode === 'carousel',
+      },
     },
     {
       name: 'backgroundColor',
@@ -93,6 +123,24 @@ export const Gallery: Block = {
         { label: 'White', value: 'white' },
         { label: 'Light Gray', value: 'light-gray' },
         { label: 'Dark', value: 'dark' },
+      ],
+    },
+    {
+      name: 'links',
+      type: 'array',
+      maxRows: 3,
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary (Filled)', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
+        },
       ],
     },
   ],

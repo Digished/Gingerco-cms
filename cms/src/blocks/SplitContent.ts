@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const SplitContent: Block = {
   slug: 'splitContent',
@@ -117,6 +118,24 @@ export const SplitContent: Block = {
       options: [
         { label: 'Top', value: 'top' },
         { label: 'Center', value: 'center' },
+      ],
+    },
+    {
+      name: 'links',
+      type: 'array',
+      maxRows: 3,
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary (Filled)', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
+        },
       ],
     },
   ],

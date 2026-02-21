@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkFields } from '../fields/linkFields'
 
 export const Content: Block = {
   slug: 'content',
@@ -31,6 +32,24 @@ export const Content: Block = {
         condition: (_, siblingData) =>
           siblingData?.layout === 'text-image' || siblingData?.layout === 'image-text',
       },
+    },
+    {
+      name: 'links',
+      type: 'array',
+      maxRows: 3,
+      fields: [
+        ...linkFields,
+        {
+          name: 'style',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary (Filled)', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
+        },
+      ],
     },
     {
       name: 'backgroundColor',
