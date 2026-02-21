@@ -110,19 +110,6 @@ export const linkFields: Field[] = [
     },
   },
   {
-    name: 'style',
-    type: 'select',
-    defaultValue: 'primary',
-    options: [
-      { label: 'Primary', value: 'primary' },
-      { label: 'Secondary', value: 'secondary' },
-      { label: 'Tertiary', value: 'tertiary' },
-    ],
-    admin: {
-      description: 'Style/variant of this link/button',
-    },
-  },
-  {
     name: 'alignment',
     type: 'select',
     defaultValue: 'left',
