@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { VideoEmbed } from '../VideoEmbed'
 
 export function GalleryBlock({ block }: { block: any }) {
@@ -9,6 +9,20 @@ export function GalleryBlock({ block }: { block: any }) {
   const slidesPerViewNum = parseInt(slidesPerView, 10) || 1
   const bgClass = backgroundColor === 'dark' ? 'bg-dark' : backgroundColor === 'light-gray' ? 'bg-light-gray' : 'bg-white'
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mq.matches)
+    const handler = (e: MediaQueryListEvent) => {
+      setIsMobile(e.matches)
+      setCurrentSlide(0)
+    }
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  const effectiveSlidesPerView = isMobile ? 1 : slidesPerViewNum
 
   // Support new "items" array and fall back to legacy "images" array
   const galleryItems: any[] = block.items?.length ? block.items : block.images || []
@@ -46,8 +60,8 @@ export function GalleryBlock({ block }: { block: any }) {
   }
 
   if (isCarousel) {
-    const maxSlide = Math.max(0, galleryItems.length - slidesPerViewNum)
-    const itemWidthPct = 100 / slidesPerViewNum
+    const maxSlide = Math.max(0, galleryItems.length - effectiveSlidesPerView)
+    const itemWidthPct = 100 / effectiveSlidesPerView
     return (
       <section className={`block-gallery ${bgClass}`}>
         <div className="gallery-inner">
@@ -63,7 +77,7 @@ export function GalleryBlock({ block }: { block: any }) {
                 </div>
               ))}
             </div>
-            {galleryItems.length > slidesPerViewNum && (
+            {galleryItems.length > effectiveSlidesPerView && (
               <>
                 <button
                   className="carousel-nav carousel-prev"

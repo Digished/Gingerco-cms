@@ -27,15 +27,6 @@ export const PartnerSection: Block = {
       },
     },
     {
-      name: 'layout',
-      type: 'select',
-      defaultValue: 'grid',
-      options: [
-        { label: 'Logo Grid', value: 'grid' },
-        { label: 'Logo Row (Scrollable)', value: 'row' },
-      ],
-    },
-    {
       name: 'backgroundColor',
       type: 'select',
       defaultValue: 'white',

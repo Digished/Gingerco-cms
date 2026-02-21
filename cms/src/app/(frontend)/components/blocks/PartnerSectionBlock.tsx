@@ -4,7 +4,7 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
 export async function PartnerSectionBlock({ block }: { block: any }) {
-  const { heading, description, partners: partnerIds, layout, backgroundColor } = block
+  const { heading, description, partners: partnerIds, backgroundColor } = block
 
   if (!partnerIds || partnerIds.length === 0) return null
 
@@ -29,7 +29,7 @@ export async function PartnerSectionBlock({ block }: { block: any }) {
       <div className="partners-inner">
         {heading && <h2>{heading}</h2>}
         {description && <p className="partners-description">{description}</p>}
-        <div className={`partners-display ${layout === 'row' ? 'partners-row' : 'partners-grid'}`}>
+        <div className="partners-display partners-grid">
           {partners.map((partner: any) => {
             const logo = partner.logo
             const content = (
