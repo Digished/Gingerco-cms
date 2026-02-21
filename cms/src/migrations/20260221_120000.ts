@@ -1,63 +1,79 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
-  // Create enum types for style and alignment fields in all link tables
-  // Ensure columns exist first (in case migration 20260220_210000 didn't run)
+  // Fix: Add only alignment column (style already exists)
+  // and convert both to correct enum types
 
-  // Add columns if they don't exist
-  await db.execute(sql`ALTER TABLE "pages_blocks_hero_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
-  await db.execute(sql`ALTER TABLE "pages_blocks_hero_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_hero_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
-  await db.execute(sql`ALTER TABLE "_pages_v_blocks_hero_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
+  const allBlocks = [
+    'hero', 'content', 'about_section', 'split_content', 'showcase_section',
+    'cta', 'events_list', 'faq', 'gallery', 'partner_section', 'team', 'testimonials'
+  ];
 
-  // Hero-specific style enum (includes 'dark')
+  const heroStyleValues = ['primary', 'outline', 'dark'];
+  const standardStyleValues = ['primary', 'secondary', 'outline'];
+
+  // Step 1: Add alignment column where missing, convert existing style columns to varchar
+  for (const block of allBlocks) {
+    const isHero = block === 'hero';
+
+    // Add alignment column if missing
+    await db.execute(sql`ALTER TABLE "pages_blocks_${block}_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
+    await db.execute(sql`ALTER TABLE "_pages_v_blocks_${block}_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
+
+    // Convert style to varchar temporarily (needed to recreate enum)
+    await db.execute(sql`ALTER TABLE "pages_blocks_${block}_links" ALTER COLUMN "style" TYPE varchar USING "style"::varchar`)
+    await db.execute(sql`ALTER TABLE "_pages_v_blocks_${block}_links" ALTER COLUMN "style" TYPE varchar USING "style"::varchar`)
+  }
+
+  // Step 2: Drop old enum types
+  await db.execute(sql`DROP TYPE IF EXISTS "public"."enum_pages_blocks_hero_links_style" CASCADE`)
   await db.execute(sql`DROP TYPE IF EXISTS "enum_pages_blocks_hero_links_style" CASCADE`)
+  await db.execute(sql`DROP TYPE IF EXISTS "enum__pages_v_blocks_hero_links_style" CASCADE`)
+
+  const standardStyleBlocks = [
+    'content', 'about_section', 'split_content', 'showcase_section',
+    'cta', 'events_list', 'faq', 'gallery', 'partner_section', 'team', 'testimonials'
+  ];
+
+  for (const block of standardStyleBlocks) {
+    await db.execute(sql`DROP TYPE IF EXISTS "public"."enum_pages_blocks_${block}_links_style" CASCADE`)
+    await db.execute(sql`DROP TYPE IF EXISTS "enum_pages_blocks_${block}_links_style" CASCADE`)
+    await db.execute(sql`DROP TYPE IF EXISTS "enum__pages_v_blocks_${block}_links_style" CASCADE`)
+  }
+
+  // Step 3: Create correct enum types
+  // Hero enum with dark value
   await db.execute(sql`
     CREATE TYPE "enum_pages_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
   `)
   await db.execute(sql`
-    ALTER TABLE "pages_blocks_hero_links"
-    ALTER COLUMN "style" TYPE "enum_pages_blocks_hero_links_style" USING "style"::"enum_pages_blocks_hero_links_style";
+    CREATE TYPE "enum__pages_v_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
   `)
 
-  await db.execute(sql`DROP TYPE IF EXISTS "enum__pages_v_blocks_hero_links_style" CASCADE`)
+  // Standard enum for other blocks
+  for (const block of standardStyleBlocks) {
+    await db.execute(sql`
+      CREATE TYPE "enum_pages_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
+    `)
+    await db.execute(sql`
+      CREATE TYPE "enum__pages_v_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
+    `)
+  }
+
+  // Step 4: Convert style columns back to correct enum types
   await db.execute(sql`
-    CREATE TYPE "enum__pages_v_blocks_hero_links_style" AS ENUM('primary', 'outline', 'dark');
+    ALTER TABLE "pages_blocks_hero_links"
+    ALTER COLUMN "style" TYPE "enum_pages_blocks_hero_links_style" USING "style"::"enum_pages_blocks_hero_links_style";
   `)
   await db.execute(sql`
     ALTER TABLE "_pages_v_blocks_hero_links"
     ALTER COLUMN "style" TYPE "enum__pages_v_blocks_hero_links_style" USING "style"::"enum__pages_v_blocks_hero_links_style";
   `)
 
-  // Standard style enum (primary, secondary, outline) for all other blocks
-  const standardStyleBlocks = [
-    'content', 'about_section', 'split_content', 'showcase_section',
-    'cta', 'events_list', 'faq', 'gallery', 'partner_section', 'team', 'testimonials'
-  ];
-
-  // Add columns if they don't exist for standard blocks
   for (const block of standardStyleBlocks) {
-    await db.execute(sql`ALTER TABLE "pages_blocks_${block}_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
-    await db.execute(sql`ALTER TABLE "pages_blocks_${block}_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
-    await db.execute(sql`ALTER TABLE "_pages_v_blocks_${block}_links" ADD COLUMN IF NOT EXISTS "alignment" varchar DEFAULT 'left'`)
-    await db.execute(sql`ALTER TABLE "_pages_v_blocks_${block}_links" ADD COLUMN IF NOT EXISTS "style" varchar DEFAULT 'primary'`)
-  }
-
-  for (const block of standardStyleBlocks) {
-    await db.execute(sql`DROP TYPE IF EXISTS "enum_pages_blocks_${block}_links_style" CASCADE`)
-    await db.execute(sql`
-      CREATE TYPE "enum_pages_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
-    `)
     await db.execute(sql`
       ALTER TABLE "pages_blocks_${block}_links"
       ALTER COLUMN "style" TYPE "enum_pages_blocks_${block}_links_style" USING "style"::"enum_pages_blocks_${block}_links_style";
-    `)
-  }
-
-  for (const block of standardStyleBlocks) {
-    await db.execute(sql`DROP TYPE IF EXISTS "enum__pages_v_blocks_${block}_links_style" CASCADE`)
-    await db.execute(sql`
-      CREATE TYPE "enum__pages_v_blocks_${block}_links_style" AS ENUM('primary', 'secondary', 'outline');
     `)
     await db.execute(sql`
       ALTER TABLE "_pages_v_blocks_${block}_links"
@@ -65,18 +81,14 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     `)
   }
 
-  // Create alignment enum for all link tables
+  // Step 5: Create alignment enum type
   await db.execute(sql`DROP TYPE IF EXISTS "enum_link_alignment" CASCADE`)
   await db.execute(sql`
     CREATE TYPE "enum_link_alignment" AS ENUM('left', 'center', 'right');
   `)
 
-  const allLinkBlocks = [
-    'hero', 'content', 'about_section', 'split_content', 'showcase_section',
-    'cta', 'events_list', 'faq', 'gallery', 'partner_section', 'team', 'testimonials'
-  ];
-
-  for (const block of allLinkBlocks) {
+  // Step 6: Convert alignment columns to enum
+  for (const block of allBlocks) {
     await db.execute(sql`
       ALTER TABLE "pages_blocks_${block}_links"
       ALTER COLUMN "alignment" TYPE "enum_link_alignment" USING "alignment"::"enum_link_alignment";
@@ -89,13 +101,13 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
-  // Convert enum columns back to varchar and drop enum types
-  const allLinkBlocks = [
+  const allBlocks = [
     'hero', 'content', 'about_section', 'split_content', 'showcase_section',
     'cta', 'events_list', 'faq', 'gallery', 'partner_section', 'team', 'testimonials'
   ];
 
-  for (const block of allLinkBlocks) {
+  // Convert back to varchar
+  for (const block of allBlocks) {
     await db.execute(sql`
       ALTER TABLE "pages_blocks_${block}_links"
       ALTER COLUMN "alignment" TYPE varchar USING "alignment"::varchar;
@@ -104,38 +116,34 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
       ALTER TABLE "_pages_v_blocks_${block}_links"
       ALTER COLUMN "alignment" TYPE varchar USING "alignment"::varchar;
     `)
+    await db.execute(sql`
+      ALTER TABLE "pages_blocks_${block}_links"
+      ALTER COLUMN "style" TYPE varchar USING "style"::varchar;
+    `)
+    await db.execute(sql`
+      ALTER TABLE "_pages_v_blocks_${block}_links"
+      ALTER COLUMN "style" TYPE varchar USING "style"::varchar;
+    `)
   }
 
-  await db.execute(sql`DROP TYPE IF EXISTS "enum_link_alignment" CASCADE`)
-
-  // Drop hero style enum
-  await db.execute(sql`
-    ALTER TABLE "pages_blocks_hero_links"
-    ALTER COLUMN "style" TYPE varchar USING "style"::varchar;
-  `)
-  await db.execute(sql`
-    ALTER TABLE "_pages_v_blocks_hero_links"
-    ALTER COLUMN "style" TYPE varchar USING "style"::varchar;
-  `)
+  // Drop enum types
   await db.execute(sql`DROP TYPE IF EXISTS "enum_pages_blocks_hero_links_style" CASCADE`)
   await db.execute(sql`DROP TYPE IF EXISTS "enum__pages_v_blocks_hero_links_style" CASCADE`)
+  await db.execute(sql`DROP TYPE IF EXISTS "enum_link_alignment" CASCADE`)
 
-  // Drop standard style enums
   const standardStyleBlocks = [
     'content', 'about_section', 'split_content', 'showcase_section',
     'cta', 'events_list', 'faq', 'gallery', 'partner_section', 'team', 'testimonials'
   ];
 
   for (const block of standardStyleBlocks) {
-    await db.execute(sql`
-      ALTER TABLE "pages_blocks_${block}_links"
-      ALTER COLUMN "style" TYPE varchar USING "style"::varchar;
-    `)
-    await db.execute(sql`
-      ALTER TABLE "_pages_v_blocks_${block}_links"
-      ALTER COLUMN "style" TYPE varchar USING "style"::varchar;
-    `)
     await db.execute(sql`DROP TYPE IF EXISTS "enum_pages_blocks_${block}_links_style" CASCADE`)
     await db.execute(sql`DROP TYPE IF EXISTS "enum__pages_v_blocks_${block}_links_style" CASCADE`)
+  }
+
+  // Drop alignment column
+  for (const block of allBlocks) {
+    await db.execute(sql`ALTER TABLE "pages_blocks_${block}_links" DROP COLUMN IF EXISTS "alignment"`)
+    await db.execute(sql`ALTER TABLE "_pages_v_blocks_${block}_links" DROP COLUMN IF EXISTS "alignment"`)
   }
 }
