@@ -109,6 +109,8 @@ export const Gallery: Block = {
         { label: '1 Slide (Full Width)', value: '1' },
         { label: '2 Slides', value: '2' },
         { label: '3 Slides', value: '3' },
+        { label: '4 Slides', value: '4' },
+        { label: '5 Slides', value: '5' },
       ],
       admin: {
         description: 'Number of slides visible at once in the carousel.',

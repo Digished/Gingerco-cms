@@ -209,7 +209,7 @@ export function FormBlockComponent({ block }: { block: any }) {
                 </div>
               ))}
 
-              {section.collapsibleContent && (
+              {section.collapsibleContent && serializeRichText(section.collapsibleContent).trim() && (
                 <div className="collapsible-details">
                   <button
                     type="button"

@@ -18,6 +18,37 @@ import { PopupModal } from '../blocks/PopupModal'
 import { PartnerSection } from '../blocks/PartnerSection'
 import { ComingSoon } from '../blocks/ComingSoon'
 
+/** Returns true only if val is a non-empty relationship value (id string/number or populated object). */
+function isValidRelation(val: unknown): boolean {
+  if (!val) return false
+  if (typeof val === 'string') return val.length > 0
+  if (typeof val === 'number') return true
+  if (typeof val === 'object' && val !== null && 'id' in val && (val as Record<string, unknown>).id) return true
+  return false
+}
+
+/** Strip empty/invalid link rows from a block's links array before validation. */
+function cleanBlockLinks(block: Record<string, unknown>): Record<string, unknown> {
+  if (!Array.isArray(block?.links)) return block
+  const cleaned = (block.links as Record<string, unknown>[])
+    .map((link) => ({
+      ...link,
+      // Null out relationship fields that are empty objects (missing id → triggers "invalid: id")
+      page: isValidRelation(link?.page) ? link.page : null,
+      event: isValidRelation(link?.event) ? link.event : null,
+      blogPost: isValidRelation(link?.blogPost) ? link.blogPost : null,
+      teamMember: isValidRelation(link?.teamMember) ? link.teamMember : null,
+    }))
+    .filter((link) => {
+      // Drop rows that have no label and no meaningful target
+      const hasLabel = Boolean(link?.label)
+      const hasUrl = Boolean(link?.url)
+      const hasTarget = link?.page || link?.event || link?.blogPost || link?.teamMember
+      return hasLabel || hasUrl || hasTarget
+    })
+  return { ...block, links: cleaned }
+}
+
 /** Inject a hidden toggle into every block so editors can hide blocks without deleting them. */
 function withVisibility(blocks: Block[]): Block[] {
   return blocks.map((block) => ({
@@ -59,6 +90,10 @@ export const Pages: CollectionConfig = {
       ({ data }) => {
         if (data?.slug && typeof data.slug === 'string') {
           data.slug = data.slug.replace(/\s+/g, '_')
+        }
+        // Sanitise link rows in every block before Payload validates relationships
+        if (Array.isArray(data?.layout)) {
+          data.layout = data.layout.map(cleanBlockLinks)
         }
         return data
       },
