@@ -173,7 +173,7 @@ function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redir
               </label>
             </div>
           ))}
-          {section.collapsibleContent && (
+          {section.collapsibleContent && serializeRichText(section.collapsibleContent).trim() && (
             <div className="collapsible-details">
               <button
                 type="button"

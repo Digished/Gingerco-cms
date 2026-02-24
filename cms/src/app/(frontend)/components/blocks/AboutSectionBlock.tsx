@@ -46,7 +46,7 @@ export function AboutSectionBlock({ block }: { block: any }) {
                 <LinkButton
                   key={link.id || i}
                   link={link}
-                  style={link.style || 'primary'}
+                  className={`btn btn-${link.style || 'primary'}`}
                 />
               ))}
             </div>

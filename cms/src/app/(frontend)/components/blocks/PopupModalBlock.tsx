@@ -135,6 +135,21 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
         const blockType = field.blockType
 
         if (blockType === 'checkbox') {
+          if (field.options && field.options.length > 0) {
+            return (
+              <div key={i} className="form-field">
+                <label>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+                <div className="checkbox-group">
+                  {field.options.map((opt: any, j: number) => (
+                    <div key={j} className="form-checkbox">
+                      <input type="checkbox" id={`modal-${name}-${j}`} name={name} value={opt.value} />
+                      <label htmlFor={`modal-${name}-${j}`}>{opt.label}</label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          }
           return (
             <div key={i} className="form-field form-checkbox">
               <input type="checkbox" id={`modal-${name}`} name={name} required={field.required} />
@@ -227,7 +242,7 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
             </div>
           ))}
 
-          {section.collapsibleContent && (
+          {section.collapsibleContent && serializeRichText(section.collapsibleContent).trim() && (
             <div className="collapsible-details">
               <button
                 type="button"
