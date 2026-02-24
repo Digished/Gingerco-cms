@@ -31,7 +31,7 @@ function isValidRelation(val: unknown): boolean {
 function cleanBlockLinks(block: Record<string, unknown>): Record<string, unknown> {
   if (!Array.isArray(block?.links)) return block
   const cleaned = (block.links as Record<string, unknown>[])
-    .map((link) => ({
+    .map((link): Record<string, unknown> => ({
       ...link,
       // Null out relationship fields that are empty objects (missing id → triggers "invalid: id")
       page: isValidRelation(link?.page) ? link.page : null,
