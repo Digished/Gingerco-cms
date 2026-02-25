@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react'
+import { RichText, hasRichTextContent } from './RichText'
 import { resolveLink } from './resolveLink'
 
 function ensureAbsoluteUrl(url: string): string {
@@ -157,7 +158,7 @@ function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redir
 
       {consentSections.map((section: any, si: number) => {
         const hasDeclarations = (section.declarations?.length ?? 0) > 0
-        const hasCollapsible = section.collapsibleContent && serializeRichText(section.collapsibleContent).trim()
+        const hasCollapsible = hasRichTextContent(section.collapsibleContent)
         if (!hasDeclarations && !hasCollapsible) return null
         return (
           <div key={si} className="consent-section">
@@ -187,7 +188,7 @@ function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redir
                   {section.collapsibleLabel || 'View Full Consent Details'}
                 </button>
                 <div className={`details-content${detailsOpen[si] ? ' active' : ''}`}>
-                  <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(section.collapsibleContent) }} />
+                  <RichText content={section.collapsibleContent} />
                 </div>
               </div>
             )}
@@ -263,7 +264,7 @@ function renderFormField(field: any, i: number, prefix: string) {
   if (blockType === 'message') {
     const msg = field.message
     if (msg?.root?.children) {
-      return <div key={i} className="form-field form-message-field"><div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} /></div>
+      return <div key={i} className="form-field form-message-field"><RichText content={msg} /></div>
     }
     if (typeof msg === 'string') {
       return <div key={i} className="form-field form-message-field"><p>{msg}</p></div>
@@ -283,29 +284,7 @@ function renderConfirmation(msg: any): React.ReactNode {
   if (!msg) return null
   if (typeof msg === 'string') return msg
   if (msg?.root?.children) {
-    return <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} />
+    return <RichText content={msg} />
   }
   return null
-}
-
-function serializeRichText(content: any): string {
-  if (!content?.root?.children) return ''
-  return content.root.children.map((node: any) => serializeNode(node)).join('')
-}
-
-function serializeNode(node: any): string {
-  if (node.type === 'text') {
-    let text = node.text || ''
-    if (node.format & 1) text = `<strong>${text}</strong>`
-    if (node.format & 2) text = `<em>${text}</em>`
-    return text
-  }
-  const children = (node.children || []).map((c: any) => serializeNode(c)).join('')
-  switch (node.type) {
-    case 'paragraph': return `<p>${children}</p>`
-    case 'heading': return `<h${node.tag?.[1] || '4'}>${children}</h${node.tag?.[1] || '4'}>`
-    case 'list': return node.listType === 'number' ? `<ol>${children}</ol>` : `<ul>${children}</ul>`
-    case 'listitem': return `<li>${children}</li>`
-    default: return children
-  }
 }
