@@ -173,7 +173,11 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         </div>
       )}
 
-      {consentSections.map((section: any, si: number) => (
+      {consentSections.map((section: any, si: number) => {
+        const hasDeclarations = (section.declarations?.length ?? 0) > 0
+        const hasCollapsible = section.collapsibleContent && serializeRichText(section.collapsibleContent).trim()
+        if (!hasDeclarations && !hasCollapsible) return null
+        return (
         <div key={si} className="consent-section">
           <div className="consent-section-title">{section.sectionTitle}</div>
           {section.declarations?.map((decl: any, di: number) => (
@@ -192,7 +196,7 @@ export function InlineFormBlock({ formData }: { formData: any }) {
             </div>
           ))}
 
-          {section.collapsibleContent && serializeRichText(section.collapsibleContent).trim() && (
+          {hasCollapsible && (
             <div className="collapsible-details">
               <button
                 type="button"
@@ -207,7 +211,8 @@ export function InlineFormBlock({ formData }: { formData: any }) {
             </div>
           )}
         </div>
-      ))}
+        )
+      })}
 
       {error && <div className="form-message error">{error}</div>}
 

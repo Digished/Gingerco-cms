@@ -155,40 +155,45 @@ function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redir
         <div className="arrival-notice"><strong>Important:</strong> {arrivalNotice}</div>
       )}
 
-      {consentSections.map((section: any, si: number) => (
-        <div key={si} className="consent-section">
-          <div className="consent-section-title">{section.sectionTitle}</div>
-          {section.declarations?.map((decl: any, di: number) => (
-            <div key={di} className="declaration-item">
-              <input
-                type="checkbox"
-                id={`lbf-consent-${si}-${di}`}
-                name={`consent_${decl.id || decl.title}`}
-                required={decl.required}
-              />
-              <label htmlFor={`lbf-consent-${si}-${di}`}>
-                {decl.title && <strong>{decl.title}</strong>}
-                {decl.description && <span> {decl.description}</span>}
-                {decl.required && <span className="required-mark"> *</span>}
-              </label>
-            </div>
-          ))}
-          {section.collapsibleContent && serializeRichText(section.collapsibleContent).trim() && (
-            <div className="collapsible-details">
-              <button
-                type="button"
-                className={`details-toggle${detailsOpen[si] ? ' active' : ''}`}
-                onClick={() => setDetailsOpen(prev => ({ ...prev, [si]: !prev[si] }))}
-              >
-                {section.collapsibleLabel || 'View Full Consent Details'}
-              </button>
-              <div className={`details-content${detailsOpen[si] ? ' active' : ''}`}>
-                <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(section.collapsibleContent) }} />
+      {consentSections.map((section: any, si: number) => {
+        const hasDeclarations = (section.declarations?.length ?? 0) > 0
+        const hasCollapsible = section.collapsibleContent && serializeRichText(section.collapsibleContent).trim()
+        if (!hasDeclarations && !hasCollapsible) return null
+        return (
+          <div key={si} className="consent-section">
+            <div className="consent-section-title">{section.sectionTitle}</div>
+            {section.declarations?.map((decl: any, di: number) => (
+              <div key={di} className="declaration-item">
+                <input
+                  type="checkbox"
+                  id={`lbf-consent-${si}-${di}`}
+                  name={`consent_${decl.id || decl.title}`}
+                  required={decl.required}
+                />
+                <label htmlFor={`lbf-consent-${si}-${di}`}>
+                  {decl.title && <strong>{decl.title}</strong>}
+                  {decl.description && <span> {decl.description}</span>}
+                  {decl.required && <span className="required-mark"> *</span>}
+                </label>
               </div>
-            </div>
-          )}
-        </div>
-      ))}
+            ))}
+            {hasCollapsible && (
+              <div className="collapsible-details">
+                <button
+                  type="button"
+                  className={`details-toggle${detailsOpen[si] ? ' active' : ''}`}
+                  onClick={() => setDetailsOpen(prev => ({ ...prev, [si]: !prev[si] }))}
+                >
+                  {section.collapsibleLabel || 'View Full Consent Details'}
+                </button>
+                <div className={`details-content${detailsOpen[si] ? ' active' : ''}`}>
+                  <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(section.collapsibleContent) }} />
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })}
 
       <div className="form-submit">
         <button type="submit" className="form-submit-btn" disabled={submitting}>
