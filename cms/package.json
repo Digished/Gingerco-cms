@@ -14,10 +14,12 @@
   },
   "dependencies": {
     "@payloadcms/db-postgres": "~3.75.0",
+    "@payloadcms/email-nodemailer": "~3.75.0",
     "@payloadcms/next": "~3.75.0",
     "@payloadcms/plugin-form-builder": "~3.75.0",
     "@payloadcms/richtext-lexical": "~3.75.0",
     "@payloadcms/storage-vercel-blob": "~3.75.0",
+    "nodemailer": "^6.9.0",
     "cross-env": "^7.0.3",
     "graphql": "^16.8.1",
     "next": "~15.4.11",
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/nodemailer": "^6.4.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.0.0",

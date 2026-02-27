@@ -227,7 +227,7 @@ export function InlineFormBlock({ formData }: { formData: any }) {
 function renderConfirmation(msg: any): React.ReactNode {
   if (!msg) return null
   if (typeof msg === 'string') return msg
-  if (msg?.root?.children) {
+  if (hasRichTextContent(msg)) {
     return <RichText content={msg} />
   }
   return null

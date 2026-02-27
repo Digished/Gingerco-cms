@@ -286,7 +286,7 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
 function renderConfirmation(msg: any): React.ReactNode {
   if (!msg) return null
   if (typeof msg === 'string') return msg
-  if (msg?.root?.children) {
+  if (hasRichTextContent(msg)) {
     return <RichText content={msg} />
   }
   return null

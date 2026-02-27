@@ -263,7 +263,7 @@ function renderFormField(field: any, i: number, prefix: string) {
   }
   if (blockType === 'message') {
     const msg = field.message
-    if (msg?.root?.children) {
+    if (hasRichTextContent(msg)) {
       return <div key={i} className="form-field form-message-field"><RichText content={msg} /></div>
     }
     if (typeof msg === 'string') {
@@ -283,7 +283,7 @@ function renderFormField(field: any, i: number, prefix: string) {
 function renderConfirmation(msg: any): React.ReactNode {
   if (!msg) return null
   if (typeof msg === 'string') return msg
-  if (msg?.root?.children) {
+  if (hasRichTextContent(msg)) {
     return <RichText content={msg} />
   }
   return null
