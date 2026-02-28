@@ -5,6 +5,7 @@ import { buildConfig } from 'payload'
 import { lexicalEditor, FixedToolbarFeature, TextStateFeature, defaultColors } from '@payloadcms/richtext-lexical'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import nodemailer from 'nodemailer'
 import { migrations } from './src/migrations'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
@@ -29,7 +30,7 @@ export default buildConfig({
   email: nodemailerAdapter({
     defaultFromAddress: 'events@gingerandco.at',
     defaultFromName: 'Ginger & Co',
-    transport: {
+    transport: nodemailer.createTransport({
       host: process.env.SMTP_HOST || '',
       port: Number(process.env.SMTP_PORT) || 587,
       secure: process.env.SMTP_SECURE === 'true',
@@ -37,7 +38,7 @@ export default buildConfig({
         user: process.env.SMTP_USER || '',
         pass: process.env.SMTP_PASS || '',
       },
-    },
+    }),
   }),
 
   db: postgresAdapter({
