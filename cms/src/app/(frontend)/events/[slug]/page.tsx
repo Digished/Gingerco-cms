@@ -7,7 +7,7 @@ import { RichText } from '../../components/RichText'
 import { VideoEmbed } from '../../components/VideoEmbed'
 import { EventCTA } from '../../components/EventCTA'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 type Args = {
   params: Promise<{ slug: string }>
@@ -53,7 +53,7 @@ export default async function EventDetail({ params }: Args) {
         {/* Hero */}
         <section className="event-hero">
           {event.featuredImage?.url && (
-            <img src={event.featuredImage.url} alt={event.featuredImage.alt || event.title} className="event-hero-bg" />
+            <img src={event.featuredImage.url} alt={event.featuredImage.alt || event.title} className="event-hero-bg" fetchPriority="high" />
           )}
           <div className="event-hero-overlay" />
           <div className="event-hero-content">

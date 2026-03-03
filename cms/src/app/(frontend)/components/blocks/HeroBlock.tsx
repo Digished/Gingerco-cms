@@ -27,7 +27,7 @@ export function HeroBlock({ block }: { block: any }) {
       style={{ minHeight: minHeight || '600px' }}
     >
       {image?.url && (
-        <img src={image.url} alt={image.alt || ''} className="hero-bg" />
+        <img src={image.url} alt={image.alt || ''} className="hero-bg" fetchPriority="high" />
       )}
       {overlay && <div className="hero-overlay" />}
       <div className="hero-content">

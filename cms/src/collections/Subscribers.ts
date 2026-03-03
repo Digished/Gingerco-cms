@@ -7,7 +7,7 @@ export const Subscribers: CollectionConfig = {
     useAsTitle: 'email',
     defaultColumns: ['email', 'firstName', 'lastName', 'status', 'subscribedAt'],
     group: 'Email',
-    description: 'Manage newsletter subscribers. Use the public /api/subscribe endpoint for opt-in forms.',
+    description: 'Manage people who have signed up for your newsletter. New subscribers are added automatically when visitors fill in the subscribe form on your website.',
   },
   access: {
     // Public: anyone can create a subscriber (subscribe form)
@@ -100,7 +100,7 @@ export const Subscribers: CollectionConfig = {
       type: 'text',
       admin: {
         position: 'sidebar',
-        description: 'Auto-generated token used to generate one-click unsubscribe links.',
+        description: 'Auto-generated code used to create the unsubscribe link included in every email.',
         readOnly: true,
       },
     },

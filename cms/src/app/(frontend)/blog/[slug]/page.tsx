@@ -5,7 +5,7 @@ import configPromise from '@payload-config'
 import type { Metadata } from 'next'
 import { RichText } from '../../components/RichText'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 type Args = {
   params: Promise<{ slug: string }>
