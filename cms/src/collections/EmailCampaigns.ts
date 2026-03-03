@@ -89,7 +89,9 @@ export const EmailCampaigns: CollectionConfig = {
     group: 'Email',
     description: 'Create and send email campaigns to your subscribers.',
     components: {
-      beforeDocumentControls: ['@/components/admin/SendCampaignButton#SendCampaignButton'],
+      edit: {
+        beforeDocumentControls: ['@/components/admin/SendCampaignButton#SendCampaignButton'],
+      },
     },
   },
   access: {
