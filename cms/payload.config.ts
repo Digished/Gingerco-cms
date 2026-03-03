@@ -24,6 +24,7 @@ import { SiteSettings } from './src/globals/SiteSettings'
 
 /** Resend email adapter for Payload's internal emails (password resets, form confirmations, etc.) */
 const resendEmailAdapter = (): EmailAdapter => () => ({
+  name: 'resend',
   defaultFromAddress: process.env.RESEND_FROM_EMAIL || 'events@gingerandco.at',
   defaultFromName: 'Ginger & Co',
   sendEmail: async (message) => {
