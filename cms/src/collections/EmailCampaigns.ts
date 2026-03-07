@@ -1,93 +1,13 @@
 import type { CollectionConfig } from 'payload'
-import { Resend } from 'resend'
-import { campaignEmail, lexicalToEmailHtml } from '../emails/templates'
-
-async function sendCampaign(campaignId: string | number, payload: any): Promise<{ sent: number; errors: string[] }> {
-  const resend = new Resend(process.env.RESEND_API_KEY)
-  const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
-
-  // Fetch the campaign document
-  const campaign = await payload.findByID({ collection: 'email-campaigns', id: campaignId })
-  if (!campaign) throw new Error('Campaign not found')
-
-  // Build subscriber query
-  const where: Record<string, any> = { status: { equals: 'subscribed' } }
-
-  if (campaign.recipientFilter === 'by-tags' && campaign.filterTags?.length) {
-    const tagValues: string[] = campaign.filterTags.map((t: any) => t.tag)
-    where['tags.tag'] = { in: tagValues }
-  }
-
-  // Paginate through all matching subscribers
-  const PAGE_SIZE = 100
-  let page = 1
-  let hasMore = true
-  let totalSent = 0
-  const errors: string[] = []
-
-  while (hasMore) {
-    const result = await payload.find({
-      collection: 'subscribers',
-      where,
-      limit: PAGE_SIZE,
-      page,
-    })
-
-    const subscribers: any[] = result.docs
-    hasMore = result.hasNextPage
-    page++
-
-    if (subscribers.length === 0) break
-
-    // Convert Lexical body to HTML
-    const bodyHtml = campaign.body?.root
-      ? lexicalToEmailHtml(campaign.body.root)
-      : campaign.body
-        ? `<p>${campaign.body}</p>`
-        : '<p>No content.</p>'
-
-    // Build batch email array for Resend (max 100 per call)
-    const emails = subscribers.map((sub: any) => {
-      const unsubscribeUrl = `${siteUrl}/api/unsubscribe?token=${sub.unsubscribeToken}`
-      const html = campaignEmail({
-        subject: campaign.subject,
-        previewText: campaign.previewText || '',
-        bodyHtml,
-        unsubscribeUrl,
-        siteUrl,
-      })
-
-      return {
-        from: `Ginger & Co <${process.env.RESEND_FROM_EMAIL || 'events@gingerandco.at'}>`,
-        to: sub.email,
-        subject: campaign.subject,
-        html,
-      }
-    })
-
-    // Send batch (Resend supports up to 100 per batch)
-    try {
-      const { data, error } = await resend.batch.send(emails)
-      if (error) {
-        errors.push(`Batch page ${page - 1}: ${error.message}`)
-      } else {
-        totalSent += emails.length
-      }
-    } catch (err: any) {
-      errors.push(`Batch page ${page - 1}: ${err.message}`)
-    }
-  }
-
-  return { sent: totalSent, errors }
-}
+import { sendCampaign } from '@/lib/sendCampaign'
 
 export const EmailCampaigns: CollectionConfig = {
   slug: 'email-campaigns',
   admin: {
     useAsTitle: 'subject',
-    defaultColumns: ['subject', 'status', 'recipientFilter', 'sentAt', 'totalSent'],
+    defaultColumns: ['subject', 'status', 'recipientFilter', 'scheduledFor', 'sentAt', 'totalSent'],
     group: 'Email',
-    description: 'Create and send email campaigns to your subscribers.',
+    description: 'Create and send email campaigns to your subscribers. Use "Send Now" to dispatch immediately or set a scheduled time.',
     components: {
       edit: {
         beforeDocumentControls: ['@/components/admin/SendCampaignButton#SendCampaignButton'],
@@ -111,7 +31,6 @@ export const EmailCampaigns: CollectionConfig = {
 
         const { id } = req.routeParams as { id: string }
 
-        // Mark as sending
         await req.payload.update({
           collection: 'email-campaigns',
           id,
@@ -121,7 +40,6 @@ export const EmailCampaigns: CollectionConfig = {
         try {
           const { sent, errors } = await sendCampaign(id, req.payload)
 
-          // Update campaign stats
           await req.payload.update({
             collection: 'email-campaigns',
             id,
@@ -146,9 +64,39 @@ export const EmailCampaigns: CollectionConfig = {
         }
       },
     },
+    {
+      path: '/:id/schedule',
+      method: 'post',
+      handler: async (req) => {
+        if (!req.user) {
+          return Response.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        const { id } = req.routeParams as { id: string }
+        const body = await req.json?.() as { scheduledFor?: string } | undefined
+        const scheduledFor = body?.scheduledFor
+
+        if (!scheduledFor) {
+          return Response.json({ error: 'scheduledFor is required' }, { status: 400 })
+        }
+
+        const scheduledDate = new Date(scheduledFor)
+        if (isNaN(scheduledDate.getTime()) || scheduledDate <= new Date()) {
+          return Response.json({ error: 'scheduledFor must be a future date/time' }, { status: 400 })
+        }
+
+        await req.payload.update({
+          collection: 'email-campaigns',
+          id,
+          data: { status: 'scheduled', scheduledFor },
+        })
+
+        return Response.json({ scheduled: true, scheduledFor })
+      },
+    },
   ],
   fields: [
-    // ─── Main content ───────────────────────────────────────────────────────
+    // ─── Main content ─────────────────────────────────────────────────────────
     {
       name: 'subject',
       type: 'text',
@@ -160,10 +108,10 @@ export const EmailCampaigns: CollectionConfig = {
     {
       name: 'previewText',
       type: 'text',
-      admin: {
-        description: 'Short preview/snippet shown in email clients next to the subject (max ~90 chars).',
-      },
       maxLength: 90,
+      admin: {
+        description: 'Short preview shown in email clients next to the subject (max ~90 chars).',
+      },
     },
     {
       name: 'body',
@@ -174,7 +122,7 @@ export const EmailCampaigns: CollectionConfig = {
       },
     },
 
-    // ─── Sending settings (sidebar) ─────────────────────────────────────────
+    // ─── Sending settings (sidebar) ───────────────────────────────────────────
     {
       name: 'status',
       type: 'select',
@@ -183,13 +131,26 @@ export const EmailCampaigns: CollectionConfig = {
       options: [
         { label: 'Draft', value: 'draft' },
         { label: 'Ready to Send', value: 'ready' },
-        { label: 'Sending...', value: 'sending' },
+        { label: 'Scheduled', value: 'scheduled' },
+        { label: 'Sending…', value: 'sending' },
         { label: 'Sent', value: 'sent' },
         { label: 'Failed', value: 'failed' },
       ],
       admin: {
         position: 'sidebar',
-        description: 'Use the "Send Campaign" button above to dispatch this email.',
+        description: 'Use the buttons above to send now or schedule.',
+      },
+    },
+    {
+      name: 'scheduledFor',
+      type: 'date',
+      admin: {
+        position: 'sidebar',
+        description: 'When to send this campaign automatically. Leave blank to send manually.',
+        date: {
+          pickerAppearance: 'dayAndTime',
+        },
+        condition: (data) => ['draft', 'ready', 'scheduled'].includes(data?.status),
       },
     },
     {
@@ -224,7 +185,7 @@ export const EmailCampaigns: CollectionConfig = {
       ],
     },
 
-    // ─── Stats (read-only) ───────────────────────────────────────────────────
+    // ─── Stats (read-only) ────────────────────────────────────────────────────
     {
       name: 'sentAt',
       type: 'date',
