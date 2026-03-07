@@ -38,12 +38,13 @@ function cleanBlockLinks(block: Record<string, unknown>): Record<string, unknown
       event: isValidRelation(link?.event) ? link.event : null,
       blogPost: isValidRelation(link?.blogPost) ? link.blogPost : null,
       teamMember: isValidRelation(link?.teamMember) ? link.teamMember : null,
+      popupForm: isValidRelation(link?.popupForm) ? link.popupForm : null,
     }))
     .filter((link) => {
       // Drop rows that have no label and no meaningful target
       const hasLabel = Boolean(link?.label)
       const hasUrl = Boolean(link?.url)
-      const hasTarget = link?.page || link?.event || link?.blogPost || link?.teamMember
+      const hasTarget = link?.page || link?.event || link?.blogPost || link?.teamMember || link?.popupForm
       return hasLabel || hasUrl || hasTarget
     })
   return { ...block, links: cleaned }
