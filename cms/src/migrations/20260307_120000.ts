@@ -86,6 +86,15 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   // _parent_id (varchar) → parent block table id (varchar UUID)
   // page_id / event_id / blog_post_id / team_member_id / popup_form_id → integer PKs
   for (const { table, parent } of LIVE_LINK_TABLES) {
+    // Clean up orphaned rows / stale references before enforcing constraints
+    await db.execute(sql.raw(`
+      DELETE FROM "${table}" WHERE "_parent_id" NOT IN (SELECT "id" FROM "${parent}");
+      UPDATE "${table}" SET "page_id"        = NULL WHERE "page_id"        IS NOT NULL AND "page_id"        NOT IN (SELECT "id" FROM "pages");
+      UPDATE "${table}" SET "event_id"       = NULL WHERE "event_id"       IS NOT NULL AND "event_id"       NOT IN (SELECT "id" FROM "events");
+      UPDATE "${table}" SET "blog_post_id"   = NULL WHERE "blog_post_id"   IS NOT NULL AND "blog_post_id"   NOT IN (SELECT "id" FROM "blog_posts");
+      UPDATE "${table}" SET "team_member_id" = NULL WHERE "team_member_id" IS NOT NULL AND "team_member_id" NOT IN (SELECT "id" FROM "team_members");
+      UPDATE "${table}" SET "popup_form_id"  = NULL WHERE "popup_form_id"  IS NOT NULL AND "popup_form_id"  NOT IN (SELECT "id" FROM "forms");
+    `))
     await db.execute(sql.raw(`
       DO $$ BEGIN
         ALTER TABLE "${table}" ADD CONSTRAINT "${table}_parent_id_fk"
@@ -138,6 +147,15 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   // _parent_id (integer) → parent version block table id (serial integer)
   // Collection ref columns are already integer from the prior fix migrations.
   for (const { table, parent } of VERSION_LINK_TABLES) {
+    // Clean up orphaned rows / stale references before enforcing constraints
+    await db.execute(sql.raw(`
+      DELETE FROM "${table}" WHERE "_parent_id" NOT IN (SELECT "id" FROM "${parent}");
+      UPDATE "${table}" SET "page_id"        = NULL WHERE "page_id"        IS NOT NULL AND "page_id"        NOT IN (SELECT "id" FROM "pages");
+      UPDATE "${table}" SET "event_id"       = NULL WHERE "event_id"       IS NOT NULL AND "event_id"       NOT IN (SELECT "id" FROM "events");
+      UPDATE "${table}" SET "blog_post_id"   = NULL WHERE "blog_post_id"   IS NOT NULL AND "blog_post_id"   NOT IN (SELECT "id" FROM "blog_posts");
+      UPDATE "${table}" SET "team_member_id" = NULL WHERE "team_member_id" IS NOT NULL AND "team_member_id" NOT IN (SELECT "id" FROM "team_members");
+      UPDATE "${table}" SET "popup_form_id"  = NULL WHERE "popup_form_id"  IS NOT NULL AND "popup_form_id"  NOT IN (SELECT "id" FROM "forms");
+    `))
     await db.execute(sql.raw(`
       DO $$ BEGIN
         ALTER TABLE "${table}" ADD CONSTRAINT "${table}_parent_id_fk"
