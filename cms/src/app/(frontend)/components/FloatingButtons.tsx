@@ -240,9 +240,14 @@ function FabFormModal({ formData, onClose }: { formData: any; onClose: () => voi
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const form = e.currentTarget
+    if (!form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
     setSubmitting(true)
     setError('')
-    const data = new FormData(e.currentTarget)
+    const data = new FormData(form)
     const submissionData: any[] = []
     fields.forEach((field: any) => {
       if (field.blockType === 'message') return
@@ -299,7 +304,11 @@ function FabFormModal({ formData, onClose }: { formData: any; onClose: () => voi
             {error && <div className="form-message error">{error}</div>}
             <div className="form-submit">
               <button type="submit" className="form-submit-btn" disabled={submitting}>
-                {submitting ? 'Sending...' : (formData.submitButtonLabel || 'Submit')}
+                {submitting ? (
+                  <span className="form-spinner-wrap"><span className="form-spinner" />Sending...</span>
+                ) : (
+                  formData.submitButtonLabel || 'Submit'
+                )}
               </button>
             </div>
           </form>

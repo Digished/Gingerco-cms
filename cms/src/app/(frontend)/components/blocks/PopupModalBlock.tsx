@@ -70,10 +70,15 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const form = e.currentTarget
+    if (!form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
     setSubmitting(true)
     setError('')
 
-    const data = new FormData(e.currentTarget)
+    const data = new FormData(form)
     const submissionData: any[] = []
 
     fields.forEach((field: any) => {
