@@ -1,4 +1,5 @@
 import type { Block, CollectionConfig } from 'payload'
+import { isValidRelation, sanitiseLinkRow } from '../fields/linkFields'
 import { Hero } from '../blocks/Hero'
 import { Content } from '../blocks/Content'
 import { AboutSection } from '../blocks/AboutSection'
@@ -18,28 +19,13 @@ import { PopupModal } from '../blocks/PopupModal'
 import { PartnerSection } from '../blocks/PartnerSection'
 import { ComingSoon } from '../blocks/ComingSoon'
 
-/** Returns true only if val is a non-empty relationship value (id string/number or populated object). */
-function isValidRelation(val: unknown): boolean {
-  if (!val) return false
-  if (typeof val === 'string') return val.length > 0
-  if (typeof val === 'number') return true
-  if (typeof val === 'object' && val !== null && 'id' in val && (val as Record<string, unknown>).id) return true
-  return false
-}
-
 /** Strip empty/invalid link rows from a block's links array before validation. */
 function cleanBlockLinks(block: Record<string, unknown>): Record<string, unknown> {
   if (!Array.isArray(block?.links)) return block
   const cleaned = (block.links as Record<string, unknown>[])
-    .map((link): Record<string, unknown> => ({
-      ...link,
-      // Null out relationship fields that are empty objects (missing id → triggers "invalid: id")
-      page: isValidRelation(link?.page) ? link.page : null,
-      event: isValidRelation(link?.event) ? link.event : null,
-      blogPost: isValidRelation(link?.blogPost) ? link.blogPost : null,
-      teamMember: isValidRelation(link?.teamMember) ? link.teamMember : null,
-      popupForm: isValidRelation(link?.popupForm) ? link.popupForm : null,
-    }))
+    // sanitiseLinkRow strips the row `id` (prevents "invalid: id" UUID errors) and nulls
+    // out empty relationship objects (prevents "invalid: id" relation errors).
+    .map(sanitiseLinkRow)
     .filter((link) => {
       // Drop rows that have no label and no meaningful target
       const hasLabel = Boolean(link?.label)

@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { isValidRelation } from '../fields/linkFields'
 
 export const Header: GlobalConfig = {
   slug: 'header',
@@ -8,6 +9,27 @@ export const Header: GlobalConfig = {
   },
   access: {
     read: () => true,
+  },
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (Array.isArray(data?.navItems)) {
+          data.navItems = (data.navItems as Record<string, unknown>[]).map((item) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { id: _id, ...rest } = item
+            return {
+              ...rest,
+              page: isValidRelation(rest.page) ? rest.page : null,
+              event: isValidRelation(rest.event) ? rest.event : null,
+              blogPost: isValidRelation(rest.blogPost) ? rest.blogPost : null,
+              teamMember: isValidRelation(rest.teamMember) ? rest.teamMember : null,
+              popupForm: isValidRelation(rest.popupForm) ? rest.popupForm : null,
+            }
+          })
+        }
+        return data
+      },
+    ],
   },
   fields: [
     {

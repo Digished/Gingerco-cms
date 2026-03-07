@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { isValidRelation } from '../fields/linkFields'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
@@ -8,6 +9,34 @@ export const Footer: GlobalConfig = {
   },
   access: {
     read: () => true,
+  },
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (Array.isArray(data?.columns)) {
+          data.columns = (data.columns as Record<string, unknown>[]).map((col) => {
+            if (!Array.isArray((col as Record<string, unknown>).links)) return col
+            const { id: _colId, ...colRest } = col as Record<string, unknown>
+            return {
+              ...(typeof _colId !== 'undefined' ? { id: _colId } : {}),
+              ...colRest,
+              links: ((col as Record<string, unknown>).links as Record<string, unknown>[]).map((link) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { id: _id, ...rest } = link
+                return {
+                  ...rest,
+                  page: isValidRelation(rest.page) ? rest.page : null,
+                  event: isValidRelation(rest.event) ? rest.event : null,
+                  blogPost: isValidRelation(rest.blogPost) ? rest.blogPost : null,
+                  teamMember: isValidRelation(rest.teamMember) ? rest.teamMember : null,
+                }
+              }),
+            }
+          })
+        }
+        return data
+      },
+    ],
   },
   fields: [
     {
