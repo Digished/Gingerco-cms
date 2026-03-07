@@ -278,9 +278,18 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     const event = result.docs[0] as any
     if (!event) return { title: 'Not Found' }
 
+    const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
+
     return {
       title: event.title,
       description: event.shortDescription || undefined,
+      alternates: { canonical: `${siteUrl}/events/${slug}` },
+      openGraph: {
+        title: event.title,
+        description: event.shortDescription || undefined,
+        url: `${siteUrl}/events/${slug}`,
+        ...(event.featuredImage?.url ? { images: [{ url: event.featuredImage.url, alt: event.featuredImage.alt || event.title }] } : {}),
+      },
     }
   } catch {
     return { title: 'Not Found' }

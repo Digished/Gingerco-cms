@@ -313,16 +313,17 @@ function renderConfirmation(msg: any): React.ReactNode {
   if (!msg) return null
   if (typeof msg === 'string') return msg
   if (msg?.root?.children) {
-    const html = msg.root.children
-      .map((node: any) => {
-        if (node.type === 'paragraph') {
-          const text = (node.children || []).map((c: any) => c.text || '').join('')
-          return `<p>${text}</p>`
-        }
-        return ''
-      })
-      .join('')
-    return <div dangerouslySetInnerHTML={{ __html: html }} />
+    return (
+      <div>
+        {msg.root.children.map((node: any, i: number) => {
+          if (node.type === 'paragraph') {
+            const text = (node.children || []).map((c: any) => c.text || '').join('')
+            return <p key={i}>{text}</p>
+          }
+          return null
+        })}
+      </div>
+    )
   }
   return null
 }

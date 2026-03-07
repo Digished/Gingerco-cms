@@ -97,6 +97,7 @@ function FormModal({ formData, redirectUrl, onClose }: { formData: any; redirect
 
 function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redirectUrl?: string | null; onSuccess: () => void }) {
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
   const [detailsOpen, setDetailsOpen] = useState<Record<number, boolean>>({})
 
   const fields = formData.fields || []
@@ -134,12 +135,21 @@ function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redir
     })
 
     try {
-      await fetch('/api/form-submissions', {
+      const res = await fetch('/api/form-submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ form: formData.id, submissionData }),
       })
-    } catch { /* submit silently */ }
+      if (!res.ok) {
+        setError('Something went wrong. Please try again.')
+        setSubmitting(false)
+        return
+      }
+    } catch {
+      setError('Network error. Please try again.')
+      setSubmitting(false)
+      return
+    }
 
     setSubmitting(false)
     // Use explicit redirect URL if provided, otherwise check form builder's own redirect config
@@ -195,6 +205,8 @@ function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redir
           </div>
         )
       })}
+
+      {error && <div className="form-message error">{error}</div>}
 
       <div className="form-submit">
         <button type="submit" className="form-submit-btn" disabled={submitting}>

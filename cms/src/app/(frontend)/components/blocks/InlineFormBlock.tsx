@@ -23,10 +23,15 @@ export function InlineFormBlock({ formData }: { formData: any }) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const form = e.currentTarget
+    if (!form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
     setSubmitting(true)
     setError('')
 
-    const data = new FormData(e.currentTarget)
+    const data = new FormData(form)
     const submissionData: any[] = []
 
     fields.forEach((field: any) => {
@@ -218,7 +223,11 @@ export function InlineFormBlock({ formData }: { formData: any }) {
       {error && <div className="form-message error">{error}</div>}
 
       <button type="submit" className="btn btn-primary" disabled={submitting}>
-        {submitting ? 'Sending...' : (formData.submitButtonLabel || 'Submit')}
+        {submitting ? (
+          <span className="form-spinner-wrap"><span className="form-spinner" />Sending...</span>
+        ) : (
+          formData.submitButtonLabel || 'Submit'
+        )}
       </button>
     </form>
   )

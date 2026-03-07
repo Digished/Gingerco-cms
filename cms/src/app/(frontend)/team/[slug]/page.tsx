@@ -197,6 +197,15 @@ function ProfileInfo({ member, specialties }: { member: any; specialties: string
 
 /* ── Rich text serialization ── */
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 function serializeRichText(content: any): string {
   if (!content?.root?.children) return ''
   return content.root.children.map((node: any) => serializeNode(node)).join('')
@@ -204,7 +213,7 @@ function serializeRichText(content: any): string {
 
 function serializeNode(node: any): string {
   if (node.type === 'text') {
-    let text = node.text || ''
+    let text = escapeHtml(node.text || '')
     if (node.format & 1) text = `<strong>${text}</strong>`
     if (node.format & 2) text = `<em>${text}</em>`
     if (node.format & 8) text = `<u>${text}</u>`
@@ -216,7 +225,7 @@ function serializeNode(node: any): string {
     case 'heading': return `<h${node.tag?.[1] || '3'}>${children}</h${node.tag?.[1] || '3'}>`
     case 'list': return node.listType === 'number' ? `<ol>${children}</ol>` : `<ul>${children}</ul>`
     case 'listitem': return `<li>${children}</li>`
-    case 'link': return `<a href="${node.fields?.url || '#'}" target="${node.fields?.newTab ? '_blank' : '_self'}" rel="noopener noreferrer">${children}</a>`
+    case 'link': return `<a href="${escapeHtml(node.fields?.url || '#')}" target="${node.fields?.newTab ? '_blank' : '_self'}" rel="noopener noreferrer">${children}</a>`
     case 'quote': return `<blockquote>${children}</blockquote>`
     default: return children
   }
@@ -236,9 +245,18 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     const member = result.docs[0] as any
     if (!member) return { title: 'Not Found' }
 
+    const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
+
     return {
       title: `${member.name} - ${member.role}`,
       description: member.bio || undefined,
+      alternates: { canonical: `${siteUrl}/team/${slug}` },
+      openGraph: {
+        title: `${member.name} - ${member.role}`,
+        description: member.bio || undefined,
+        url: `${siteUrl}/team/${slug}`,
+        ...(member.photo?.url ? { images: [{ url: member.photo.url, alt: member.photo.alt || member.name }] } : {}),
+      },
     }
   } catch {
     return { title: 'Not Found' }

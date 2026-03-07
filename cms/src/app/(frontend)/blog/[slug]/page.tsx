@@ -76,9 +76,21 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     const post = result.docs[0] as any
     if (!post) return { title: 'Not Found' }
 
+    const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
+    const title = post.meta?.title || post.title
+    const description = post.meta?.description || post.excerpt || undefined
+
     return {
-      title: post.meta?.title || post.title,
-      description: post.meta?.description || post.excerpt || undefined,
+      title,
+      description,
+      alternates: { canonical: `${siteUrl}/blog/${slug}` },
+      openGraph: {
+        title,
+        description,
+        url: `${siteUrl}/blog/${slug}`,
+        type: 'article',
+        ...(post.featuredImage?.url ? { images: [{ url: post.featuredImage.url, alt: post.featuredImage.alt || post.title }] } : {}),
+      },
     }
   } catch {
     return { title: 'Not Found' }
