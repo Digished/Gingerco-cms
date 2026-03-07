@@ -54,13 +54,31 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   // page_id, event_id, blog_post_id, team_member_id, popup_form_id were created
   // as varchar but must be integer to match their target collections' serial PKs.
   for (const { table } of LIVE_LINK_TABLES) {
+    // Idempotent: only alter if page_id is still character varying.
+    // A previous failed migration run may have partially converted some tables
+    // already (Drizzle does not wrap migrations in a transaction).
+    // NULL out all values first to avoid any cast issues, then retype.
     await db.execute(sql.raw(`
-      ALTER TABLE "${table}"
-        ALTER COLUMN "page_id"        TYPE integer USING CASE WHEN "page_id"        ~ '^[0-9]+$' THEN "page_id"::integer        ELSE NULL END,
-        ALTER COLUMN "event_id"       TYPE integer USING CASE WHEN "event_id"       ~ '^[0-9]+$' THEN "event_id"::integer       ELSE NULL END,
-        ALTER COLUMN "blog_post_id"   TYPE integer USING CASE WHEN "blog_post_id"   ~ '^[0-9]+$' THEN "blog_post_id"::integer   ELSE NULL END,
-        ALTER COLUMN "team_member_id" TYPE integer USING CASE WHEN "team_member_id" ~ '^[0-9]+$' THEN "team_member_id"::integer ELSE NULL END,
-        ALTER COLUMN "popup_form_id"  TYPE integer USING CASE WHEN "popup_form_id"  ~ '^[0-9]+$' THEN "popup_form_id"::integer  ELSE NULL END
+      DO $$
+      BEGIN
+        IF EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_schema = 'public'
+            AND table_name   = '${table}'
+            AND column_name  = 'page_id'
+            AND data_type    = 'character varying'
+        ) THEN
+          UPDATE "${table}"
+          SET "page_id" = NULL, "event_id" = NULL, "blog_post_id" = NULL,
+              "team_member_id" = NULL, "popup_form_id" = NULL;
+          ALTER TABLE "${table}"
+            ALTER COLUMN "page_id"        TYPE integer USING NULL::integer,
+            ALTER COLUMN "event_id"       TYPE integer USING NULL::integer,
+            ALTER COLUMN "blog_post_id"   TYPE integer USING NULL::integer,
+            ALTER COLUMN "team_member_id" TYPE integer USING NULL::integer,
+            ALTER COLUMN "popup_form_id"  TYPE integer USING NULL::integer;
+        END IF;
+      END $$;
     `))
   }
 
