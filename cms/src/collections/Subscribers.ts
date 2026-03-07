@@ -7,12 +7,10 @@ export const Subscribers: CollectionConfig = {
     useAsTitle: 'email',
     defaultColumns: ['email', 'firstName', 'lastName', 'status', 'subscribedAt'],
     group: 'Email',
-    description: 'Manage people who have signed up for your newsletter. New subscribers are added automatically when visitors fill in the subscribe form on your website.',
+    description: 'Manage people who have signed up for your newsletter. New subscribers receive a confirmation email and are activated once they click the link.',
   },
   access: {
-    // Public: anyone can create a subscriber (subscribe form)
     create: () => true,
-    // Admin only for everything else
     read: ({ req: { user } }) => Boolean(user),
     update: ({ req: { user } }) => Boolean(user),
     delete: ({ req: { user } }) => Boolean(user),
@@ -23,6 +21,9 @@ export const Subscribers: CollectionConfig = {
         if (operation === 'create') {
           if (!data.unsubscribeToken) {
             data.unsubscribeToken = crypto.randomBytes(32).toString('hex')
+          }
+          if (!data.confirmationToken) {
+            data.confirmationToken = crypto.randomBytes(32).toString('hex')
           }
           if (!data.subscribedAt) {
             data.subscribedAt = new Date().toISOString()
@@ -51,11 +52,11 @@ export const Subscribers: CollectionConfig = {
       name: 'status',
       type: 'select',
       required: true,
-      defaultValue: 'subscribed',
+      defaultValue: 'pending',
       options: [
+        { label: 'Pending (awaiting confirmation)', value: 'pending' },
         { label: 'Subscribed', value: 'subscribed' },
         { label: 'Unsubscribed', value: 'unsubscribed' },
-        { label: 'Pending (awaiting confirmation)', value: 'pending' },
         { label: 'Bounced', value: 'bounced' },
       ],
       admin: {
@@ -91,7 +92,7 @@ export const Subscribers: CollectionConfig = {
       type: 'date',
       admin: {
         position: 'sidebar',
-        description: 'Date when this subscriber was added.',
+        description: 'Date when this subscriber confirmed their subscription.',
         readOnly: true,
       },
     },
@@ -100,7 +101,16 @@ export const Subscribers: CollectionConfig = {
       type: 'text',
       admin: {
         position: 'sidebar',
-        description: 'Auto-generated code used to create the unsubscribe link included in every email.',
+        description: 'Auto-generated token used in every email unsubscribe link.',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'confirmationToken',
+      type: 'text',
+      admin: {
+        position: 'sidebar',
+        description: 'Auto-generated token sent in the double opt-in confirmation email.',
         readOnly: true,
       },
     },

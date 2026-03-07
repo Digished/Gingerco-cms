@@ -6,17 +6,18 @@ import { useDocumentInfo } from '@payloadcms/ui'
 export const SendCampaignButton: React.FC = () => {
   const { id, savedDocumentData } = useDocumentInfo()
   const [sending, setSending] = useState(false)
+  const [scheduling, setScheduling] = useState(false)
+  const [showSchedulePicker, setShowSchedulePicker] = useState(false)
+  const [scheduledFor, setScheduledFor] = useState('')
   const [result, setResult] = useState<{ type: 'success' | 'error' | 'warning'; message: string } | null>(null)
 
   const status = savedDocumentData?.status
 
-  // Don't show for new unsaved documents
   if (!id) return null
 
-  // Already sent — show read-only info
   if (status === 'sent') {
     return (
-      <div style={{ marginBottom: '8px', padding: '10px 14px', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '4px', fontSize: '13px', color: '#166534' }}>
+      <div style={bannerStyle('#f0fdf4', '#86efac', '#166534')}>
         ✓ Campaign sent — {savedDocumentData?.totalSent ?? 0} emails dispatched
       </div>
     )
@@ -24,17 +25,34 @@ export const SendCampaignButton: React.FC = () => {
 
   if (status === 'sending') {
     return (
-      <div style={{ marginBottom: '8px', padding: '10px 14px', background: '#fef9c3', border: '1px solid #fde047', borderRadius: '4px', fontSize: '13px', color: '#854d0e' }}>
-        Sending in progress...
+      <div style={bannerStyle('#fef9c3', '#fde047', '#854d0e')}>
+        Sending in progress…
       </div>
     )
   }
 
-  const handleSend = async () => {
+  if (status === 'scheduled') {
+    const when = savedDocumentData?.scheduledFor
+      ? new Date(savedDocumentData.scheduledFor).toLocaleString()
+      : 'unknown time'
+    return (
+      <div style={bannerStyle('#eff6ff', '#93c5fd', '#1e40af')}>
+        ⏰ Scheduled for {when}
+        <button
+          onClick={handleCancelSchedule}
+          style={{ marginLeft: 12, background: 'none', border: '1px solid #93c5fd', borderRadius: 4, padding: '2px 8px', cursor: 'pointer', fontSize: 12, color: '#1e40af' }}
+        >
+          Cancel
+        </button>
+      </div>
+    )
+  }
+
+  const handleSendNow = async () => {
     const confirmed = window.confirm(
       `Send "${savedDocumentData?.subject || 'this campaign'}" to ${
         savedDocumentData?.recipientFilter === 'by-tags' ? 'tagged' : 'all'
-      } subscribers?\n\nThis cannot be undone.`
+      } subscribers?\n\nThis cannot be undone.`,
     )
     if (!confirmed) return
 
@@ -46,12 +64,12 @@ export const SendCampaignButton: React.FC = () => {
       const data = await res.json()
 
       if (res.ok) {
-        if (data.warnings?.length) {
-          setResult({ type: 'warning', message: `Sent to ${data.sent} subscribers (${data.warnings.length} partial errors)` })
-        } else {
-          setResult({ type: 'success', message: `✓ Sent to ${data.sent} subscribers` })
-        }
-        // Reload to refresh the status fields
+        setResult({
+          type: data.warnings?.length ? 'warning' : 'success',
+          message: data.warnings?.length
+            ? `Sent to ${data.sent} subscribers (${data.warnings.length} partial errors)`
+            : `✓ Sent to ${data.sent} subscribers`,
+        })
         setTimeout(() => window.location.reload(), 1500)
       } else {
         setResult({ type: 'error', message: `Error: ${data.error || 'Failed to send'}` })
@@ -63,46 +81,129 @@ export const SendCampaignButton: React.FC = () => {
     }
   }
 
+  const handleSchedule = async () => {
+    if (!scheduledFor) {
+      setResult({ type: 'error', message: 'Please pick a date and time.' })
+      return
+    }
+    if (new Date(scheduledFor) <= new Date()) {
+      setResult({ type: 'error', message: 'Scheduled time must be in the future.' })
+      return
+    }
+
+    setScheduling(true)
+    setResult(null)
+
+    try {
+      const res = await fetch(`/api/email-campaigns/${id}/schedule`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scheduledFor }),
+      })
+      const data = await res.json()
+
+      if (res.ok) {
+        setResult({ type: 'success', message: `✓ Scheduled for ${new Date(scheduledFor).toLocaleString()}` })
+        setShowSchedulePicker(false)
+        setTimeout(() => window.location.reload(), 1500)
+      } else {
+        setResult({ type: 'error', message: `Error: ${data.error || 'Failed to schedule'}` })
+      }
+    } catch {
+      setResult({ type: 'error', message: 'Network error — please try again.' })
+    } finally {
+      setScheduling(false)
+    }
+  }
+
+  async function handleCancelSchedule() {
+    if (!window.confirm('Cancel this scheduled campaign? It will return to "Ready to Send" status.')) return
+    try {
+      await fetch(`/api/email-campaigns/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'ready', scheduledFor: null }),
+      })
+      window.location.reload()
+    } catch {
+      // ignore
+    }
+  }
+
   const resultStyles: Record<string, React.CSSProperties> = {
     success: { background: '#f0fdf4', border: '1px solid #86efac', color: '#166534' },
     warning: { background: '#fef9c3', border: '1px solid #fde047', color: '#854d0e' },
-    error: { background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b' },
+    error:   { background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b' },
   }
 
   return (
-    <div style={{ marginBottom: '8px' }}>
-      <button
-        onClick={handleSend}
-        disabled={sending}
-        style={{
-          background: sending ? '#999' : '#D4AF37',
-          color: '#1A1A1A',
-          border: 'none',
-          padding: '10px 20px',
-          borderRadius: '4px',
-          cursor: sending ? 'not-allowed' : 'pointer',
-          fontWeight: 'bold',
-          fontSize: '14px',
-          letterSpacing: '0.5px',
-          width: '100%',
-        }}
-      >
-        {sending ? 'Sending…' : 'Send Campaign'}
-      </button>
+    <div style={{ marginBottom: 8 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
+        {/* Send Now */}
+        <button
+          onClick={handleSendNow}
+          disabled={sending || scheduling}
+          style={btnStyle(sending || scheduling, '#D4AF37', '#1A1A1A')}
+        >
+          {sending ? 'Sending…' : 'Send Now'}
+        </button>
+
+        {/* Schedule toggle */}
+        <button
+          onClick={() => { setShowSchedulePicker(v => !v); setResult(null) }}
+          disabled={sending || scheduling}
+          style={btnStyle(sending || scheduling, '#1A1A1A', '#D4AF37')}
+        >
+          ⏰ Schedule
+        </button>
+      </div>
+
+      {showSchedulePicker && (
+        <div style={{ marginTop: 8, padding: '12px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 4 }}>
+          <label style={{ display: 'block', fontSize: 12, color: '#374151', marginBottom: 4 }}>
+            Send at (your local time):
+          </label>
+          <input
+            type="datetime-local"
+            value={scheduledFor}
+            onChange={(e) => setScheduledFor(e.target.value)}
+            min={new Date(Date.now() + 60000).toISOString().slice(0, 16)}
+            style={{ width: '100%', padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: 4, fontSize: 13, marginBottom: 8 }}
+          />
+          <button
+            onClick={handleSchedule}
+            disabled={scheduling || !scheduledFor}
+            style={btnStyle(scheduling || !scheduledFor, '#D4AF37', '#1A1A1A')}
+          >
+            {scheduling ? 'Scheduling…' : 'Confirm Schedule'}
+          </button>
+        </div>
+      )}
 
       {result && (
-        <div
-          style={{
-            marginTop: '8px',
-            padding: '8px 12px',
-            borderRadius: '4px',
-            fontSize: '13px',
-            ...resultStyles[result.type],
-          }}
-        >
+        <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 4, fontSize: 13, ...resultStyles[result.type] }}>
           {result.message}
         </div>
       )}
     </div>
   )
+}
+
+function bannerStyle(bg: string, border: string, color: string): React.CSSProperties {
+  return { marginBottom: 8, padding: '10px 14px', background: bg, border: `1px solid ${border}`, borderRadius: 4, fontSize: 13, color }
+}
+
+function btnStyle(disabled: boolean, bg: string, color: string): React.CSSProperties {
+  return {
+    flex: 1,
+    background: disabled ? '#999' : bg,
+    color,
+    border: 'none',
+    padding: '10px 16px',
+    borderRadius: 4,
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    fontWeight: 'bold',
+    fontSize: 13,
+    letterSpacing: '0.5px',
+  }
 }

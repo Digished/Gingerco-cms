@@ -50,6 +50,35 @@ function htmlWrapper(content: string, opts: EmailTemplateOptions = {}): string {
 </html>`
 }
 
+/** Confirmation email sent to new subscribers before they are activated */
+export function confirmationEmail(opts: {
+  firstName?: string
+  confirmationUrl: string
+  siteUrl?: string
+}): string {
+  const name = opts.firstName ? opts.firstName : 'there'
+  const siteUrl = opts.siteUrl || process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
+
+  const body = `
+    <div class="body">
+      <h2>Please confirm your subscription</h2>
+      <p>Hi ${name},</p>
+      <p>You've signed up to receive updates from Ginger &amp; Co. Click the button below to confirm your email address and activate your subscription.</p>
+      <p style="text-align:center;">
+        <a href="${opts.confirmationUrl}" class="cta-button">Confirm My Subscription</a>
+      </p>
+      <p style="font-size:13px;color:#888;">
+        This link expires in 24 hours. If you didn't sign up, simply ignore this email — you won't receive anything further.
+      </p>
+    </div>
+    <div class="footer">
+      <p>Ginger &amp; Co &mdash; Vienna, Austria</p>
+      <p><a href="${siteUrl}">gingerandco.at</a></p>
+    </div>
+  `
+  return htmlWrapper(body, { previewText: `Confirm your Ginger & Co subscription`, siteUrl })
+}
+
 /** Welcome email sent to new subscribers */
 export function welcomeEmail(opts: {
   firstName?: string
