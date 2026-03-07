@@ -20,7 +20,6 @@ export const CallToAction: Block = {
     {
       name: 'links',
       type: 'array',
-      minRows: 1,
       maxRows: 3,
       fields: [
         ...linkFields,

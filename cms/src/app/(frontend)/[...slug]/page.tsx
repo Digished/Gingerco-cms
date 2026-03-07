@@ -4,7 +4,7 @@ import configPromise from '@payload-config'
 import type { Metadata } from 'next'
 import { RenderBlocks } from '../components/RenderBlocks'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 type Args = {
   params: Promise<{ slug: string[] }>

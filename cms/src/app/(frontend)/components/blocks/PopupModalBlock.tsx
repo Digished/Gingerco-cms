@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react'
+import { RichText, hasRichTextContent } from '../RichText'
 
 function ensureAbsoluteUrl(url: string): string {
   if (/^https?:\/\//i.test(url)) return url
@@ -69,10 +70,15 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const form = e.currentTarget
+    if (!form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
     setSubmitting(true)
     setError('')
 
-    const data = new FormData(e.currentTarget)
+    const data = new FormData(form)
     const submissionData: any[] = []
 
     fields.forEach((field: any) => {
@@ -135,6 +141,21 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
         const blockType = field.blockType
 
         if (blockType === 'checkbox') {
+          if (field.options && field.options.length > 0) {
+            return (
+              <div key={i} className="form-field">
+                <label>{field.label}{field.required && <span className="required-mark"> *</span>}</label>
+                <div className="checkbox-group">
+                  {field.options.map((opt: any, j: number) => (
+                    <div key={j} className="form-checkbox">
+                      <input type="checkbox" id={`modal-${name}-${j}`} name={name} value={opt.value} />
+                      <label htmlFor={`modal-${name}-${j}`}>{opt.label}</label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          }
           return (
             <div key={i} className="form-field form-checkbox">
               <input type="checkbox" id={`modal-${name}`} name={name} required={field.required} />
@@ -208,7 +229,11 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
       )}
 
       {/* Consent Sections */}
-      {consentSections.map((section: any, si: number) => (
+      {consentSections.map((section: any, si: number) => {
+        const hasDeclarations = (section.declarations?.length ?? 0) > 0
+        const hasCollapsible = hasRichTextContent(section.collapsibleContent)
+        if (!hasDeclarations && !hasCollapsible) return null
+        return (
         <div key={si} className="consent-section">
           <div className="consent-section-title">{section.sectionTitle}</div>
           {section.declarations?.map((decl: any, di: number) => (
@@ -227,7 +252,7 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
             </div>
           ))}
 
-          {section.collapsibleContent && (
+          {hasCollapsible && (
             <div className="collapsible-details">
               <button
                 type="button"
@@ -237,12 +262,13 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
                 {section.collapsibleLabel || 'View Full Consent Details'}
               </button>
               <div className={`details-content${detailsOpen[si] ? ' active' : ''}`}>
-                <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(section.collapsibleContent) }} />
+                <RichText content={section.collapsibleContent} />
               </div>
             </div>
           )}
         </div>
-      ))}
+        )
+      })}
 
       {error && <div className="form-message error">{error}</div>}
 
@@ -265,30 +291,8 @@ function ModalForm({ formData, onSuccess }: { formData: any; onSuccess: () => vo
 function renderConfirmation(msg: any): React.ReactNode {
   if (!msg) return null
   if (typeof msg === 'string') return msg
-  if (msg?.root?.children) {
-    return <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} />
+  if (hasRichTextContent(msg)) {
+    return <RichText content={msg} />
   }
   return null
-}
-
-function serializeRichText(content: any): string {
-  if (!content?.root?.children) return ''
-  return content.root.children.map((node: any) => serializeNode(node)).join('')
-}
-
-function serializeNode(node: any): string {
-  if (node.type === 'text') {
-    let text = node.text || ''
-    if (node.format & 1) text = `<strong>${text}</strong>`
-    if (node.format & 2) text = `<em>${text}</em>`
-    return text
-  }
-  const children = (node.children || []).map((c: any) => serializeNode(c)).join('')
-  switch (node.type) {
-    case 'paragraph': return `<p>${children}</p>`
-    case 'heading': return `<h${node.tag?.[1] || '4'}>${children}</h${node.tag?.[1] || '4'}>`
-    case 'list': return node.listType === 'number' ? `<ol>${children}</ol>` : `<ul>${children}</ul>`
-    case 'listitem': return `<li>${children}</li>`
-    default: return children
-  }
 }

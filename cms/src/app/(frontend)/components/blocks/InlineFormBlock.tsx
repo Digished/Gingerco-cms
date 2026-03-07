@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react'
+import { RichText, hasRichTextContent } from '../RichText'
 
 function ensureAbsoluteUrl(url: string): string {
   if (/^https?:\/\//i.test(url)) return url
@@ -22,10 +23,15 @@ export function InlineFormBlock({ formData }: { formData: any }) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const form = e.currentTarget
+    if (!form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
     setSubmitting(true)
     setError('')
 
-    const data = new FormData(e.currentTarget)
+    const data = new FormData(form)
     const submissionData: any[] = []
 
     fields.forEach((field: any) => {
@@ -173,7 +179,11 @@ export function InlineFormBlock({ formData }: { formData: any }) {
         </div>
       )}
 
-      {consentSections.map((section: any, si: number) => (
+      {consentSections.map((section: any, si: number) => {
+        const hasDeclarations = (section.declarations?.length ?? 0) > 0
+        const hasCollapsible = hasRichTextContent(section.collapsibleContent)
+        if (!hasDeclarations && !hasCollapsible) return null
+        return (
         <div key={si} className="consent-section">
           <div className="consent-section-title">{section.sectionTitle}</div>
           {section.declarations?.map((decl: any, di: number) => (
@@ -192,7 +202,7 @@ export function InlineFormBlock({ formData }: { formData: any }) {
             </div>
           ))}
 
-          {section.collapsibleContent && (
+          {hasCollapsible && (
             <div className="collapsible-details">
               <button
                 type="button"
@@ -202,17 +212,22 @@ export function InlineFormBlock({ formData }: { formData: any }) {
                 {section.collapsibleLabel || 'View Full Consent Details'}
               </button>
               <div className={`details-content${detailsOpen[si] ? ' active' : ''}`}>
-                <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(section.collapsibleContent) }} />
+                <RichText content={section.collapsibleContent} />
               </div>
             </div>
           )}
         </div>
-      ))}
+        )
+      })}
 
       {error && <div className="form-message error">{error}</div>}
 
       <button type="submit" className="btn btn-primary" disabled={submitting}>
-        {submitting ? 'Sending...' : (formData.submitButtonLabel || 'Submit')}
+        {submitting ? (
+          <span className="form-spinner-wrap"><span className="form-spinner" />Sending...</span>
+        ) : (
+          formData.submitButtonLabel || 'Submit'
+        )}
       </button>
     </form>
   )
@@ -221,30 +236,8 @@ export function InlineFormBlock({ formData }: { formData: any }) {
 function renderConfirmation(msg: any): React.ReactNode {
   if (!msg) return null
   if (typeof msg === 'string') return msg
-  if (msg?.root?.children) {
-    return <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} />
+  if (hasRichTextContent(msg)) {
+    return <RichText content={msg} />
   }
   return null
-}
-
-function serializeRichText(content: any): string {
-  if (!content?.root?.children) return ''
-  return content.root.children.map((node: any) => serializeNode(node)).join('')
-}
-
-function serializeNode(node: any): string {
-  if (node.type === 'text') {
-    let text = node.text || ''
-    if (node.format & 1) text = `<strong>${text}</strong>`
-    if (node.format & 2) text = `<em>${text}</em>`
-    return text
-  }
-  const children = (node.children || []).map((c: any) => serializeNode(c)).join('')
-  switch (node.type) {
-    case 'paragraph': return `<p>${children}</p>`
-    case 'heading': return `<h${node.tag?.[1] || '4'}>${children}</h${node.tag?.[1] || '4'}>`
-    case 'list': return node.listType === 'number' ? `<ol>${children}</ol>` : `<ul>${children}</ul>`
-    case 'listitem': return `<li>${children}</li>`
-    default: return children
-  }
 }

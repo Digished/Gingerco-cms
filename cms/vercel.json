@@ -1,5 +1,11 @@
 {
   "framework": "nextjs",
   "buildCommand": "npm run payload -- migrate && npm run build",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "crons": [
+    {
+      "path": "/api/cron/send-campaigns",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }

@@ -1,9 +1,10 @@
 import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { buildConfig } from 'payload'
+import { buildConfig, type EmailAdapter } from 'payload'
 import { lexicalEditor, FixedToolbarFeature, TextStateFeature, defaultColors } from '@payloadcms/richtext-lexical'
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { Resend } from 'resend'
 import { migrations } from './src/migrations'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
@@ -15,15 +16,36 @@ import { Media } from './src/collections/Media'
 import { BlogPosts } from './src/collections/BlogPosts'
 import { TeamMembers } from './src/collections/TeamMembers'
 import { Partners } from './src/collections/Partners'
+import { Subscribers } from './src/collections/Subscribers'
+import { EmailCampaigns } from './src/collections/EmailCampaigns'
 import { Header } from './src/globals/Header'
 import { Footer } from './src/globals/Footer'
 import { SiteSettings } from './src/globals/SiteSettings'
+
+/** Resend email adapter for Payload's internal emails (password resets, form confirmations, etc.) */
+const resendEmailAdapter = (): EmailAdapter => () => ({
+  name: 'resend',
+  defaultFromAddress: process.env.RESEND_FROM_EMAIL || 'events@gingerandco.at',
+  defaultFromName: 'Ginger & Co',
+  sendEmail: async (message) => {
+    const resend = new Resend(process.env.RESEND_API_KEY)
+    await resend.emails.send({
+      from: `Ginger & Co <${process.env.RESEND_FROM_EMAIL || 'events@gingerandco.at'}>`,
+      to: Array.isArray(message.to) ? message.to as string[] : [message.to as string],
+      subject: message.subject,
+      html: message.html || '',
+      text: message.text,
+    })
+  },
+})
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || '',
+
+  email: resendEmailAdapter(),
 
   db: postgresAdapter({
     prodMigrations: migrations,
@@ -66,7 +88,7 @@ export default buildConfig({
     ],
   }),
 
-  collections: [Users, Pages, Events, BlogPosts, TeamMembers, Partners, Media],
+  collections: [Users, Pages, Events, BlogPosts, TeamMembers, Partners, Media, Subscribers, EmailCampaigns],
 
   globals: [Header, Footer, SiteSettings],
 

@@ -7,7 +7,7 @@ import { RichText } from '../../components/RichText'
 import { VideoEmbed } from '../../components/VideoEmbed'
 import { EventCTA } from '../../components/EventCTA'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 type Args = {
   params: Promise<{ slug: string }>
@@ -53,7 +53,7 @@ export default async function EventDetail({ params }: Args) {
         {/* Hero */}
         <section className="event-hero">
           {event.featuredImage?.url && (
-            <img src={event.featuredImage.url} alt={event.featuredImage.alt || event.title} className="event-hero-bg" />
+            <img src={event.featuredImage.url} alt={event.featuredImage.alt || event.title} className="event-hero-bg" fetchPriority="high" />
           )}
           <div className="event-hero-overlay" />
           <div className="event-hero-content">
@@ -278,9 +278,18 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     const event = result.docs[0] as any
     if (!event) return { title: 'Not Found' }
 
+    const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
+
     return {
       title: event.title,
       description: event.shortDescription || undefined,
+      alternates: { canonical: `${siteUrl}/events/${slug}` },
+      openGraph: {
+        title: event.title,
+        description: event.shortDescription || undefined,
+        url: `${siteUrl}/events/${slug}`,
+        ...(event.featuredImage?.url ? { images: [{ url: event.featuredImage.url, alt: event.featuredImage.alt || event.title }] } : {}),
+      },
     }
   } catch {
     return { title: 'Not Found' }

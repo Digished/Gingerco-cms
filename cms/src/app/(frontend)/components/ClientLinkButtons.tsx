@@ -12,7 +12,7 @@ export function ClientLinkButtons({ links }: { links: any[] }) {
         <LinkButton
           key={link.id || i}
           link={link}
-          style={link.style || 'primary'}
+          className={`btn btn-${link.style || 'primary'}`}
         />
       ))}
     </>

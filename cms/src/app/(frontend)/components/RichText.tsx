@@ -180,3 +180,18 @@ export function RichText({ content }: { content: any }) {
     </div>
   )
 }
+
+function checkNodes(nodes: any[]): boolean {
+  for (const node of nodes) {
+    if (node.type === 'text' && node.text?.trim()) return true
+    if (node.type === 'linebreak') return true
+    if (node.type === 'horizontalrule' || node.type === 'upload') return true
+    if (Array.isArray(node.children) && checkNodes(node.children)) return true
+  }
+  return false
+}
+
+export function hasRichTextContent(content: any): boolean {
+  if (!content?.root?.children?.length) return false
+  return checkNodes(content.root.children)
+}

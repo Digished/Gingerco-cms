@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react'
+import { RichText, hasRichTextContent } from './RichText'
 import { resolveLink } from './resolveLink'
 
 function ensureAbsoluteUrl(url: string): string {
@@ -96,6 +97,7 @@ function FormModal({ formData, redirectUrl, onClose }: { formData: any; redirect
 
 function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redirectUrl?: string | null; onSuccess: () => void }) {
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
   const [detailsOpen, setDetailsOpen] = useState<Record<number, boolean>>({})
 
   const fields = formData.fields || []
@@ -133,12 +135,21 @@ function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redir
     })
 
     try {
-      await fetch('/api/form-submissions', {
+      const res = await fetch('/api/form-submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ form: formData.id, submissionData }),
       })
-    } catch { /* submit silently */ }
+      if (!res.ok) {
+        setError('Something went wrong. Please try again.')
+        setSubmitting(false)
+        return
+      }
+    } catch {
+      setError('Network error. Please try again.')
+      setSubmitting(false)
+      return
+    }
 
     setSubmitting(false)
     // Use explicit redirect URL if provided, otherwise check form builder's own redirect config
@@ -155,40 +166,47 @@ function InlineForm({ formData, redirectUrl, onSuccess }: { formData: any; redir
         <div className="arrival-notice"><strong>Important:</strong> {arrivalNotice}</div>
       )}
 
-      {consentSections.map((section: any, si: number) => (
-        <div key={si} className="consent-section">
-          <div className="consent-section-title">{section.sectionTitle}</div>
-          {section.declarations?.map((decl: any, di: number) => (
-            <div key={di} className="declaration-item">
-              <input
-                type="checkbox"
-                id={`lbf-consent-${si}-${di}`}
-                name={`consent_${decl.id || decl.title}`}
-                required={decl.required}
-              />
-              <label htmlFor={`lbf-consent-${si}-${di}`}>
-                {decl.title && <strong>{decl.title}</strong>}
-                {decl.description && <span> {decl.description}</span>}
-                {decl.required && <span className="required-mark"> *</span>}
-              </label>
-            </div>
-          ))}
-          {section.collapsibleContent && (
-            <div className="collapsible-details">
-              <button
-                type="button"
-                className={`details-toggle${detailsOpen[si] ? ' active' : ''}`}
-                onClick={() => setDetailsOpen(prev => ({ ...prev, [si]: !prev[si] }))}
-              >
-                {section.collapsibleLabel || 'View Full Consent Details'}
-              </button>
-              <div className={`details-content${detailsOpen[si] ? ' active' : ''}`}>
-                <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(section.collapsibleContent) }} />
+      {consentSections.map((section: any, si: number) => {
+        const hasDeclarations = (section.declarations?.length ?? 0) > 0
+        const hasCollapsible = hasRichTextContent(section.collapsibleContent)
+        if (!hasDeclarations && !hasCollapsible) return null
+        return (
+          <div key={si} className="consent-section">
+            <div className="consent-section-title">{section.sectionTitle}</div>
+            {section.declarations?.map((decl: any, di: number) => (
+              <div key={di} className="declaration-item">
+                <input
+                  type="checkbox"
+                  id={`lbf-consent-${si}-${di}`}
+                  name={`consent_${decl.id || decl.title}`}
+                  required={decl.required}
+                />
+                <label htmlFor={`lbf-consent-${si}-${di}`}>
+                  {decl.title && <strong>{decl.title}</strong>}
+                  {decl.description && <span> {decl.description}</span>}
+                  {decl.required && <span className="required-mark"> *</span>}
+                </label>
               </div>
-            </div>
-          )}
-        </div>
-      ))}
+            ))}
+            {hasCollapsible && (
+              <div className="collapsible-details">
+                <button
+                  type="button"
+                  className={`details-toggle${detailsOpen[si] ? ' active' : ''}`}
+                  onClick={() => setDetailsOpen(prev => ({ ...prev, [si]: !prev[si] }))}
+                >
+                  {section.collapsibleLabel || 'View Full Consent Details'}
+                </button>
+                <div className={`details-content${detailsOpen[si] ? ' active' : ''}`}>
+                  <RichText content={section.collapsibleContent} />
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })}
+
+      {error && <div className="form-message error">{error}</div>}
 
       <div className="form-submit">
         <button type="submit" className="form-submit-btn" disabled={submitting}>
@@ -257,8 +275,8 @@ function renderFormField(field: any, i: number, prefix: string) {
   }
   if (blockType === 'message') {
     const msg = field.message
-    if (msg?.root?.children) {
-      return <div key={i} className="form-field form-message-field"><div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} /></div>
+    if (hasRichTextContent(msg)) {
+      return <div key={i} className="form-field form-message-field"><RichText content={msg} /></div>
     }
     if (typeof msg === 'string') {
       return <div key={i} className="form-field form-message-field"><p>{msg}</p></div>
@@ -277,30 +295,8 @@ function renderFormField(field: any, i: number, prefix: string) {
 function renderConfirmation(msg: any): React.ReactNode {
   if (!msg) return null
   if (typeof msg === 'string') return msg
-  if (msg?.root?.children) {
-    return <div className="rich-text" dangerouslySetInnerHTML={{ __html: serializeRichText(msg) }} />
+  if (hasRichTextContent(msg)) {
+    return <RichText content={msg} />
   }
   return null
-}
-
-function serializeRichText(content: any): string {
-  if (!content?.root?.children) return ''
-  return content.root.children.map((node: any) => serializeNode(node)).join('')
-}
-
-function serializeNode(node: any): string {
-  if (node.type === 'text') {
-    let text = node.text || ''
-    if (node.format & 1) text = `<strong>${text}</strong>`
-    if (node.format & 2) text = `<em>${text}</em>`
-    return text
-  }
-  const children = (node.children || []).map((c: any) => serializeNode(c)).join('')
-  switch (node.type) {
-    case 'paragraph': return `<p>${children}</p>`
-    case 'heading': return `<h${node.tag?.[1] || '4'}>${children}</h${node.tag?.[1] || '4'}>`
-    case 'list': return node.listType === 'number' ? `<ol>${children}</ol>` : `<ul>${children}</ul>`
-    case 'listitem': return `<li>${children}</li>`
-    default: return children
-  }
 }

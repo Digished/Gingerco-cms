@@ -240,9 +240,14 @@ function FabFormModal({ formData, onClose }: { formData: any; onClose: () => voi
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const form = e.currentTarget
+    if (!form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
     setSubmitting(true)
     setError('')
-    const data = new FormData(e.currentTarget)
+    const data = new FormData(form)
     const submissionData: any[] = []
     fields.forEach((field: any) => {
       if (field.blockType === 'message') return
@@ -299,7 +304,11 @@ function FabFormModal({ formData, onClose }: { formData: any; onClose: () => voi
             {error && <div className="form-message error">{error}</div>}
             <div className="form-submit">
               <button type="submit" className="form-submit-btn" disabled={submitting}>
-                {submitting ? 'Sending...' : (formData.submitButtonLabel || 'Submit')}
+                {submitting ? (
+                  <span className="form-spinner-wrap"><span className="form-spinner" />Sending...</span>
+                ) : (
+                  formData.submitButtonLabel || 'Submit'
+                )}
               </button>
             </div>
           </form>
@@ -313,16 +322,17 @@ function renderConfirmation(msg: any): React.ReactNode {
   if (!msg) return null
   if (typeof msg === 'string') return msg
   if (msg?.root?.children) {
-    const html = msg.root.children
-      .map((node: any) => {
-        if (node.type === 'paragraph') {
-          const text = (node.children || []).map((c: any) => c.text || '').join('')
-          return `<p>${text}</p>`
-        }
-        return ''
-      })
-      .join('')
-    return <div dangerouslySetInnerHTML={{ __html: html }} />
+    return (
+      <div>
+        {msg.root.children.map((node: any, i: number) => {
+          if (node.type === 'paragraph') {
+            const text = (node.children || []).map((c: any) => c.text || '').join('')
+            return <p key={i}>{text}</p>
+          }
+          return null
+        })}
+      </div>
+    )
   }
   return null
 }
