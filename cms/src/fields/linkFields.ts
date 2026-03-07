@@ -16,15 +16,20 @@ export function isValidRelation(val: unknown): boolean {
 }
 
 /**
- * Strip the row `id` and null out any invalid/empty relationship fields from a single link row.
- * Stripping `id` is required because the admin UI assigns a UUID string to new rows, which
- * PostgreSQL rejects as invalid for the auto-increment integer `id` column. Payload replaces
- * array rows with a full delete → insert cycle on every save, so the id is never needed.
+ * Sanitise a single link row before saving:
+ * - Strips string (UUID) `id` values: the admin UI assigns a UUID to newly added
+ *   array rows, but PostgreSQL expects an auto-increment integer. Keeping a UUID
+ *   causes "The following field is invalid: id / Value must be unique".
+ * - Preserves integer `id` values so Payload can identify and UPDATE existing rows.
+ * - Nulls out empty relationship objects (e.g. after a related doc is deleted),
+ *   which would otherwise fail Payload's relation validator.
  */
 export function sanitiseLinkRow(link: Record<string, unknown>): Record<string, unknown> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id: _id, ...rest } = link
+  const { id: linkId, ...rest } = link as Record<string, unknown>
+  // Only keep the id if it's a valid integer (existing DB row). UUID strings must be dropped.
+  const preservedId = typeof linkId === 'number' ? { id: linkId } : {}
   return {
+    ...preservedId,
     ...rest,
     page: isValidRelation(rest.page) ? rest.page : null,
     event: isValidRelation(rest.event) ? rest.event : null,

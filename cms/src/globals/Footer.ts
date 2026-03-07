@@ -16,14 +16,16 @@ export const Footer: GlobalConfig = {
         if (Array.isArray(data?.columns)) {
           data.columns = (data.columns as Record<string, unknown>[]).map((col) => {
             if (!Array.isArray((col as Record<string, unknown>).links)) return col
-            const { id: _colId, ...colRest } = col as Record<string, unknown>
+            const { id: colId, ...colRest } = col as Record<string, unknown>
+            const preservedColId = typeof colId === 'number' ? { id: colId } : {}
             return {
-              ...(typeof _colId !== 'undefined' ? { id: _colId } : {}),
+              ...preservedColId,
               ...colRest,
               links: ((col as Record<string, unknown>).links as Record<string, unknown>[]).map((link) => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { id: _id, ...rest } = link
+                const { id: linkId, ...rest } = link as Record<string, unknown>
+                const preservedLinkId = typeof linkId === 'number' ? { id: linkId } : {}
                 return {
+                  ...preservedLinkId,
                   ...rest,
                   page: isValidRelation(rest.page) ? rest.page : null,
                   event: isValidRelation(rest.event) ? rest.event : null,

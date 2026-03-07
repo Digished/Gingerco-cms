@@ -23,7 +23,8 @@ import { ComingSoon } from '../blocks/ComingSoon'
 function cleanBlockLinks(block: Record<string, unknown>): Record<string, unknown> {
   if (!Array.isArray(block?.links)) return block
   const cleaned = (block.links as Record<string, unknown>[])
-    // sanitiseLinkRow strips the row `id` (prevents "invalid: id" UUID errors) and nulls
+    // sanitiseLinkRow strips UUID string `id`s (prevents "invalid: id" UUID errors),
+    // preserves integer `id`s (so Payload can UPDATE existing rows), and nulls
     // out empty relationship objects (prevents "invalid: id" relation errors).
     .map(sanitiseLinkRow)
     .filter((link) => {

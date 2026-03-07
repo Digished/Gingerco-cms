@@ -15,9 +15,10 @@ export const Header: GlobalConfig = {
       ({ data }) => {
         if (Array.isArray(data?.navItems)) {
           data.navItems = (data.navItems as Record<string, unknown>[]).map((item) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { id: _id, ...rest } = item
+            const { id: itemId, ...rest } = item as Record<string, unknown>
+            const preservedId = typeof itemId === 'number' ? { id: itemId } : {}
             return {
+              ...preservedId,
               ...rest,
               page: isValidRelation(rest.page) ? rest.page : null,
               event: isValidRelation(rest.event) ? rest.event : null,
