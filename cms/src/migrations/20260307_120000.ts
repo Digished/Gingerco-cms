@@ -56,11 +56,11 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   for (const { table } of LIVE_LINK_TABLES) {
     await db.execute(sql.raw(`
       ALTER TABLE "${table}"
-        ALTER COLUMN "page_id"        TYPE integer USING CASE WHEN "page_id"        IS NULL OR "page_id"        = '' THEN NULL ELSE "page_id"::integer        END,
-        ALTER COLUMN "event_id"       TYPE integer USING CASE WHEN "event_id"       IS NULL OR "event_id"       = '' THEN NULL ELSE "event_id"::integer       END,
-        ALTER COLUMN "blog_post_id"   TYPE integer USING CASE WHEN "blog_post_id"   IS NULL OR "blog_post_id"   = '' THEN NULL ELSE "blog_post_id"::integer   END,
-        ALTER COLUMN "team_member_id" TYPE integer USING CASE WHEN "team_member_id" IS NULL OR "team_member_id" = '' THEN NULL ELSE "team_member_id"::integer END,
-        ALTER COLUMN "popup_form_id"  TYPE integer USING CASE WHEN "popup_form_id"  IS NULL OR "popup_form_id"  = '' THEN NULL ELSE "popup_form_id"::integer  END
+        ALTER COLUMN "page_id"        TYPE integer USING CASE WHEN "page_id"        ~ '^[0-9]+$' THEN "page_id"::integer        ELSE NULL END,
+        ALTER COLUMN "event_id"       TYPE integer USING CASE WHEN "event_id"       ~ '^[0-9]+$' THEN "event_id"::integer       ELSE NULL END,
+        ALTER COLUMN "blog_post_id"   TYPE integer USING CASE WHEN "blog_post_id"   ~ '^[0-9]+$' THEN "blog_post_id"::integer   ELSE NULL END,
+        ALTER COLUMN "team_member_id" TYPE integer USING CASE WHEN "team_member_id" ~ '^[0-9]+$' THEN "team_member_id"::integer ELSE NULL END,
+        ALTER COLUMN "popup_form_id"  TYPE integer USING CASE WHEN "popup_form_id"  ~ '^[0-9]+$' THEN "popup_form_id"::integer  ELSE NULL END
     `))
   }
 
