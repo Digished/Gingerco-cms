@@ -17,6 +17,7 @@ import { SplitContentBlock } from './blocks/SplitContentBlock'
 import { PopupModalBlock } from './blocks/PopupModalBlock'
 import { PartnerSectionBlock } from './blocks/PartnerSectionBlock'
 import { ComingSoonBlock } from './blocks/ComingSoonBlock'
+import { NewsletterBlockComponent } from './blocks/NewsletterBlockComponent'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const blockComponents: Record<string, React.FC<{ block: any }>> = {
@@ -38,6 +39,7 @@ const blockComponents: Record<string, React.FC<{ block: any }>> = {
   popupModal: PopupModalBlock,
   partnerSection: PartnerSectionBlock as any,
   comingSoon: ComingSoonBlock,
+  newsletterBlock: NewsletterBlockComponent,
 }
 
 export function RenderBlocks({ blocks }: { blocks: any[] }) {
