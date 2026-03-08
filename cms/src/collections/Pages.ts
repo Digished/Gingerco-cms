@@ -18,6 +18,7 @@ import { SplitContent } from '../blocks/SplitContent'
 import { PopupModal } from '../blocks/PopupModal'
 import { PartnerSection } from '../blocks/PartnerSection'
 import { ComingSoon } from '../blocks/ComingSoon'
+import { NewsletterBlock } from '../blocks/NewsletterBlock'
 
 /** Strip empty/invalid link rows from a block's links array before validation. */
 function cleanBlockLinks(block: Record<string, unknown>): Record<string, unknown> {
@@ -107,7 +108,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       required: true,
-      blocks: withVisibility([Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList, BulletList, SplitContent, PopupModal, PartnerSection, ComingSoon]),
+      blocks: withVisibility([Hero, Content, AboutSection, ShowcaseSection, EventsList, Gallery, CallToAction, FAQ, FormBlock, CountdownTimer, TeamBlock, Testimonials, BlogList, BulletList, SplitContent, PopupModal, PartnerSection, ComingSoon, NewsletterBlock]),
     },
     {
       name: 'meta',
