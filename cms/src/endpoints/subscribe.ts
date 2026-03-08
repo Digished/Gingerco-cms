@@ -24,7 +24,7 @@ async function sendConfirmationEmail(
 
 export const subscribeEndpoint: PayloadHandler = async (req) => {
   try {
-    const body = await req.json()
+    const body = await (req as unknown as Request).json()
     const { email, firstName, lastName, source, tags } = body
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
