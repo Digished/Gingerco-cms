@@ -22,7 +22,6 @@ export const Content: Block = {
     {
       name: 'richText',
       type: 'richText',
-      required: true,
     },
     {
       name: 'image',

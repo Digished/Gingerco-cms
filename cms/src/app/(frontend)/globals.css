@@ -3512,3 +3512,18 @@ select[multiple] {
     height: 52px;
   }
 }
+
+/* --- Newsletter Block --- */
+/* Uses .block-form / .form-inner / .form-field / .form-submit-btn from the
+   shared form styles above. Only need the two-column name row helper. */
+.newsletter-name-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 540px) {
+  .newsletter-name-cols {
+    grid-template-columns: 1fr;
+  }
+}

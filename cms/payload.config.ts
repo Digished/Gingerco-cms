@@ -21,6 +21,9 @@ import { EmailCampaigns } from './src/collections/EmailCampaigns'
 import { Header } from './src/globals/Header'
 import { Footer } from './src/globals/Footer'
 import { SiteSettings } from './src/globals/SiteSettings'
+import { subscribeEndpoint } from './src/endpoints/subscribe'
+import { confirmSubscriptionEndpoint } from './src/endpoints/confirm-subscription'
+import { unsubscribeEndpoint } from './src/endpoints/unsubscribe'
 
 /** Resend email adapter for Payload's internal emails (password resets, form confirmations, etc.) */
 const resendEmailAdapter = (): EmailAdapter => () => ({
@@ -91,6 +94,12 @@ export default buildConfig({
   collections: [Users, Pages, Events, BlogPosts, TeamMembers, Partners, Media, Subscribers, EmailCampaigns],
 
   globals: [Header, Footer, SiteSettings],
+
+  endpoints: [
+    { path: '/subscribe', method: 'post', handler: subscribeEndpoint },
+    { path: '/confirm-subscription', method: 'get', handler: confirmSubscriptionEndpoint },
+    { path: '/unsubscribe', method: 'get', handler: unsubscribeEndpoint },
+  ],
 
   plugins: [
     formBuilderPlugin({

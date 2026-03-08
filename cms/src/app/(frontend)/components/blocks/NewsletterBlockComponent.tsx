@@ -14,7 +14,6 @@ export function NewsletterBlockComponent({ block }: { block: any }) {
     source,
     tags,
     backgroundColor = 'light-gray',
-    alignment = 'center',
   } = block
 
   const bgClass =
@@ -23,7 +22,6 @@ export function NewsletterBlockComponent({ block }: { block: any }) {
       : backgroundColor === 'light-gray'
         ? 'bg-light-gray'
         : 'bg-white'
-  const alignClass = alignment === 'left' ? 'newsletter-align-left' : 'newsletter-align-center'
 
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
@@ -70,23 +68,23 @@ export function NewsletterBlockComponent({ block }: { block: any }) {
 
   if (submitted) {
     return (
-      <section className={`block-newsletter ${bgClass}`}>
-        <div className={`newsletter-inner ${alignClass}`}>
-          <p className="newsletter-success">{successMessage}</p>
+      <section className={`block-form ${bgClass}`}>
+        <div className="form-inner">
+          <div className="form-message success">{successMessage}</div>
         </div>
       </section>
     )
   }
 
   return (
-    <section className={`block-newsletter ${bgClass}`}>
-      <div className={`newsletter-inner ${alignClass}`}>
-        {heading && <h2 className="newsletter-heading">{heading}</h2>}
-        {description && <p className="newsletter-description">{description}</p>}
+    <section className={`block-form ${bgClass}`}>
+      <div className="form-inner">
+        {heading && <h2>{heading}</h2>}
+        {description && <p className="form-description">{description}</p>}
 
-        <form onSubmit={handleSubmit} className="newsletter-form">
+        <form onSubmit={handleSubmit} className="cms-form">
           {(collectFirstName || collectLastName) && (
-            <div className="newsletter-name-row">
+            <div className="newsletter-name-cols">
               {collectFirstName && (
                 <div className="form-field">
                   <label htmlFor="newsletter-firstName">First Name</label>
@@ -102,14 +100,17 @@ export function NewsletterBlockComponent({ block }: { block: any }) {
             </div>
           )}
 
-          <div className="newsletter-email-row">
-            <div className="form-field">
-              <label htmlFor="newsletter-email">
-                Email <span className="required-mark">*</span>
-              </label>
-              <input type="email" id="newsletter-email" name="email" required />
-            </div>
-            <button type="submit" className="btn btn-primary newsletter-submit" disabled={submitting}>
+          <div className="form-field">
+            <label htmlFor="newsletter-email">
+              Email <span className="required-mark">*</span>
+            </label>
+            <input type="email" id="newsletter-email" name="email" required />
+          </div>
+
+          {error && <div className="form-message error">{error}</div>}
+
+          <div className="form-submit">
+            <button type="submit" className="form-submit-btn" disabled={submitting}>
               {submitting ? (
                 <span className="form-spinner-wrap">
                   <span className="form-spinner" />
@@ -120,8 +121,6 @@ export function NewsletterBlockComponent({ block }: { block: any }) {
               )}
             </button>
           </div>
-
-          {error && <div className="form-message error">{error}</div>}
         </form>
       </div>
     </section>
