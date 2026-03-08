@@ -26,8 +26,11 @@ export function isValidRelation(val: unknown): boolean {
  */
 export function sanitiseLinkRow(link: Record<string, unknown>): Record<string, unknown> {
   const { id: linkId, ...rest } = link as Record<string, unknown>
-  // Only keep the id if it's a valid integer (existing DB row). UUID strings must be dropped.
-  const preservedId = typeof linkId === 'number' ? { id: linkId } : {}
+  // Preserve any non-empty id (integer or UUID string). The link row tables use varchar
+  // primary keys so UUID strings are valid DB ids. Stripping UUIDs caused autosave to
+  // INSERT a new row every tick (the admin never received the real DB id back), producing
+  // duplicates. Only drop null/undefined/empty ids (truly new rows Payload hasn't saved yet).
+  const preservedId = linkId != null && linkId !== '' ? { id: linkId } : {}
   return {
     ...preservedId,
     ...rest,
