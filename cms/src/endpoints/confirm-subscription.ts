@@ -51,7 +51,7 @@ function htmlResponse(title: string, message: string, success: boolean): Respons
 }
 
 export const confirmSubscriptionEndpoint: PayloadHandler = async (req) => {
-  const url = new URL(req.url)
+  const url = new URL(req.url ?? '', process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at')
   const token = url.searchParams.get('token')
   const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
 

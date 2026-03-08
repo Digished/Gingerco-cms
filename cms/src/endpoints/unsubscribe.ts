@@ -49,7 +49,7 @@ function htmlPage(title: string, message: string, success: boolean): Response {
 }
 
 export const unsubscribeEndpoint: PayloadHandler = async (req) => {
-  const url = new URL(req.url)
+  const url = new URL(req.url ?? '', process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at')
   const token = url.searchParams.get('token')
 
   if (!token) {
