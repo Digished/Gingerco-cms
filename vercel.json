@@ -1,5 +1,12 @@
 {
+  "framework": "nextjs",
   "installCommand": "cd cms && npm install",
   "buildCommand": "cd cms && npm run payload -- migrate && npm run build",
-  "outputDirectory": "cms/.next"
+  "outputDirectory": "cms/.next",
+  "crons": [
+    {
+      "path": "/api/cron/send-campaigns",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }
