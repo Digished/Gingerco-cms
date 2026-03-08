@@ -11,8 +11,8 @@ async function sendConfirmationEmail(
   if (!resendKey) return
 
   const resend = new Resend(resendKey)
-  const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
-  const confirmationUrl = `${siteUrl}/api/confirm-subscription?token=${confirmationToken}`
+  const cmsUrl = process.env.NEXT_PUBLIC_CMS_URL || process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
+  const confirmationUrl = `${cmsUrl}/api/confirm-subscription?token=${confirmationToken}`
 
   await resend.emails.send({
     from: `Ginger & Co <${process.env.RESEND_FROM_EMAIL || 'events@gingerandco.at'}>`,

@@ -51,7 +51,8 @@ function htmlResponse(title: string, message: string, success: boolean): Respons
 }
 
 export const confirmSubscriptionEndpoint: PayloadHandler = async (req) => {
-  const url = new URL(req.url ?? '', process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at')
+  const cmsUrl = process.env.NEXT_PUBLIC_CMS_URL || process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
+  const url = new URL(req.url ?? '', cmsUrl)
   const token = url.searchParams.get('token')
   const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
 
@@ -88,7 +89,7 @@ export const confirmSubscriptionEndpoint: PayloadHandler = async (req) => {
     const resendKey = process.env.RESEND_API_KEY
     if (resendKey) {
       const resend = new Resend(resendKey)
-      const unsubscribeUrl = `${siteUrl}/api/unsubscribe?token=${subscriber.unsubscribeToken}`
+      const unsubscribeUrl = `${cmsUrl}/api/unsubscribe?token=${subscriber.unsubscribeToken}`
 
       await resend.emails.send({
         from: `Ginger & Co <${process.env.RESEND_FROM_EMAIL || 'events@gingerandco.at'}>`,
