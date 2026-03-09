@@ -43,7 +43,7 @@ export const NewsletterBlock: Block = {
     {
       name: 'successMessage',
       type: 'text',
-      defaultValue: 'Thanks! Please check your email to confirm your subscription.',
+      defaultValue: 'Thanks for subscribing!',
       admin: {
         description: 'Shown after the form is submitted successfully.',
       },
