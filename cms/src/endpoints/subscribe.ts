@@ -1,10 +1,10 @@
 import type { PayloadHandler } from 'payload'
 import { Resend } from 'resend'
-import { confirmationEmail } from '../emails/templates'
+import { welcomeEmail } from '../emails/templates'
 
-async function sendConfirmationEmail(
+async function sendWelcomeEmail(
   email: string,
-  confirmationToken: string,
+  unsubscribeToken: string,
   firstName?: string,
 ): Promise<void> {
   const resendKey = process.env.RESEND_API_KEY
@@ -13,13 +13,13 @@ async function sendConfirmationEmail(
   const resend = new Resend(resendKey)
   const cmsUrl = process.env.NEXT_PUBLIC_CMS_URL || process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
   const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://gingerandco.at'
-  const confirmationUrl = `${cmsUrl}/api/confirm-subscription?token=${confirmationToken}`
+  const unsubscribeUrl = `${cmsUrl}/api/unsubscribe?token=${unsubscribeToken}`
 
   await resend.emails.send({
     from: `Ginger & Co <${process.env.RESEND_FROM_EMAIL || 'events@gingerandco.at'}>`,
     to: email,
-    subject: 'Please confirm your subscription — Ginger & Co',
-    html: confirmationEmail({ firstName, confirmationUrl, siteUrl }),
+    subject: 'Welcome to Ginger & Co!',
+    html: welcomeEmail({ firstName, unsubscribeUrl, siteUrl }),
   })
 }
 
@@ -48,19 +48,20 @@ export const subscribeEndpoint: PayloadHandler = async (req) => {
         return Response.json({ success: true })
       }
 
-      await sendConfirmationEmail(sub.email, sub.confirmationToken as string, firstName || sub.firstName as string)
-
       await req.payload.update({
         collection: 'subscribers',
         id: sub.id,
         data: {
-          status: 'pending',
+          status: 'subscribed',
+          subscribedAt: new Date().toISOString(),
           firstName: firstName || sub.firstName,
           lastName: lastName || sub.lastName,
         },
       })
 
-      return Response.json({ success: true, message: 'Check your email to confirm your subscription.' })
+      await sendWelcomeEmail(sub.email, sub.unsubscribeToken as string, firstName || sub.firstName as string)
+
+      return Response.json({ success: true, message: 'Thanks for subscribing!' })
     }
 
     const tagArray = Array.isArray(tags) ? tags.map((t: string) => ({ tag: t })) : []
@@ -71,16 +72,17 @@ export const subscribeEndpoint: PayloadHandler = async (req) => {
         email: normalizedEmail,
         firstName: firstName || '',
         lastName: lastName || '',
-        status: 'pending',
+        status: 'subscribed',
+        subscribedAt: new Date().toISOString(),
         source: source || 'api',
         tags: tagArray,
       },
     })
 
-    await sendConfirmationEmail(subscriber.email, subscriber.confirmationToken as string, firstName)
+    await sendWelcomeEmail(subscriber.email, subscriber.unsubscribeToken as string, firstName)
 
     return Response.json(
-      { success: true, message: 'Thanks! Please check your email to confirm your subscription.' },
+      { success: true, message: 'Thanks for subscribing!' },
       { status: 201 },
     )
   } catch (err) {
